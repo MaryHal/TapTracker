@@ -1,0 +1,34 @@
+diff --git a/cpuexec_old.c b/cpuexec.c
+index e2eea6d..5f714e9 100644
+--- a/cpuexec_old.c
++++ b/cpuexec.c
+@@ -12,6 +12,7 @@
+ #include "emu.h"
+ #include "profiler.h"
+ #include "debugger.h"
++#include "debug/debugcpu.h"
+ 
+ void poll_if_necessary(running_machine *machine);
+ void frame_update_callback(running_machine *machine);
+@@ -259,6 +260,21 @@ void cpuexec_timeslice(running_machine *machine)
+ 	cpuexec_private *global = machine->cpuexec_data;
+ 	int ran;
+ 
++	running_device *device;
++	for (device = machine->devicelist.first(); device != NULL; device = device->next)
++        {
++            if (mame_stricmp(device->tag(), "maincpu") == 0)
++            {
++                break;
++            }
++        }
++	const address_space* space = cpu_get_address_space(device, ADDRESS_SPACE_PROGRAM + (0 - EXPSPACE_PROGRAM_LOGICAL));
++        printf("%d %d %d\n",
++               debug_read_byte(space, memory_address_to_byte(space, 0x06064BF5), TRUE), // p1 State
++               debug_read_word(space, memory_address_to_byte(space, 0x06064BBA), TRUE), // p1 Level
++               debug_read_word(space, memory_address_to_byte(space, 0x06064BEA), TRUE)  // p1 Timer
++            );
++
+ 	/* build the execution list if we don't have one yet */
+ 	if (global->executelist == NULL)
+ 		rebuild_execute_list(machine);
