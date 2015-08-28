@@ -7,6 +7,8 @@
 #include <string.h>
 #include <stdio.h>
 
+#include <assert.h>
+
 #define SECTION_MAX 100
 #define SECTION_COUNT 10
 
@@ -19,11 +21,18 @@ typedef enum
     LOCKED  = 4, // Tetromino is being locked to the playfield.
     ENTRY   = 5,
     IDLE    = 10,
+    STARTUP = 71
 } tap_state;
 
 bool isInPlayingState(tap_state state)
 {
-    return state != 0 && state != 10;
+    return state != NONE && state != IDLE && state != STARTUP;
+}
+
+float convertTime(int frames)
+{
+    // Sadly shmupmame runs TAP at 60 fps instead of the native ~61.7 fps.
+    return frames / 60.0f;
 }
 
 struct datapoint_t
@@ -36,17 +45,69 @@ struct section_t
 {
         struct datapoint_t data[SECTION_MAX];
         size_t size;
+
+        int lines[4];
 };
 
 struct game_t
 {
         struct section_t sections[SECTION_COUNT];
-
-        int singleCount;
-        int doubleCount;
-        int tripleCount;
-        int tetrisCount;
 };
+
+// (Re)sets all game data.
+// If passed NULL, allocate new game data.
+struct game_t* createNewGame(struct game_t* game);
+
+// Adds datapoint to section data if level has incremented.
+void pushDataPoint(struct game_t* game, struct datapoint_t datapoint);
+
+// Returns section data for a single section.
+struct section_t* getSection(struct game_t* game, int sectionIndex);
+
+struct game_t* createNewGame(struct game_t* game)
+{
+    if (game == NULL)
+    {
+        game = (struct game_t*)malloc(sizeof(struct game_t));
+    }
+
+    memset(game, 0, sizeof(struct game_t));
+
+    return game;
+}
+
+void pushDataPoint(struct game_t* game, struct datapoint_t datapoint)
+{
+    const int sectionIndex = datapoint.level / 100;
+    assert(sectionIndex < SECTION_COUNT);
+
+    // Push datapoint to the end of the section.
+    struct section_t* section = &game->sections[sectionIndex];
+
+    int levelDifference = 0;
+    if (section->size == 0 ||
+        (levelDifference = datapoint.level - section->data[section->size - 1].level))
+    {
+        assert(levelDifference <= 4);
+
+        section->data[section->size] = datapoint;
+        section->size++;
+
+        // If we have at least two elements in this section, we can check if we scored some phat lines.
+        if (section->size >= 2)
+        {
+            section->lines[levelDifference - 1]++;
+        }
+    }
+
+    assert(section->size <= SECTION_MAX);
+}
+
+struct section_t* getSection(struct game_t* game, int sectionIndex)
+{
+    assert(sectionIndex < SECTION_COUNT);
+    return &game->sections[sectionIndex];
+}
 
 int main(int argc, char *argv[])
 {
@@ -69,7 +130,7 @@ int main(int argc, char *argv[])
     int oldstdin, oldstdout;
 
     pipe(outfd); // Where the parent is going to write to
-    pipe(infd); // From where parent is going to read
+    pipe(infd);  // From where parent is going to read
 
     oldstdin = dup(0); // Save current stdin
     oldstdout = dup(1); // Save stdout
@@ -112,6 +173,9 @@ int main(int argc, char *argv[])
 
         int incomingFD = infd[0];
 
+        struct game_t game;
+        createNewGame(&game);
+
         while (true)
         {
             // Check if child process has ended.
@@ -138,9 +202,15 @@ int main(int argc, char *argv[])
                     token = strtok(NULL, " \n");
                 } while (token);
 
-                printf("state: %d, level %d, time %d\n", state, level, time);
+                /* printf("state: %d, level %d, time %.2f\n", state, level, convertTime(time)); */
+
+                if (isInPlayingState(state))
+                {
+                    pushDataPoint(&game, (struct datapoint_t){ level, time });
+                }
             }
         }
     }
+
     return 0;
 }
