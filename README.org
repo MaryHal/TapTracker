@@ -1,0 +1,31 @@
+* TapTracker
+This project aims to log various game data (and inputs) during a game of [[https://en.wikipedia.org/wiki/Tetris:_The_Grand_Master][Tetris: The Grandmaster 2 Plus]] (TGM2p/TGM2+/TAP) when run in an emulator ([[http://mamedev.org/][MAME]]). This is linux-only for now.
+
+[[https://github.com/sanford1/BlockTracker][BlockTracker]] was my first attempt at doing this. It was done by interacting with [[https://github.com/scanmem/scanmem][scanmem]] as a child process. Ultimately, this meant every time I started up the game, I had to probe for the memory address holding level data. Along the way I wrote quite possibly the worst code I've ever written. The upside was that this method is game-agnostic; I could probe any TGM-style game for level data.
+
+In contract, TapTracker takes a more direct route by modifying a version of MAME to output the relevant data. Only a single file in the MAME source code has been changed ($MAME/emu/cpuexec.c) and the patch file can be found at =tgm2p_cpuexec_patch=. The patch can be applied via [[http://linux.die.net/man/1/patch][patch]]. Keep in mind that the go-to version of MAME for TGM is a modified version of shmupmame. Some info about it can be found [[http://tetrisconcept.net/wiki/Modded_MAME][here]]. The required MAME version is 0.137 at the moment. The build process on Linux has a couple quirks, I might write a build guide in the near future.
+
+The patch uses debug functions in MAME, so enable the cheat engine with the =-c= switch, or enable debugging with =-debug=.
+
+** Building TapTracker
+
+After cloning this repository, retrieve all the submodules:
+
+#+BEGIN_SRC sh
+  git submodule update --init --recursive
+#+END_SRC
+
+Building this project requires [[https://www.python.org/][python]] and [[https://martine.github.io/ninja/][ninja]]:
+
+#+BEGIN_SRC sh
+  python bootstrap.py
+  ninja
+#+END_SRC
+
+** Running TapTracker
+
+TapTracker expects shmupmametgm as its first argument, then each subsequent argument is passed to shmupmametgm. Example:
+
+#+BEGIN_SRC sh
+  /path/to/TapTracker shmupmametgm -c -record last.inp
+#+END_SRC
