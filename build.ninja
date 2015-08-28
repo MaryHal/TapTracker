@@ -1,0 +1,26 @@
+ninja_required_version = 1.3
+ar = ar
+cxx = clang
+cxxflags = -Wall -Wextra -pedantic -pedantic-errors -std=c11 -DNDEBUG -O3 $
+    -I./ext/uthash/include/
+ldflags = -lGL -lglfw
+
+rule bootstrap
+  command = python bootstrap.py --cxx=clang
+  generator = 1
+rule compile
+  command = $cxx -MMD -MF $out.d -c $cxxflags $in -o $out
+  description = Compiling $in to $out
+  depfile = $out.d
+  deps = gcc
+rule link
+  command = $cxx $cxxflags $in -o $out $ldflags
+  description = Creating $out
+rule ar
+  command = rm -f $out && $ar crs $out $in
+  description = AR $out
+
+build build.ninja: bootstrap | bootstrap.py
+build obj/src/main.o: compile src/main.c
+
+build ./bin/TapTracker: link obj/src/main.o
