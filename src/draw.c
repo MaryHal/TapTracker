@@ -1,5 +1,8 @@
 #include "draw.h"
+#include "font.h"
 #include "game.h"
+
+#include <stdio.h>
 
 #include <GLFW/glfw3.h>
 
@@ -16,14 +19,15 @@ void setupOpenGL(const unsigned int width, const unsigned int height)
 
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
-    glDisable(GL_LIGHTING);
-    glDisable(GL_DEPTH_TEST);
+    /* glDisable(GL_LIGHTING); */
+    /* glDisable(GL_DEPTH_TEST); */
 
     glEnable(GL_LINE_SMOOTH);
     glLineWidth(2.0f);
 }
 
-void drawSectionGraph(struct game_t* game, unsigned int x, unsigned int y,
+void drawSectionGraph(struct game_t* game, struct font_t* font,
+                      float x, float y,
                       unsigned int graphWidth, unsigned int graphHeight)
 {
     glPushMatrix();
@@ -59,9 +63,15 @@ void drawSectionGraph(struct game_t* game, unsigned int x, unsigned int y,
 
         // Section-Level lines
         struct datapoint_t prevDatapoint = { 0, 0 };
-        float sectionAlpha = 1.0f;
-        for (int i = game->currentSection; i >= 0; --i)
+        float sectionAlpha = 0.2f;
+        for (int i = game->currentSection - 1; i <= (signed)game->currentSection; ++i)
         {
+            if (i < 0)
+            {
+                sectionAlpha *= 5;
+                continue;
+            }
+
             struct section_t* section = &game->sections[i];
 
             if (section->size == 0)
@@ -76,8 +86,8 @@ void drawSectionGraph(struct game_t* game, unsigned int x, unsigned int y,
                 {
                     struct datapoint_t datapoint = section->data[j];
 
-                    float vx = graphWidth * (convertTime(datapoint.time - section->startTime)) / 45.0f;
-                    float vy = graphHeight - graphHeight * (datapoint.level - (i * 100)) / 100.0f;
+                    x = graphWidth * (convertTime(datapoint.time - section->startTime)) / 45.0f;
+                    y = graphHeight - graphHeight * (datapoint.level - (i * 100)) / 100.0f;
 
                     int levelDifference = datapoint.level - prevDatapoint.level;
                     prevDatapoint = datapoint;
@@ -87,13 +97,21 @@ void drawSectionGraph(struct game_t* game, unsigned int x, unsigned int y,
                               colors[levelDifference - 1][2],
                               sectionAlpha);
 
-                    glVertex2f(vx, vy);
+                    glVertex2f(x, y);
                 }
             }
             glEnd();
 
-            sectionAlpha /= 4;
+            sectionAlpha *= 5;
         }
+
+        // Print level
+        /* struct section_t* section = &game->sections[game->currentSection]; */
+        char levelStr[15];
+        sprintf(levelStr, "%d", prevDatapoint.level);
+
+        glColor4f(0.8f, 0.8f, 0.8f, 1.0f);
+        drawText(font, x, y, levelStr);
 
         // Draw axis
         glColor4f(0.8f, 0.8f, 0.8f, 1.0f);

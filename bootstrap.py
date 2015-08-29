@@ -37,10 +37,10 @@ args = parser.parse_args()
 BUILD_FILENAME = 'build.ninja'
 
 compiler = args.cxx
-include = ['-I./ext/uthash/include/']
+include = ['-I./ext/stb', '-I./ext/uthash/include']
 depends = []
 libdirs = []
-ldflags = ['-lGL', '-lglfw']
+ldflags = ['-lGL', '-lglfw', '-lm']
 cxxflags = ['-Wall', '-Wextra', '-pedantic', '-pedantic-errors', '-std=c11']
 
 if sys.platform == 'win32':

@@ -4,8 +4,11 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-#define SECTION_MAX 100
-#define SECTION_COUNT 10
+#define LEVEL_MAX      999
+
+#define SECTION_LENGTH 100
+#define SECTION_MAX    100
+#define SECTION_COUNT  10
 
 typedef enum
 {
@@ -46,6 +49,9 @@ struct game_t
 // (Re)sets all game data.
 // If passed NULL, allocate new game data.
 struct game_t* createNewGame(struct game_t* game);
+void destroyGame(struct game_t* game);
+
+bool isGameComplete(struct game_t* game);
 
 // Adds datapoint to section data if level has incremented.
 void pushDataPoint(struct game_t* game, struct datapoint_t datapoint);
