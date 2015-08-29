@@ -1,3 +1,6 @@
 [submodule "ext/uthash"]
 	path = ext/uthash
 	url = https://github.com/troydhanson/uthash.git
+[submodule "ext/stb"]
+	path = ext/stb
+	url = https://github.com/nothings/stb
