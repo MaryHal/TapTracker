@@ -27,12 +27,20 @@ struct game_t* createNewGame(struct game_t* game)
     return game;
 }
 
+void destroyGame(struct game_t* game)
+{
+    free(game);
+}
+
+bool isGameComplete(struct game_t* game)
+{
+    struct section_t* section = &game->sections[game->currentSection];
+    return section->data[section->size].level >= LEVEL_MAX;
+}
+
 void pushDataPoint(struct game_t* game, struct datapoint_t datapoint)
 {
     assert(game->currentSection >= 0 && game->currentSection < SECTION_COUNT);
-
-    const int sectionLength = 100;
-    const int LEVEL_MAX = 999;
 
     struct section_t* section = &game->sections[game->currentSection];
 
@@ -42,7 +50,7 @@ void pushDataPoint(struct game_t* game, struct datapoint_t datapoint)
         return;
     }
 
-    const int levelBoundary = (game->currentSection + 1) * sectionLength;
+    const int levelBoundary = (game->currentSection + 1) * SECTION_LENGTH;
 
     if (datapoint.level >= levelBoundary)
     {

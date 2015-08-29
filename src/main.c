@@ -10,6 +10,7 @@
 #include <GLFW/glfw3.h>
 
 #include "game.h"
+#include "font.h"
 #include "draw.h"
 
 int main(int argc, char *argv[])
@@ -88,6 +89,8 @@ int main(int argc, char *argv[])
 
         {
             glfwWindowHint(GLFW_RESIZABLE, false);
+            glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
+            glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 
             window = glfwCreateWindow(width, height,
                                       "TapTracker",
@@ -102,6 +105,9 @@ int main(int argc, char *argv[])
 
             setupOpenGL(width, height);
         }
+
+        struct font_t font;
+        loadFont(&font, "/usr/share/fonts/TTF/DroidSansFallback.ttf", 20.0f);
 
         struct game_t game;
         createNewGame(&game);
@@ -137,7 +143,7 @@ int main(int argc, char *argv[])
             glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
             glClear(GL_COLOR_BUFFER_BIT);
 
-            drawSectionGraph(&game, 8, 8, width - 16, height - 16);
+            drawSectionGraph(&game, &font, 16, 16, width - 32, height - 32);
 
             glfwSwapBuffers(window);
             glfwPollEvents();
