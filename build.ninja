@@ -23,5 +23,6 @@ rule ar
 build build.ninja: bootstrap | bootstrap.py
 build obj/src/main.o: compile src/main.c
 build obj/src/game.o: compile src/game.c
+build obj/src/draw.o: compile src/draw.c
 
-build ./bin/TapTracker: link obj/src/main.o obj/src/game.o
+build ./bin/TapTracker: link obj/src/main.o obj/src/game.o obj/src/draw.o

@@ -7,7 +7,10 @@
 #include <string.h>
 #include <stdio.h>
 
+#include <GLFW/glfw3.h>
+
 #include "game.h"
+#include "draw.h"
 
 int main(int argc, char *argv[])
 {
@@ -55,6 +58,7 @@ int main(int argc, char *argv[])
         close(infd[0]);
         close(infd[1]);
 
+        // Execute MAME.
         execv(argv[1], argv + 1);
     }
     else // Parent
@@ -73,6 +77,32 @@ int main(int argc, char *argv[])
 
         int incomingFD = infd[0];
 
+        if (!glfwInit())
+        {
+            perror("Could not initialize GLFW.");
+        }
+
+        GLFWwindow* window;
+        const unsigned int width = 960 - 640;
+        const unsigned int height = 540;
+
+        {
+            glfwWindowHint(GLFW_RESIZABLE, false);
+
+            window = glfwCreateWindow(width, height,
+                                      "TapTracker",
+                                      NULL,
+                                      NULL);
+            if (window == NULL)
+            {
+                perror("Could not create GLFW window.");
+            }
+
+            glfwMakeContextCurrent(window);
+
+            setupOpenGL(width, height);
+        }
+
         struct game_t game;
         createNewGame(&game);
 
@@ -80,36 +110,46 @@ int main(int argc, char *argv[])
         {
             // Check if child process has ended.
             int status = 0;
-            if (waitpid(subprocessPid, &status, WNOHANG))
+            if (waitpid(subprocessPid, &status, WNOHANG) != 0)
             {
                 break;
             }
 
             buffer[read(incomingFD, buffer, bufsize)] = 0;
 
-            if (strlen(buffer))
+            int state, level, time;
+
+            char* buf = buffer;
+            char* search = NULL;
+            while ((search = strchr(buf, '\n')) != NULL)
             {
-                // Tokenize the input (formatted as: state level time)
-                char* token = strtok(buffer, " \n");
-                int state, level, time;
+                sscanf(search, "%d%d%d", &state, &level, &time);
 
-                do
-                {
-                    state = atoi(token);
-                    level = atoi(strtok(NULL, " \n"));
-                    time  = atoi(strtok(NULL, " \n"));
-
-                    token = strtok(NULL, " \n");
-                } while (token);
-
-                /* printf("state: %d, level %d, time %.2f\n", state, level, convertTime(time)); */
+                /* printf("%d %d %d\n", state, level, time); */
 
                 if (isInPlayingState(state))
                 {
                     pushDataPoint(&game, (struct datapoint_t){ level, time });
                 }
+                buf = search + 1;
             }
+
+            glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+            glClear(GL_COLOR_BUFFER_BIT);
+
+            drawSectionGraph(&game, 8, 8, width - 16, height - 16);
+
+            glfwSwapBuffers(window);
+            glfwPollEvents();
         }
+
+        glfwDestroyWindow(window);
+        glfwTerminate();
+
+        // Wait for child to finish
+        printf("Parent process completed. Waiting for child to exit...\n");
+        int childStatus = 0;
+        wait(&childStatus);
     }
 
     return 0;
