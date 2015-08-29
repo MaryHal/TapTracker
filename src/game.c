@@ -1,5 +1,6 @@
 #include "game.h"
 
+#include <stdio.h>
 #include <string.h>
 #include <assert.h>
 
@@ -28,23 +29,28 @@ struct game_t* createNewGame(struct game_t* game)
 
 void pushDataPoint(struct game_t* game, struct datapoint_t datapoint)
 {
-    const int sectionIndex = datapoint.level / 100;
-    assert(sectionIndex >= 0 && sectionIndex < SECTION_COUNT);
+    assert(game->currentSection >= 0 && game->currentSection < SECTION_COUNT);
 
-    struct section_t* section = &game->sections[sectionIndex];
+    const int sectionLength = 100;
+    const int LEVEL_MAX = 999;
 
-    // When a datapoint crosses a section boundary, we want that datapoint on
-    // both sections.
-    if (sectionIndex > 0)
+    struct section_t* section = &game->sections[game->currentSection];
+
+    // If we're at the end of the game, don't do anything.
+    if (section->data[section->size].level >= LEVEL_MAX)
     {
-        struct section_t* prevSection = &game->sections[sectionIndex - 1];
-        const int levelBoundary = sectionIndex * 100;
+        return;
+    }
 
-        if (prevSection->data[prevSection->size].level < levelBoundary &&
-            datapoint.level > levelBoundary)
-        {
-            pushDataPointToSection(prevSection, datapoint);
-        }
+    const int levelBoundary = (game->currentSection + 1) * sectionLength;
+
+    if (datapoint.level >= levelBoundary)
+    {
+        pushDataPointToSection(section, datapoint);
+
+        // Section advance!
+        game->currentSection++;
+        section = &game->sections[game->currentSection];
     }
 
     pushDataPointToSection(section, datapoint);
@@ -55,9 +61,17 @@ void pushDataPointToSection(struct section_t* section, struct datapoint_t datapo
     // Only push the data point if level has been incremented.
     int levelDifference = 0;
     if (section->size == 0 ||
-        (levelDifference = datapoint.level - section->data[section->size - 1].level))
+        (levelDifference = datapoint.level - section->data[section->size - 1].level) > 0)
     {
-        assert(levelDifference <= 4);
+        // levelDifference will be zero if this is the first level of the section.
+        /* assert(levelDifference >= 0 && levelDifference <= 4); */
+        assert(levelDifference >= 0);
+
+        // This section just began, as we have no datapoints yet.
+        if (section->size == 0)
+        {
+            section->startTime = datapoint.time;
+        }
 
         // Push datapoint to the end of the section.
         section->data[section->size] = datapoint;

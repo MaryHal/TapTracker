@@ -33,12 +33,14 @@ struct section_t
         struct datapoint_t data[SECTION_MAX];
         size_t size;
 
+        int startTime; // Frame count for when this section began.
         int lines[4];
 };
 
 struct game_t
 {
         struct section_t sections[SECTION_COUNT];
+        unsigned int currentSection;
 };
 
 // (Re)sets all game data.
