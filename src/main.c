@@ -112,7 +112,7 @@ int main(int argc, char *argv[])
         struct game_t game;
         createNewGame(&game);
 
-        while (true)
+        while (!glfwWindowShouldClose(window))
         {
             // Check if child process has ended.
             int status = 0;
