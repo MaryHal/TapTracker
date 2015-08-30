@@ -78,7 +78,8 @@ int main(int argc, char *argv[])
         }
 
         GLFWwindow* window;
-        const unsigned int width = 960 - 640;
+        float ratio = 540 / 480.0;
+        const unsigned int width = 960 - 640 * ratio;
         const unsigned int height = 540;
 
         {
@@ -115,6 +116,7 @@ int main(int argc, char *argv[])
                 break;
             }
 
+            // Read input from child process
             buffer[read(incomingFD, buffer, bufsize)] = 0;
 
             char* buf = buffer;
@@ -128,7 +130,7 @@ int main(int argc, char *argv[])
 
                 /* printf("%d %d %d\n", state, level, time); */
 
-                if (isInPlayingState(game.state))
+                if (isInPlayingState(game.state) && game.level - game.prevLevel > 0)
                 {
                     pushDataPoint(&game, (struct datapoint_t){ game.level, game.time });
                 }
@@ -148,7 +150,7 @@ int main(int argc, char *argv[])
             glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
             glClear(GL_COLOR_BUFFER_BIT);
 
-            drawSectionGraph(&game, &font, 16, 16, width - 32, height - 32);
+            drawSectionGraph(&game, &font, 0, 0, width, height / 2, 32.0f);
 
             glfwSwapBuffers(window);
             glfwPollEvents();

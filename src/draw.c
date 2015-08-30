@@ -28,8 +28,14 @@ void setupOpenGL(const unsigned int width, const unsigned int height)
 
 void drawSectionGraph(struct game_t* game, struct font_t* font,
                       float x, float y,
-                      unsigned int graphWidth, unsigned int graphHeight)
+                      float graphWidth, float graphHeight,
+                      float margin)
 {
+    x += margin;
+    y += margin;
+    graphWidth  -= 2 * margin;
+    graphHeight -= 2 * margin;
+
     glPushMatrix();
     glTranslatef(x, y, 0.0f);
     {
@@ -111,23 +117,25 @@ void drawSectionGraph(struct game_t* game, struct font_t* font,
         sprintf(levelStr, "%d", prevDatapoint.level);
 
         glColor4f(0.8f, 0.8f, 0.8f, 1.0f);
-        drawText(font, x, y, levelStr);
+        drawText(font, x + 4.0f, y - 4.0f, levelStr);
 
         // Draw axis
-        glColor4f(0.8f, 0.8f, 0.8f, 1.0f);
-        glBegin(GL_LINES);
         {
-            glVertex2f(0.0f, 0.0f);
-            glVertex2f(0.0f, graphHeight);
-        }
-        glEnd();
+            glColor4f(0.8f, 0.8f, 0.8f, 1.0f);
+            glBegin(GL_LINES);
+            {
+                glVertex2f(0.0f, 0.0f);
+                glVertex2f(0.0f, graphHeight);
+            }
+            glEnd();
 
-        glBegin(GL_LINES);
-        {
-            glVertex2f(0.0f, graphHeight);
-            glVertex2f(graphWidth, graphHeight);
+            glBegin(GL_LINES);
+            {
+                glVertex2f(0.0f, graphHeight);
+                glVertex2f(graphWidth, graphHeight);
+            }
+            glEnd();
         }
-        glEnd();
     }
     glPopMatrix();
 }
