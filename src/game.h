@@ -49,7 +49,8 @@ struct game_t
 // (Re)sets all game data.
 // If passed NULL, allocate new game data.
 struct game_t* createNewGame(struct game_t* game);
-void destroyGame(struct game_t* game);
+void destroyGame(struct game_t* game, bool freeMem);
+void resetGame(struct game_t* game);
 
 bool isGameComplete(struct game_t* game);
 
