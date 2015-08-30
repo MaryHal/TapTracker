@@ -12,14 +12,17 @@
 
 typedef enum
 {
-    NONE    = 0,
-    /* PRE_ENTRY = 1, */
-    ACTIVE  = 2,
-    LOCKING = 3, // Cannot be influenced anymore
-    LOCKED  = 4, // Tetromino is being locked to the playfield.
-    ENTRY   = 5,
-    IDLE    = 10,
-    STARTUP = 71
+    NONE         = 0,
+    /* PRE_ENTRY   = 1, */
+    ACTIVE       = 2,
+    LOCKING      = 3, // Cannot be influenced anymore
+    LOCKED       = 4, // Tetromino is being locked to the playfield.
+    ENTRY        = 5,
+    GAMEOVER     = 7,
+    IDLE         = 10, // No game has started, just waiting...
+    FADING       = 11, // Blocks fading away when topping out
+    COMPLETION   = 13, // Blocks fading when completing the game
+    STARTUP      = 71
 } tap_state;
 
 bool isInPlayingState(tap_state state);
