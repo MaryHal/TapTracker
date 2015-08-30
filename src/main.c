@@ -20,13 +20,6 @@ int main(int argc, char *argv[])
         perror("This program expects shmupmametgm as its first argument. Each subsequent argument is passed to shmupmametgm.");
         return 1;
     }
-    else
-    {
-        for (int i = 0; i < argc; ++i)
-        {
-            printf("%s\n", argv[i]);
-        }
-    }
 
     int outfd[2];
     int infd[2];
@@ -59,7 +52,8 @@ int main(int argc, char *argv[])
         close(infd[0]);
         close(infd[1]);
 
-        // Execute MAME.
+        // Execute MAME. argv is guaranteed to be NULL-terminated, very
+        // convenient.
         execv(argv[1], argv + 1);
     }
     else // Parent
@@ -112,6 +106,8 @@ int main(int argc, char *argv[])
         struct game_t game;
         createNewGame(&game);
 
+        int prevState = IDLE;
+
         while (!glfwWindowShouldClose(window))
         {
             // Check if child process has ended.
@@ -137,6 +133,13 @@ int main(int argc, char *argv[])
                 {
                     pushDataPoint(&game, (struct datapoint_t){ level, time });
                 }
+                if (!isInPlayingState(prevState) && isInPlayingState(state))
+                {
+                    resetGame(&game);
+                }
+
+                prevState = state;
+
                 buf = search + 1;
             }
 
