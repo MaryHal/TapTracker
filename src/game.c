@@ -27,9 +27,15 @@ struct game_t* createNewGame(struct game_t* game)
     return game;
 }
 
-void destroyGame(struct game_t* game)
+void destroyGame(struct game_t* game, bool freeMem)
 {
-    free(game);
+    if (freeMem)
+        free(game);
+}
+
+void resetGame(struct game_t* game)
+{
+    memset(game, 0, sizeof(struct game_t));
 }
 
 bool isGameComplete(struct game_t* game)
