@@ -122,15 +122,17 @@ int main(int argc, char *argv[])
             while ((search = strchr(buf, '\n')) != NULL)
             {
                 game.prevState = game.state;
-                sscanf(search, "%d%d%d", &game.state, &game.currentLevel, &game.currentTime);
+                game.prevLevel = game.level;
+                game.prevTime  = game.time;
+                sscanf(search, "%d%d%d", &game.state, &game.level, &game.time);
 
                 /* printf("%d %d %d\n", state, level, time); */
 
-                if (isInPlayingState(&game))
+                if (isInPlayingState(game.state))
                 {
-                    pushDataPoint(&game, (struct datapoint_t){ game.currentLevel, game.currentTime });
+                    pushDataPoint(&game, (struct datapoint_t){ game.level, game.time });
                 }
-                if (!isInPlayingState(&game) && isInPlayingState(&game))
+                if (!isInPlayingState(game.prevState) && isInPlayingState(game.prevState))
                 {
                     resetGame(&game);
                 }

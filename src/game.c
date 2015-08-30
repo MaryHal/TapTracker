@@ -39,25 +39,9 @@ bool isGameComplete(struct game_t* game)
     return section->data[section->size].level >= LEVEL_MAX;
 }
 
-void updateState(struct game_t* game, tap_state newState)
+bool isInPlayingState(tap_state state)
 {
-    game->prevState = game->state;
-    game->state = newState;
-}
-
-bool stateChangedTo(struct game_t* game, tap_state testState)
-{
-    return game->state == testState;
-}
-
-bool stateChangedFrom(struct game_t* game, tap_state testState)
-{
-    return game->prevState == testState;
-}
-
-bool isInPlayingState(struct game_t* game)
-{
-    return game->state != NONE && game->state != IDLE && game->state != STARTUP;
+    return state != NONE && state != IDLE && state != STARTUP;
 }
 
 void pushDataPoint(struct game_t* game, struct datapoint_t datapoint)

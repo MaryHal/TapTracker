@@ -45,11 +45,11 @@ struct game_t
         struct section_t sections[SECTION_COUNT];
         unsigned int currentSection;
 
-        tap_state state;
-        tap_state prevState;
-
-        int currentLevel;
-        int currentTime;
+        // We want to detect change on each frame, so we'll keep track of how
+        // things looked on the previous frame for comparison.
+        tap_state state, prevState;
+        int level, prevLevel;
+        int time, prevTime;
 };
 
 float convertTime(int frames);
@@ -61,12 +61,7 @@ void destroyGame(struct game_t* game, bool freeMem);
 void resetGame(struct game_t* game);
 
 bool isGameComplete(struct game_t* game);
-
-void updateState(struct game_t* game, tap_state newState);
-bool stateChangedTo(struct game_t* game, tap_state testState);
-bool stateChangedFrom(struct game_t* game, tap_state testState);
-
-bool isInPlayingState(struct game_t* game);
+bool isInPlayingState(tap_state game);
 
 // Adds datapoint to section data if level has incremented.
 void pushDataPoint(struct game_t* game, struct datapoint_t datapoint);
