@@ -29,7 +29,7 @@ struct font_t* loadFont(struct font_t* font, const char* filename, float pixelHe
     uint8_t ttf_buffer[filesize];
     uint8_t temp_bitmap[font->textureWidth * font->textureHeight];
 
-    fread(ttf_buffer, 1, 1 << 20, fopen(filename, "rb"));
+    fread(ttf_buffer, 1, filesize, fopen(filename, "rb"));
 
     fclose(ttf_file);
 
@@ -47,12 +47,12 @@ struct font_t* loadFont(struct font_t* font, const char* filename, float pixelHe
         pr[0].chardata_for_range = font->pdata;
         pr[0].first_unicode_codepoint_in_range = 32;
         pr[0].num_chars = 95;
-        pr[0].font_size = pixelHeight;
+        pr[0].font_size = STBTT_POINT_SIZE(pixelHeight);
 
         pr[1].chardata_for_range = font->pdata+256;
         pr[1].first_unicode_codepoint_in_range = 0xa0;
         pr[1].num_chars = 0x100 - 0xa0;
-        pr[1].font_size = pixelHeight;
+        pr[1].font_size = STBTT_POINT_SIZE(pixelHeight);
 
         stbtt_PackSetOversampling(&pc, 2, 2);
 
