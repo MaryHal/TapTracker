@@ -25,9 +25,6 @@ typedef enum
     STARTUP      = 71
 } tap_state;
 
-bool isInPlayingState(tap_state state);
-float convertTime(int frames);
-
 struct datapoint_t
 {
         int level;
@@ -47,7 +44,15 @@ struct game_t
 {
         struct section_t sections[SECTION_COUNT];
         unsigned int currentSection;
+
+        tap_state state;
+        tap_state prevState;
+
+        int currentLevel;
+        int currentTime;
 };
+
+float convertTime(int frames);
 
 // (Re)sets all game data.
 // If passed NULL, allocate new game data.
@@ -56,6 +61,12 @@ void destroyGame(struct game_t* game, bool freeMem);
 void resetGame(struct game_t* game);
 
 bool isGameComplete(struct game_t* game);
+
+void updateState(struct game_t* game, tap_state newState);
+bool stateChangedTo(struct game_t* game, tap_state testState);
+bool stateChangedFrom(struct game_t* game, tap_state testState);
+
+bool isInPlayingState(struct game_t* game);
 
 // Adds datapoint to section data if level has incremented.
 void pushDataPoint(struct game_t* game, struct datapoint_t datapoint);
