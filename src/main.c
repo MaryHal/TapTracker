@@ -14,6 +14,7 @@
 #include "draw.h"
 
 #include "history.h"
+#include "joystick.h"
 
 int main(int argc, char *argv[])
 {
@@ -109,6 +110,9 @@ int main(int argc, char *argv[])
         struct history_t history;
         createHistory(&history);
 
+        struct joystick_t joystick;
+        createJoystick(&joystick, GLFW_JOYSTICK_1);
+
         struct game_t game;
         createNewGame(&game);
 
@@ -138,6 +142,8 @@ int main(int argc, char *argv[])
                 if (isInPlayingState(game.state) && game.level - game.prevLevel > 0)
                 {
                     pushDataPoint(&game, (struct datapoint_t){ game.level, game.time });
+
+                    pushHistoryElement(&history, game.level);
                 }
 
                 // Reset if we were looking at the game over screen and just
@@ -159,6 +165,9 @@ int main(int argc, char *argv[])
 
             glfwSwapBuffers(window);
             glfwPollEvents();
+
+            updateButtons(&joystick);
+            /* pushCharFromJoystick(&history, &joystick); */
         }
 
         glfwDestroyWindow(window);
