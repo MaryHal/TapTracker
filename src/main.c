@@ -106,8 +106,6 @@ int main(int argc, char *argv[])
         struct game_t game;
         createNewGame(&game);
 
-        int prevState = IDLE;
-
         while (!glfwWindowShouldClose(window))
         {
             // Check if child process has ended.
@@ -119,27 +117,26 @@ int main(int argc, char *argv[])
 
             buffer[read(incomingFD, buffer, bufsize)] = 0;
 
-            int state, level, time;
-
             char* buf = buffer;
             char* search = NULL;
             while ((search = strchr(buf, '\n')) != NULL)
             {
-                sscanf(search, "%d%d%d", &state, &level, &time);
+                game.prevState = game.state;
+                sscanf(search, "%d%d%d", &game.state, &game.currentLevel, &game.currentTime);
 
                 /* printf("%d %d %d\n", state, level, time); */
 
-                if (isInPlayingState(state))
+                if (isInPlayingState(&game))
                 {
-                    pushDataPoint(&game, (struct datapoint_t){ level, time });
+                    pushDataPoint(&game, (struct datapoint_t){ game.currentLevel, game.currentTime });
                 }
-                if (!isInPlayingState(prevState) && isInPlayingState(state))
+                if (!isInPlayingState(&game) && isInPlayingState(&game))
                 {
                     resetGame(&game);
                 }
 
-                prevState = state;
-
+                // Discard the part of the string buffer that we already
+                // processed.
                 buf = search + 1;
             }
 
