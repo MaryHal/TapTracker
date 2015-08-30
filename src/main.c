@@ -132,7 +132,10 @@ int main(int argc, char *argv[])
                 {
                     pushDataPoint(&game, (struct datapoint_t){ game.level, game.time });
                 }
-                if (!isInPlayingState(game.prevState) && isInPlayingState(game.prevState))
+
+                // Reset if we were looking at the game over screen and just
+                // moved to an idle state.
+                if (game.prevState == GAMEOVER && !isInPlayingState(game.state))
                 {
                     resetGame(&game);
                 }
