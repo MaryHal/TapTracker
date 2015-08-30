@@ -4,11 +4,6 @@
 #include <string.h>
 #include <assert.h>
 
-bool isInPlayingState(tap_state state)
-{
-    return state != NONE && state != IDLE && state != STARTUP;
-}
-
 float convertTime(int frames)
 {
     // Sadly shmupmame runs TAP at 60 fps instead of the native ~61.7 fps.
@@ -42,6 +37,27 @@ bool isGameComplete(struct game_t* game)
 {
     struct section_t* section = &game->sections[game->currentSection];
     return section->data[section->size].level >= LEVEL_MAX;
+}
+
+void updateState(struct game_t* game, tap_state newState)
+{
+    game->prevState = game->state;
+    game->state = newState;
+}
+
+bool stateChangedTo(struct game_t* game, tap_state testState)
+{
+    return game->state == testState;
+}
+
+bool stateChangedFrom(struct game_t* game, tap_state testState)
+{
+    return game->prevState == testState;
+}
+
+bool isInPlayingState(struct game_t* game)
+{
+    return game->state != NONE && game->state != IDLE && game->state != STARTUP;
 }
 
 void pushDataPoint(struct game_t* game, struct datapoint_t datapoint)
