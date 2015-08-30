@@ -13,6 +13,8 @@
 #include "font.h"
 #include "draw.h"
 
+#include "history.h"
+
 int main(int argc, char *argv[])
 {
     if (argc < 2)
@@ -102,7 +104,10 @@ int main(int argc, char *argv[])
         }
 
         struct font_t font;
-        loadFont(&font, "/usr/share/fonts/TTF/DroidSansFallback.ttf", 20.0f);
+        loadFont(&font, "/usr/share/fonts/TTF/DroidSansFallback.ttf", 14.0f);
+
+        struct history_t history;
+        createHistory(&history);
 
         struct game_t game;
         createNewGame(&game);
@@ -150,7 +155,7 @@ int main(int argc, char *argv[])
             glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
             glClear(GL_COLOR_BUFFER_BIT);
 
-            drawSectionGraph(&game, &font, 0, 0, width, height / 2, 32.0f);
+            drawSectionGraph(&game, &font, 0, 0, width, height / 2, 16.0f);
 
             glfwSwapBuffers(window);
             glfwPollEvents();
