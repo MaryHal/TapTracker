@@ -17,7 +17,7 @@ struct game_t* createNewGame(struct game_t* game)
         game = (struct game_t*)malloc(sizeof(struct game_t));
     }
 
-    memset(game, 0, sizeof(struct game_t));
+    resetGame(game);
 
     return game;
 }
@@ -31,6 +31,8 @@ void destroyGame(struct game_t* game, bool freeMem)
 void resetGame(struct game_t* game)
 {
     memset(game, 0, sizeof(struct game_t));
+
+    pushDataPoint(game, (struct datapoint_t) { 0, 0 });
 }
 
 bool isGameComplete(struct game_t* game)
