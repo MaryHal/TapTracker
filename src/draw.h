@@ -7,6 +7,7 @@ struct font_t;
 void setupOpenGL(const unsigned int width, const unsigned int height);
 void drawSectionGraph(struct game_t* game, struct font_t* font,
                       float x, float y,
-                      unsigned int graphWidth, unsigned int graphHeight);
+                      float graphWidth, float graphHeight,
+                      float margin);
 
 #endif /* DRAW_H */
