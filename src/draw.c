@@ -2,6 +2,8 @@
 #include "font.h"
 #include "game.h"
 
+#include "history.h"
+
 #include <stdio.h>
 
 #include <GLFW/glfw3.h>
@@ -138,4 +140,18 @@ void drawSectionGraph(struct game_t* game, struct font_t* font,
         }
     }
     glPopMatrix();
+}
+
+void drawHistory(struct history_t* history, struct font_t* font,
+                 float x, float y)
+{
+    glColor4f(0.8f, 0.8f, 0.8f, 1.0f);
+    for (size_t i = history->start; i < history->end; i++)
+    {
+        char spectrum[32];
+        sprintf(spectrum, "%d: %s", history->data[i % HISTORY_LENGTH].level, history->data[i % HISTORY_LENGTH].spectrum);
+
+        drawText(font, x, y, spectrum);
+        y += 16.0f;
+    }
 }

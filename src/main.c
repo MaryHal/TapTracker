@@ -142,7 +142,10 @@ int main(int argc, char *argv[])
                 if (isInPlayingState(game.state) && game.level - game.prevLevel > 0)
                 {
                     pushDataPoint(&game, (struct datapoint_t){ game.level, game.time });
+                }
 
+                if (game.prevState != ACTIVE && game.state == ACTIVE)
+                {
                     pushHistoryElement(&history, game.level);
                 }
 
@@ -151,23 +154,25 @@ int main(int argc, char *argv[])
                 if (game.prevState == GAMEOVER && !isInPlayingState(game.state))
                 {
                     resetGame(&game);
+                    resetHistory(&history);
                 }
 
                 // Discard the part of the string buffer that we already
                 // processed.
                 buf = search + 1;
             }
+            glfwPollEvents();
+
+            updateButtons(&joystick);
+            pushCharFromJoystick(&history, &joystick);
 
             glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
             glClear(GL_COLOR_BUFFER_BIT);
 
             drawSectionGraph(&game, &font, 0, 0, width, height / 2, 16.0f);
+            drawHistory(&history, &font, 0, height / 2);
 
             glfwSwapBuffers(window);
-            glfwPollEvents();
-
-            updateButtons(&joystick);
-            /* pushCharFromJoystick(&history, &joystick); */
         }
 
         glfwDestroyWindow(window);
