@@ -23,6 +23,7 @@ struct history_t
 
 struct history_t* createHistory(struct history_t* history);
 void destoryHistory(struct history_t* history, bool freeMe);
+void resetHistory(struct history_t* history);
 
 void pushHistoryElement(struct history_t* history, int level);
 void pushChar(struct history_t* history, char c);
@@ -31,6 +32,5 @@ void popHistoryElement(struct history_t* history);
 
 struct joystick_t;
 void pushCharFromJoystick(struct history_t* history, struct joystick_t* joystick);
-void printHistory(struct history_t* history);
 
 #endif /* HISTORY_H */

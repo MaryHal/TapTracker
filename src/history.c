@@ -1,6 +1,7 @@
 #include "history.h"
 #include "joystick.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -13,7 +14,7 @@ struct history_t* createHistory(struct history_t* history)
         history = (struct history_t*) malloc(sizeof(struct history_t));
     }
 
-    memset(history, 0, sizeof(struct history_t));
+    resetHistory(history);
 
     return history;
 }
@@ -24,20 +25,35 @@ void destoryHistory(struct history_t* history, bool freeMe)
         free(history);
 }
 
+void resetHistory(struct history_t* history)
+{
+    memset(history, 0, sizeof(struct history_t));
+}
+
 void pushHistoryElement(struct history_t* history, int level)
 {
-    if (history->end + 1 == history->start)
+    if (history->end - history->start == HISTORY_LENGTH)
     {
         popHistoryElement(history);
     }
 
-    history->data[(history->end + 1) % HISTORY_LENGTH].level = level;
+    const size_t elementIndex = (history->end) % HISTORY_LENGTH;
+
+    history->data[elementIndex].level = level;
+    history->data[elementIndex].size = 0;
+    history->data[elementIndex].spectrum[0] = '\0';
     history->end++;
 }
 
 void pushChar(struct history_t* history, char c)
 {
-    struct element_t* historyElement = &history->data[history->end % HISTORY_LENGTH];
+    // Don't push if we're empty!
+    if (history->start == history->end)
+    {
+        return;
+    }
+
+    struct element_t* historyElement = &history->data[(history->end - 1) % HISTORY_LENGTH];
 
     // Append char to history element string
     if (historyElement->size < MAX_STRING_LENGTH - 2)
@@ -69,5 +85,21 @@ void pushCharFromJoystick(struct history_t* history, struct joystick_t* joystick
     if (buttonChange(joystick, BUTTON_C) && getButtonState(joystick, BUTTON_C) == GLFW_PRESS)
     {
         pushChar(history, 'C');
+    }
+    if (axisChange(joystick, AXIS_HORI) && getAxisState(joystick, AXIS_HORI) == -1)
+    {
+        pushChar(history, '<');
+    }
+    if (axisChange(joystick, AXIS_HORI) && getAxisState(joystick, AXIS_HORI) == 1)
+    {
+        pushChar(history, '>');
+    }
+    if (axisChange(joystick, AXIS_VERT) && getAxisState(joystick, AXIS_VERT) == -1)
+    {
+        pushChar(history, '^');
+    }
+    if (axisChange(joystick, AXIS_VERT) && getAxisState(joystick, AXIS_VERT) == 1)
+    {
+        pushChar(history, 'v');
     }
 }
