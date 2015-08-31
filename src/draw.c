@@ -143,15 +143,49 @@ void drawSectionGraph(struct game_t* game, struct font_t* font,
 }
 
 void drawHistory(struct history_t* history, struct font_t* font,
-                 float x, float y)
+                 float x, float y,
+                 float margin)
 {
-    glColor4f(0.8f, 0.8f, 0.8f, 1.0f);
-    for (size_t i = history->start; i < history->end; i++)
+    glPushMatrix();
     {
-        char spectrum[32];
-        sprintf(spectrum, "%d: %s", history->data[i % HISTORY_LENGTH].level, history->data[i % HISTORY_LENGTH].spectrum);
+        glTranslatef(x + margin, y + margin, 0.0f);
+        x = 0.0f;
+        y = 0.0f;
 
-        drawText(font, x, y, spectrum);
-        y += 16.0f;
+        glColor4f(0.8f, 0.8f, 0.8f, 1.0f);
+        for (size_t i = history->start; i < history->end; i++)
+        {
+            char spectrum[32];
+            sprintf(spectrum, "%d: %s", history->data[i % HISTORY_LENGTH].level, history->data[i % HISTORY_LENGTH].spectrum);
+
+            drawText(font, x, y, spectrum);
+            y += 16.0f;
+        }
     }
+    glPopMatrix();
+}
+
+void drawSectionLineCount(struct game_t* game, struct font_t* font,
+                          float x, float y,
+                          float margin)
+{
+    glPushMatrix();
+    {
+        glTranslatef(x + margin, y + margin, 0.0f);
+        x = 0.0f;
+        y = 0.0f;
+
+        glColor4f(0.8f, 0.8f, 0.8f, 1.0f);
+
+        struct section_t* section = &game->sections[game->currentSection];
+        char lineCount[64];
+        sprintf(lineCount, "%d : %d : %d : %d",
+                section->lines[0],
+                section->lines[1],
+                section->lines[2],
+                section->lines[3]);
+
+        drawText(font, x, y, lineCount);
+    }
+    glPopMatrix();
 }

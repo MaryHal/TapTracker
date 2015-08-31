@@ -16,7 +16,7 @@ typedef enum
     /* PRE_ENTRY   = 1, */
     ACTIVE       = 2,
     LOCKING      = 3, // Cannot be influenced anymore
-    LOCKED       = 4, // Tetromino is being locked to the playfield.
+    LINECLEAR    = 4, // Tetromino is being locked to the playfield.
     ENTRY        = 5,
     GAMEOVER     = 7,
     IDLE         = 10, // No game has started, just waiting...
@@ -64,8 +64,8 @@ bool isGameComplete(struct game_t* game);
 bool isInPlayingState(tap_state game);
 
 // Adds datapoint to section data if level has incremented.
-void pushDataPoint(struct game_t* game, struct datapoint_t datapoint);
-void pushDataPointToSection(struct section_t* section, struct datapoint_t datapoint);
+void pushDataPoint(struct game_t* game);
+void pushDataPointToSection(struct game_t* game, struct section_t* section);
 
 // Returns section data for a single section.
 struct section_t* getSection(struct game_t* game, int sectionIndex);
