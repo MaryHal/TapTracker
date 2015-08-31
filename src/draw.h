@@ -12,6 +12,11 @@ void drawSectionGraph(struct game_t* game, struct font_t* font,
                       float margin);
 
 void drawHistory(struct history_t* history, struct font_t* font,
-                 float x, float y);
+                 float x, float y,
+                 float margin);
+
+void drawSectionLineCount(struct game_t* game, struct font_t* font,
+                          float x, float y,
+                          float margin);
 
 #endif /* DRAW_H */
