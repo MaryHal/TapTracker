@@ -99,7 +99,7 @@ void pushDataPointToSection(struct game_t* game, struct section_t* section)
         // at the correct time (it stays in the LOCKING state).
         if (game->state == LOCKING)
         {
-            perror("Line clear is on LOCKING state instead of LINECLEAR state!");
+            perror("Line clear is on LOCKING state instead of LINECLEAR state!\n");
         }
         if (section->size >= 2 && (game->state == LINECLEAR || game->state == LOCKING))
         {
