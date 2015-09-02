@@ -28,6 +28,8 @@ void destoryHistory(struct history_t* history, bool freeMe)
 void resetHistory(struct history_t* history)
 {
     memset(history, 0, sizeof(struct history_t));
+
+    pushHistoryElement(history, -1);
 }
 
 void pushHistoryElement(struct history_t* history, int level)

@@ -86,7 +86,7 @@ void destroyFont(struct font_t* font, bool freeFont)
         free(font);
 }
 
-void drawText(struct font_t* font, float x, float y, char* string)
+void drawString(struct font_t* font, float x, float y, char* string)
 {
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, font->texture);
