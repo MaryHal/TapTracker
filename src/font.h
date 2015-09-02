@@ -17,6 +17,6 @@ struct font_t
 struct font_t* loadFont(struct font_t* font, const char* filename, float pixelHeight);
 void destroyFont(struct font_t* font, bool freeFont);
 
-void drawText(struct font_t* font, float x, float y, char* string);
+void drawString(struct font_t* font, float x, float y, char* string);
 
 #endif /* FONT_H */

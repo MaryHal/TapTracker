@@ -137,6 +137,12 @@ int main(int argc, char *argv[])
                 game.prevTime  = game.time;
                 sscanf(search, "%d%d%d", &game.state, &game.level, &game.time);
 
+                if (game.time < 0)
+                {
+                    perror("Time Error!");
+                    printf(" %d\n", game.time);
+                }
+
                 if (isInPlayingState(game.state) && game.level - game.prevLevel > 0)
                 {
                     // Push a data point based on the newly acquired game state.
@@ -154,8 +160,6 @@ int main(int argc, char *argv[])
                 {
                     resetGame(&game);
                     resetHistory(&history);
-
-                    pushHistoryElement(&history, -1);
                 }
 
                 // Discard the part of the string buffer that we already
@@ -170,9 +174,10 @@ int main(int argc, char *argv[])
             glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
             glClear(GL_COLOR_BUFFER_BIT);
 
-            drawSectionGraph(&game, &font, 0, 0, width, height / 2, 16.0f);
-            drawSectionLineCount(&game, &font, 0, 0, 16.0f);
-            drawHistory(&history, &font, 0, height / 2, 16.0f);
+            float margin = 16.0f;
+            drawSectionGraph(&game, &font, 0, 0, width, height / 2, margin);
+            drawSectionLineCount(&game, &font, 0, 0, margin);
+            drawHistory(&history, &font, 0, height / 2, margin);
 
             glfwSwapBuffers(window);
         }

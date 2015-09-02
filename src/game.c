@@ -97,11 +97,12 @@ void pushDataPointToSection(struct game_t* game, struct section_t* section)
         // If we have at least two elements in this section, we can check if we
         // scored some phat lines. Sometimes the state on line clear is not set
         // at the correct time (it stays in the LOCKING state).
-        if (game->state == LOCKING)
-        {
-            perror("Line clear is on LOCKING state instead of LINECLEAR state!\n");
-        }
-        if (section->size >= 2 && (game->state == LINECLEAR || game->state == LOCKING))
+        /* if (game->state == LOCKING) */
+        /* { */
+        /*     perror("Line clear is on LOCKING state instead of LINECLEAR state!\n"); */
+        /* } */
+        /* if (section->size >= 2 && (game->state == LINECLEAR || game->state == LOCKING)) */
+        if (section->size >= 2 && (game->prevState == LOCKING || game->state == LINECLEAR))
         {
             section->lines[levelDifference - 1]++;
         }

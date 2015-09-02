@@ -119,7 +119,7 @@ void drawSectionGraph(struct game_t* game, struct font_t* font,
         sprintf(levelStr, "%d", prevDatapoint.level);
 
         glColor4f(0.8f, 0.8f, 0.8f, 1.0f);
-        drawText(font, x + 4.0f, y - 4.0f, levelStr);
+        drawString(font, x + 4.0f, y - 4.0f, levelStr);
 
         // Draw axis
         {
@@ -158,7 +158,7 @@ void drawHistory(struct history_t* history, struct font_t* font,
             char spectrum[32];
             sprintf(spectrum, "%d: %s", history->data[i % HISTORY_LENGTH].level, history->data[i % HISTORY_LENGTH].spectrum);
 
-            drawText(font, x, y, spectrum);
+            drawString(font, x, y, spectrum);
             y += 16.0f;
         }
     }
@@ -185,7 +185,7 @@ void drawSectionLineCount(struct game_t* game, struct font_t* font,
                 section->lines[2],
                 section->lines[3]);
 
-        drawText(font, x, y, lineCount);
+        drawString(font, x, y, lineCount);
     }
     glPopMatrix();
 }
