@@ -37,7 +37,7 @@ args = parser.parse_args()
 BUILD_FILENAME = 'build.ninja'
 
 compiler = args.cxx
-include = ['-isystem./ext/stb']
+include = ['./ext/uthash/include', '-isystem./ext/stb']
 depends = []
 libdirs = []
 ldflags = ['-lGL', '-lglfw', '-lm']

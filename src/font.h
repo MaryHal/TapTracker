@@ -4,14 +4,13 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#include <stb_truetype.h>
-
 struct font_t
 {
         unsigned int texture;
         unsigned int textureWidth;
         unsigned int textureHeight;
-        stbtt_packedchar pdata[256*2];
+
+        /* stbtt_packedchar pdata[256*2]; */
 };
 
 struct font_t* loadFont(struct font_t* font, const char* filename, float pixelHeight);
