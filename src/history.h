@@ -7,9 +7,15 @@
 #define MAX_STRING_LENGTH 16
 #define HISTORY_LENGTH    16
 
+struct button_t
+{
+        int key;
+        bool held;
+};
+
 struct element_t
 {
-        char spectrum[MAX_STRING_LENGTH];
+        struct button_t spectrum[MAX_STRING_LENGTH];
         size_t size;
         int level;
 };
@@ -19,6 +25,16 @@ struct history_t
         struct element_t data[HISTORY_LENGTH];
         size_t start;
         size_t end;
+
+        struct button_t* lastD;
+        struct button_t* lastA;
+        struct button_t* lastB;
+        struct button_t* lastC;
+
+        struct button_t* lastLeft;
+        struct button_t* lastUp;
+        struct button_t* lastRight;
+        struct button_t* lastDown;
 };
 
 struct history_t* createHistory(struct history_t* history);
@@ -26,7 +42,7 @@ void destoryHistory(struct history_t* history, bool freeMe);
 void resetHistory(struct history_t* history);
 
 void pushHistoryElement(struct history_t* history, int level);
-void pushChar(struct history_t* history, char c);
+struct button_t* pushKey(struct history_t* history, int key);
 
 void popHistoryElement(struct history_t* history);
 
