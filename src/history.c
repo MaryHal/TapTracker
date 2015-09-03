@@ -43,16 +43,15 @@ void pushHistoryElement(struct history_t* history, int level)
 
     history->data[elementIndex].level = level;
     history->data[elementIndex].size = 0;
-    history->data[elementIndex].spectrum[0] = '\0';
     history->end++;
 }
 
-void pushChar(struct history_t* history, char c)
+struct button_t* pushKey(struct history_t* history, int key)
 {
     // Don't push if we're empty!
     if (history->start == history->end)
     {
-        return;
+        return NULL;
     }
 
     struct element_t* historyElement = &history->data[(history->end - 1) % HISTORY_LENGTH];
@@ -60,9 +59,14 @@ void pushChar(struct history_t* history, char c)
     // Append char to history element string
     if (historyElement->size < MAX_STRING_LENGTH - 2)
     {
-        historyElement->spectrum[historyElement->size++] = c;
-        historyElement->spectrum[historyElement->size] = '\0';
+        historyElement->spectrum[historyElement->size] = (struct button_t){ key, true };
+        struct button_t* ret = &historyElement->spectrum[historyElement->size];
+        historyElement->size++;
+
+        return ret;
     }
+
+    return NULL;
 }
 
 void popHistoryElement(struct history_t* history)
@@ -72,36 +76,79 @@ void popHistoryElement(struct history_t* history)
 
 void pushCharFromJoystick(struct history_t* history, struct joystick_t* joystick)
 {
+    // Key Press
     if (buttonChange(joystick, BUTTON_D) && getButtonState(joystick, BUTTON_D) == GLFW_PRESS)
     {
-        pushChar(history, 'D');
+        history->lastD = pushKey(history, 'D');
     }
     if (buttonChange(joystick, BUTTON_A) && getButtonState(joystick, BUTTON_A) == GLFW_PRESS)
     {
-        pushChar(history, 'A');
+        history->lastA = pushKey(history, 'A');
     }
     if (buttonChange(joystick, BUTTON_B) && getButtonState(joystick, BUTTON_B) == GLFW_PRESS)
     {
-        pushChar(history, 'B');
+        history->lastB = pushKey(history, 'B');
     }
     if (buttonChange(joystick, BUTTON_C) && getButtonState(joystick, BUTTON_C) == GLFW_PRESS)
     {
-        pushChar(history, 'C');
+        history->lastC = pushKey(history, 'C');
     }
     if (axisChange(joystick, AXIS_HORI) && getAxisState(joystick, AXIS_HORI) == -1)
     {
-        pushChar(history, '<');
+        history->lastLeft = pushKey(history, 0x21d0);
     }
     if (axisChange(joystick, AXIS_HORI) && getAxisState(joystick, AXIS_HORI) == 1)
     {
-        pushChar(history, '>');
+        history->lastRight = pushKey(history, 0x21d2);
     }
     if (axisChange(joystick, AXIS_VERT) && getAxisState(joystick, AXIS_VERT) == -1)
     {
-        pushChar(history, '^');
+        history->lastUp = pushKey(history, 0x21d1);
     }
     if (axisChange(joystick, AXIS_VERT) && getAxisState(joystick, AXIS_VERT) == 1)
     {
-        pushChar(history, 'v');
+        history->lastDown = pushKey(history, 0x21d3);
+    }
+
+    // Key Release
+    if (buttonChange(joystick, BUTTON_D) && getButtonState(joystick, BUTTON_D) == GLFW_RELEASE)
+    {
+        if (history->lastD)
+            history->lastD->held = false;
+    }
+    if (buttonChange(joystick, BUTTON_A) && getButtonState(joystick, BUTTON_A) == GLFW_RELEASE)
+    {
+        if (history->lastA)
+            history->lastA->held = false;
+    }
+    if (buttonChange(joystick, BUTTON_B) && getButtonState(joystick, BUTTON_B) == GLFW_RELEASE)
+    {
+        if (history->lastB)
+            history->lastB->held = false;
+    }
+    if (buttonChange(joystick, BUTTON_C) && getButtonState(joystick, BUTTON_C) == GLFW_RELEASE)
+    {
+        if (history->lastC)
+            history->lastC->held = false;
+    }
+    if (axisChange(joystick, AXIS_HORI) && getAxisState(joystick, AXIS_HORI) != -1)
+    {
+        if (history->lastLeft)
+            history->lastLeft->held = false;
+    }
+    if (axisChange(joystick, AXIS_HORI) && getAxisState(joystick, AXIS_HORI) != 1)
+    {
+        if (history->lastRight)
+            history->lastRight->held = false;
+    }
+    if (axisChange(joystick, AXIS_VERT) && getAxisState(joystick, AXIS_VERT) != -1)
+    {
+        if (history->lastUp)
+            history->lastUp->held = false;
+    }
+    if (axisChange(joystick, AXIS_VERT) && getAxisState(joystick, AXIS_VERT) != 1)
+    {
+        if (history->lastDown)
+            history->lastDown->held = false;
     }
 }
