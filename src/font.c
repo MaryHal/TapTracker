@@ -4,12 +4,14 @@
 #include <stdio.h>
 #include <math.h>
 
+#include <assert.h>
+
 #include <GLFW/glfw3.h>
 
 #include <stb_rect_pack.h>
 
-/* #define STB_IMAGE_WRITE_IMPLEMENTATION */
-/* #include <stb_image_write.h> */
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include <stb_image_write.h>
 
 struct chardata_t* dataHash = NULL;
 
@@ -76,7 +78,7 @@ struct font_t* loadFont(struct font_t* font, const char* filename, float pixelHe
         }
 
         stbtt_packedchar pdata[256*2];
-        stbtt_pack_range pr[1];
+        stbtt_pack_range pr[2];
 
         pr[0].chardata_for_range = pdata;
         pr[0].first_unicode_codepoint_in_range = 32;
@@ -84,8 +86,8 @@ struct font_t* loadFont(struct font_t* font, const char* filename, float pixelHe
         pr[0].font_size = STBTT_POINT_SIZE(pixelHeight);
 
         pr[1].chardata_for_range = pdata+256;
-        pr[1].first_unicode_codepoint_in_range = 0xa0;
-        pr[1].num_chars = 0x100 - 0xa0;
+        pr[1].first_unicode_codepoint_in_range = 0x21d0;
+        pr[1].num_chars = 0x21d3 - 0x2100 + 1;
         pr[1].font_size = STBTT_POINT_SIZE(pixelHeight);
 
         stbtt_PackSetOversampling(&pc, 2, 2);
@@ -96,7 +98,7 @@ struct font_t* loadFont(struct font_t* font, const char* filename, float pixelHe
         }
 
         stbtt_PackEnd(&pc);
-        /* stbi_write_png("fonttest3.png", font->textureWidth, font->textureHeight, 1, temp_bitmap, 0); */
+        stbi_write_png("fonttest3.png", font->textureWidth, font->textureHeight, 1, temp_bitmap, 0);
 
         // Move all rects to hash table.
         for (int i = 0; i < 2; i++)
@@ -140,6 +142,8 @@ void getPackedQuad(struct font_t* font, int codepoint,
     float ipw = 1.0f / font->textureWidth;
     float iph = 1.0f / font->textureHeight;
 
+    assert(getCharData(codepoint) != NULL);
+
     stbtt_packedchar* b = &getCharData(codepoint)->pchar;
 
     if (align_to_integer) {
@@ -164,7 +168,27 @@ void getPackedQuad(struct font_t* font, int codepoint,
     *xpos += b->xadvance;
 }
 
-void drawString(struct font_t* font, float x, float y, char* string)
+void drawChar(struct font_t* font, float* x, float* y, wchar_t c)
+{
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, font->texture);
+
+    glBegin(GL_QUADS);
+    {
+        stbtt_aligned_quad q;
+        getPackedQuad(font, c, x, y, 1, &q);
+
+        glTexCoord2f(q.s0,q.t0); glVertex2f(q.x0,q.y0);
+        glTexCoord2f(q.s1,q.t0); glVertex2f(q.x1,q.y0);
+        glTexCoord2f(q.s1,q.t1); glVertex2f(q.x1,q.y1);
+        glTexCoord2f(q.s0,q.t1); glVertex2f(q.x0,q.y1);
+    }
+    glEnd();
+
+    glDisable(GL_TEXTURE_2D);
+}
+
+void drawString(struct font_t* font, float x, float y, const char* string)
 {
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, font->texture);
@@ -172,17 +196,21 @@ void drawString(struct font_t* font, float x, float y, char* string)
     // Boo! Immediate mode!
     for (;*string != '\0'; ++string)
     {
-        glBegin(GL_QUADS);
-        {
-            stbtt_aligned_quad q;
-            getPackedQuad(font, *string, &x, &y, 1, &q);
+        drawChar(font, &x, &y, *string);
+    }
 
-            glTexCoord2f(q.s0,q.t0); glVertex2f(q.x0,q.y0);
-            glTexCoord2f(q.s1,q.t0); glVertex2f(q.x1,q.y0);
-            glTexCoord2f(q.s1,q.t1); glVertex2f(q.x1,q.y1);
-            glTexCoord2f(q.s0,q.t1); glVertex2f(q.x0,q.y1);
-        }
-        glEnd();
+    glDisable(GL_TEXTURE_2D);
+}
+
+void drawWideString(struct font_t* font, float x, float y, const wchar_t* string)
+{
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, font->texture);
+
+    // Boo! Immediate mode!
+    for (;*string != '\0'; ++string)
+    {
+        drawChar(font, &x, &y, *string);
     }
 
     glDisable(GL_TEXTURE_2D);

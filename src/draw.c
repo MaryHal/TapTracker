@@ -152,13 +152,28 @@ void drawHistory(struct history_t* history, struct font_t* font,
         x = 0.0f;
         y = 0.0f;
 
-        glColor4f(0.8f, 0.8f, 0.8f, 1.0f);
         for (size_t i = history->start; i < history->end; i++)
         {
-            char spectrum[32];
-            sprintf(spectrum, "%d: %s", history->data[i % HISTORY_LENGTH].level, history->data[i % HISTORY_LENGTH].spectrum);
+            glColor4f(0.8f, 0.8f, 0.8f, 1.0f);
 
-            drawString(font, x, y, spectrum);
+            char levelString[32];
+            sprintf(levelString, "%d:", history->data[i % HISTORY_LENGTH].level);
+            drawString(font, x, y, levelString);
+
+            x = 32.0f;
+
+            struct element_t* element = &history->data[i % HISTORY_LENGTH];
+            for (size_t j = 0; j < element->size; j++)
+            {
+                if (element->spectrum[j].held)
+                    glColor4f(0.8f, 0.8f, 0.0f, 1.0f);
+                else
+                    glColor4f(0.8f, 0.8f, 0.8f, 1.0f);
+
+                drawChar(font, &x, &y, element->spectrum[j].key);
+            }
+
+            x = 0.0f;
             y += 16.0f;
         }
     }
