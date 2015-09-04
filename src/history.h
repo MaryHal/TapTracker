@@ -4,6 +4,8 @@
 #include <stddef.h>
 #include <stdbool.h>
 
+#include "joystick.h"
+
 #define MAX_STRING_LENGTH 18
 #define HISTORY_LENGTH    12
 
@@ -26,10 +28,7 @@ struct history_t
         size_t start;
         size_t end;
 
-        struct button_t* lastD;
-        struct button_t* lastA;
-        struct button_t* lastB;
-        struct button_t* lastC;
+        struct button_t* heldButtons[BUTTON_COUNT];
 
         struct button_t* lastLeft;
         struct button_t* lastUp;
@@ -38,7 +37,7 @@ struct history_t
 };
 
 struct history_t* createHistory(struct history_t* history);
-void destoryHistory(struct history_t* history, bool freeMe);
+void destroyHistory(struct history_t* history, bool freeMe);
 void resetHistory(struct history_t* history);
 
 void pushHistoryElement(struct history_t* history, int level);
