@@ -95,19 +95,19 @@ void pushCharFromJoystick(struct history_t* history, struct joystick_t* joystick
     }
     if (axisChange(joystick, AXIS_HORI) && getAxisState(joystick, AXIS_HORI) == -1)
     {
-        history->lastLeft = pushKey(history, 0x21d0);
+        history->lastLeft = pushKey(history, 0x2190);
     }
     if (axisChange(joystick, AXIS_HORI) && getAxisState(joystick, AXIS_HORI) == 1)
     {
-        history->lastRight = pushKey(history, 0x21d2);
+        history->lastRight = pushKey(history, 0x2192);
     }
     if (axisChange(joystick, AXIS_VERT) && getAxisState(joystick, AXIS_VERT) == -1)
     {
-        history->lastUp = pushKey(history, 0x21d1);
+        history->lastUp = pushKey(history, 0x2191);
     }
     if (axisChange(joystick, AXIS_VERT) && getAxisState(joystick, AXIS_VERT) == 1)
     {
-        history->lastDown = pushKey(history, 0x21d3);
+        history->lastDown = pushKey(history, 0x2193);
     }
 
     // Key Release

@@ -7,6 +7,7 @@ struct history_t;
 
 void setupOpenGL(const unsigned int width, const unsigned int height);
 void drawSectionGraph(struct game_t* game, struct font_t* font,
+                      float scale,
                       float x, float y,
                       float graphWidth, float graphHeight,
                       float margin);
