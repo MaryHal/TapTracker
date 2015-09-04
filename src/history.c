@@ -19,7 +19,7 @@ struct history_t* createHistory(struct history_t* history)
     return history;
 }
 
-void destoryHistory(struct history_t* history, bool freeMe)
+void destroyHistory(struct history_t* history, bool freeMe)
 {
     if (freeMe)
         free(history);
@@ -76,77 +76,54 @@ void popHistoryElement(struct history_t* history)
 
 void pushCharFromJoystick(struct history_t* history, struct joystick_t* joystick)
 {
-    // Key Press
-    if (buttonChange(joystick, BUTTON_D) && getButtonState(joystick, BUTTON_D) == GLFW_PRESS)
+    for (int buttonID = 0; buttonID < BUTTON_COUNT; buttonID++)
     {
-        history->lastD = pushKey(history, 'D');
+        if (buttonChange(joystick, buttonID))
+        {
+            if (getButtonState(joystick, buttonID) == GLFW_PRESS)
+            {
+                history->heldButtons[buttonID] = pushKey(history, JoystickButtonLabels[buttonID]);
+            }
+            else if (getButtonState(joystick, buttonID) == GLFW_RELEASE)
+            {
+                if (history->heldButtons[buttonID])
+                    history->heldButtons[buttonID]->held = false;
+            }
+        }
     }
-    if (buttonChange(joystick, BUTTON_A) && getButtonState(joystick, BUTTON_A) == GLFW_PRESS)
-    {
-        history->lastA = pushKey(history, 'A');
-    }
-    if (buttonChange(joystick, BUTTON_B) && getButtonState(joystick, BUTTON_B) == GLFW_PRESS)
-    {
-        history->lastB = pushKey(history, 'B');
-    }
-    if (buttonChange(joystick, BUTTON_C) && getButtonState(joystick, BUTTON_C) == GLFW_PRESS)
-    {
-        history->lastC = pushKey(history, 'C');
-    }
-    if (axisChange(joystick, AXIS_HORI) && getAxisState(joystick, AXIS_HORI) == -1)
+
+    if (axisChangedToState(joystick, AXIS_HORI, AXIS_NEGATIVE))
     {
         history->lastLeft = pushKey(history, 0x2190);
     }
-    if (axisChange(joystick, AXIS_HORI) && getAxisState(joystick, AXIS_HORI) == 1)
+    if (axisChangedToState(joystick, AXIS_HORI, AXIS_POSITIVE))
     {
         history->lastRight = pushKey(history, 0x2192);
     }
-    if (axisChange(joystick, AXIS_VERT) && getAxisState(joystick, AXIS_VERT) == -1)
+    if (axisChangedToState(joystick, AXIS_VERT, AXIS_NEGATIVE))
     {
         history->lastUp = pushKey(history, 0x2191);
     }
-    if (axisChange(joystick, AXIS_VERT) && getAxisState(joystick, AXIS_VERT) == 1)
+    if (axisChangedToState(joystick, AXIS_VERT, AXIS_POSITIVE))
     {
         history->lastDown = pushKey(history, 0x2193);
     }
-
-    // Key Release
-    if (buttonChange(joystick, BUTTON_D) && getButtonState(joystick, BUTTON_D) == GLFW_RELEASE)
-    {
-        if (history->lastD)
-            history->lastD->held = false;
-    }
-    if (buttonChange(joystick, BUTTON_A) && getButtonState(joystick, BUTTON_A) == GLFW_RELEASE)
-    {
-        if (history->lastA)
-            history->lastA->held = false;
-    }
-    if (buttonChange(joystick, BUTTON_B) && getButtonState(joystick, BUTTON_B) == GLFW_RELEASE)
-    {
-        if (history->lastB)
-            history->lastB->held = false;
-    }
-    if (buttonChange(joystick, BUTTON_C) && getButtonState(joystick, BUTTON_C) == GLFW_RELEASE)
-    {
-        if (history->lastC)
-            history->lastC->held = false;
-    }
-    if (axisChange(joystick, AXIS_HORI) && getAxisState(joystick, AXIS_HORI) != -1)
+    if (axisChangedFromState(joystick, AXIS_HORI, AXIS_NEGATIVE))
     {
         if (history->lastLeft)
             history->lastLeft->held = false;
     }
-    if (axisChange(joystick, AXIS_HORI) && getAxisState(joystick, AXIS_HORI) != 1)
+    if (axisChangedFromState(joystick, AXIS_HORI, AXIS_POSITIVE))
     {
         if (history->lastRight)
             history->lastRight->held = false;
     }
-    if (axisChange(joystick, AXIS_VERT) && getAxisState(joystick, AXIS_VERT) != -1)
+    if (axisChangedFromState(joystick, AXIS_VERT, AXIS_NEGATIVE))
     {
         if (history->lastUp)
             history->lastUp->held = false;
     }
-    if (axisChange(joystick, AXIS_VERT) && getAxisState(joystick, AXIS_VERT) != 1)
+    if (axisChangedFromState(joystick, AXIS_VERT, AXIS_POSITIVE))
     {
         if (history->lastDown)
             history->lastDown->held = false;

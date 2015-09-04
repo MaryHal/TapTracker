@@ -141,16 +141,16 @@ int main(int argc, char *argv[])
                 game.prevTime  = game.time;
                 sscanf(search, "%d%d%d", &game.state, &game.level, &game.time);
 
-                if (game.time < 0)
+                if (game.time < game.prevTime)
                 {
                     perror("Time Error!");
-                    printf(" %d\n", game.time);
+                    printGameState(&game);
                 }
 
                 if (isInPlayingState(game.state) && game.level - game.prevLevel > 0)
                 {
                     // Push a data point based on the newly acquired game state.
-                    pushDataPoint(&game);
+                    pushCurrentState(&game);
                 }
 
                 if (game.prevState != ACTIVE && game.state == ACTIVE)
@@ -189,6 +189,11 @@ int main(int argc, char *argv[])
 
             glfwSwapBuffers(window);
         }
+
+        destroyGame(&game, false);
+        destroyJoystick(&joystick, false);
+        destroyHistory(&history, false);
+        destroyFont(&font, false);
 
         glfwDestroyWindow(window);
         glfwTerminate();

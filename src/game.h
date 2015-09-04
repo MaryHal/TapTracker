@@ -64,10 +64,12 @@ bool isGameComplete(struct game_t* game);
 bool isInPlayingState(tap_state game);
 
 // Adds datapoint to section data if level has incremented.
-void pushDataPoint(struct game_t* game);
-void pushDataPointToSection(struct game_t* game, struct section_t* section);
+void pushCurrentState(struct game_t* game);
+void pushStateToSection(struct game_t* game, struct section_t* section);
 
 // Returns section data for a single section.
 struct section_t* getSection(struct game_t* game, int sectionIndex);
+
+void printGameState(struct game_t* game);
 
 #endif /* GAME_H */
