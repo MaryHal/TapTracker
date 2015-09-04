@@ -29,6 +29,7 @@ void setupOpenGL(const unsigned int width, const unsigned int height)
 }
 
 void drawSectionGraph(struct game_t* game, struct font_t* font,
+                      float scale,
                       float x, float y,
                       float graphWidth, float graphHeight,
                       float margin)
@@ -71,8 +72,8 @@ void drawSectionGraph(struct game_t* game, struct font_t* font,
 
         // Section-Level lines
         struct datapoint_t prevDatapoint = { 0, 0 };
-        float sectionAlpha = 0.2f;
-        for (int i = game->currentSection - 1; i <= (signed)game->currentSection; ++i)
+        float sectionAlpha = 0.04f;
+        for (int i = game->currentSection - 2; i <= (signed)game->currentSection; ++i)
         {
             if (i < 0)
             {
@@ -94,7 +95,7 @@ void drawSectionGraph(struct game_t* game, struct font_t* font,
                 {
                     struct datapoint_t datapoint = section->data[j];
 
-                    x = graphWidth * (convertTime(datapoint.time - section->startTime)) / 45.0f;
+                    x = graphWidth * (convertTime(datapoint.time - section->startTime)) / scale;
                     y = graphHeight - graphHeight * (datapoint.level - (i * 100)) / 100.0f;
 
                     int levelDifference = datapoint.level - prevDatapoint.level;
@@ -137,6 +138,11 @@ void drawSectionGraph(struct game_t* game, struct font_t* font,
                 glVertex2f(graphWidth, graphHeight);
             }
             glEnd();
+
+            drawString(font, graphWidth / 2 - 40.0f, graphHeight + 16.0f, "Section Time");
+
+            sprintf(levelStr, "%d", (int)scale);
+            drawString(font, graphWidth - 10.0f, graphHeight + 16.0f, levelStr);
         }
     }
     glPopMatrix();

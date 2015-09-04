@@ -1,4 +1,4 @@
-;;; Project ---  BlockTracker Project file for Emacs users.
+;;; Project ---  TapTracker Project file for Emacs users.
 ;;; Commentary:
 ;;;    Eval this file!
 
