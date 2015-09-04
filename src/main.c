@@ -116,6 +116,10 @@ int main(int argc, char *argv[])
         struct game_t game;
         createNewGame(&game);
 
+        #define SCALE_COUNT 2
+        int scaleIndex = 0;
+        float scales[SCALE_COUNT] = { 45.0f, 60.0f };
+
         while (!glfwWindowShouldClose(window))
         {
             // Check if child process has ended.
@@ -169,15 +173,19 @@ int main(int argc, char *argv[])
             glfwPollEvents();
 
             updateButtons(&joystick);
+            if (buttonChange(&joystick, BUTTON_D) && getButtonState(&joystick, BUTTON_D) == GLFW_PRESS)
+            {
+                scaleIndex++;
+            }
             pushCharFromJoystick(&history, &joystick);
 
             glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
             glClear(GL_COLOR_BUFFER_BIT);
 
             float margin = 16.0f;
-            drawSectionGraph(&game, &font, 0, 0, width, height / 2, margin);
-            drawSectionLineCount(&game, &font, 0, 0, margin);
-            drawHistory(&history, &font, 0, height / 2, margin);
+            drawSectionGraph(&game, &font, scales[scaleIndex % SCALE_COUNT], 0, 0, width, height / 2, margin);
+            drawSectionLineCount(&game, &font, 70.0f, height / 2, margin);
+            drawHistory(&history, &font, 0, height / 2 + 20.0f, margin);
 
             glfwSwapBuffers(window);
         }

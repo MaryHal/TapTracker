@@ -4,8 +4,8 @@
 #include <stddef.h>
 #include <stdbool.h>
 
-#define MAX_STRING_LENGTH 16
-#define HISTORY_LENGTH    16
+#define MAX_STRING_LENGTH 18
+#define HISTORY_LENGTH    12
 
 struct button_t
 {
