@@ -65,7 +65,7 @@ bool isInPlayingState(tap_state game);
 
 // Adds datapoint to section data if level has incremented.
 void pushCurrentState(struct game_t* game);
-void pushStateToSection(struct game_t* game, struct section_t* section);
+void addDataPointToSection(struct game_t* game, struct section_t* section, int currentLevel, int currentTime);
 
 // Returns section data for a single section.
 struct section_t* getSection(struct game_t* game, int sectionIndex);

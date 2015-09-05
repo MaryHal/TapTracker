@@ -10,8 +10,8 @@
 
 #include <stb_rect_pack.h>
 
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include <stb_image_write.h>
+/* #define STB_IMAGE_WRITE_IMPLEMENTATION */
+/* #include <stb_image_write.h> */
 
 struct chardata_t* dataHash = NULL;
 
@@ -77,8 +77,9 @@ struct font_t* loadFont(struct font_t* font, const char* filename, float pixelHe
             perror("stbtt_PackBegin error");
         }
 
+        const int NUM_RANGES = 2;
+        stbtt_pack_range pr[NUM_RANGES];
         stbtt_packedchar pdata[256*2];
-        stbtt_pack_range pr[2];
 
         pr[0].chardata_for_range = pdata;
         pr[0].first_unicode_codepoint_in_range = 32;
@@ -95,13 +96,14 @@ struct font_t* loadFont(struct font_t* font, const char* filename, float pixelHe
         if (!stbtt_PackFontRanges(&pc, ttf_buffer, 0, pr, 2))
         {
             perror("stbtt_PackFontRanges error. Chars cannot fit on bitmap?");
+            return NULL;
         }
 
         stbtt_PackEnd(&pc);
-        stbi_write_png("fonttest3.png", font->textureWidth, font->textureHeight, 1, temp_bitmap, 0);
+        /* stbi_write_png("fonttest3.png", font->textureWidth, font->textureHeight, 1, temp_bitmap, 0); */
 
         // Move all rects to hash table.
-        for (int i = 0; i < 2; i++)
+        for (int i = 0; i < NUM_RANGES; i++)
         {
             for (int j = 0; j < pr[i].num_chars; j++)
             {
@@ -146,14 +148,17 @@ void getPackedQuad(struct font_t* font, int codepoint,
 
     stbtt_packedchar* b = &getCharData(codepoint)->pchar;
 
-    if (align_to_integer) {
+    if (align_to_integer)
+    {
         float x = (float) ((int)floor((*xpos + b->xoff) + 0.5f));
         float y = (float) ((int)floor((*ypos + b->yoff) + 0.5f));
         q->x0 = x;
         q->y0 = y;
         q->x1 = x + b->xoff2 - b->xoff;
         q->y1 = y + b->yoff2 - b->yoff;
-    } else {
+    }
+    else
+    {
         q->x0 = *xpos + b->xoff;
         q->y0 = *ypos + b->yoff;
         q->x1 = *xpos + b->xoff2;
@@ -193,7 +198,6 @@ void drawString(struct font_t* font, float x, float y, const char* string)
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, font->texture);
 
-    // Boo! Immediate mode!
     for (;*string != '\0'; ++string)
     {
         drawChar(font, &x, &y, *string);
@@ -207,7 +211,6 @@ void drawWideString(struct font_t* font, float x, float y, const wchar_t* string
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, font->texture);
 
-    // Boo! Immediate mode!
     for (;*string != '\0'; ++string)
     {
         drawChar(font, &x, &y, *string);
