@@ -61,24 +61,32 @@ void pushCurrentState(struct game_t* game)
 
     const int levelBoundary = (game->currentSection + 1) * SECTION_LENGTH;
 
-    if (game->level >= levelBoundary)
+    // TODO: Figure out what causes the input (from MAME) inconsistency that
+    // distorts the game state for a single frame. To patch this, we will use
+    // the previous frame's state if a problem occurs. The main will still
+    // output an error during these inconsistent frames.
+    int currentLevel = (game->level < game->prevLevel) ? game->prevLevel : game->level;
+    int currentTime  = (game->time < game->prevTime) ? game->prevTime : game->time;
+
+    if (currentLevel >= levelBoundary)
     {
-        pushStateToSection(game, section);
+        addDataPointToSection(game, section, currentLevel, currentTime);
 
         // Section advance!
         game->currentSection++;
         section = &game->sections[game->currentSection];
     }
 
-    pushStateToSection(game, section);
+    addDataPointToSection(game, section, currentLevel, currentTime);
 }
 
-void pushStateToSection(struct game_t* game, struct section_t* section)
+void addDataPointToSection(struct game_t* game, struct section_t* section,
+                           int currentLevel, int currentTime)
 {
     // Only push the data point if level has been incremented.
     int levelDifference = 0;
     if (section->size == 0 ||
-        (levelDifference = game->level - section->data[section->size - 1].level) > 0)
+        (levelDifference = currentLevel - section->data[section->size - 1].level) > 0)
     {
         // levelDifference will be zero if this is the first level of the section.
         /* assert(levelDifference >= 0 && levelDifference <= 4); */
@@ -87,11 +95,11 @@ void pushStateToSection(struct game_t* game, struct section_t* section)
         // This section just began, as we have no datapoints yet.
         if (section->size == 0)
         {
-            section->startTime = game->time;
+            section->startTime = currentTime;
         }
 
         // Push datapoint to the end of the section.
-        section->data[section->size] = (struct datapoint_t) { game->level, game->time };
+        section->data[section->size] = (struct datapoint_t) { currentLevel, currentTime };
         section->size++;
 
         // If we have at least two elements in this section, we can check if we
