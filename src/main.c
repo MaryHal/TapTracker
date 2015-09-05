@@ -132,48 +132,53 @@ int main(int argc, char *argv[])
             // Read input from child process
             buffer[read(incomingFD, buffer, bufsize)] = 0;
 
-            char* buf = buffer;
-            char* search = NULL;
-            while ((search = strchr(buf, '\n')) != NULL)
+            char* token = strtok(buffer, "\n");
+            while (token)
             {
                 game.prevState = game.state;
                 game.prevLevel = game.level;
                 game.prevTime  = game.time;
-                sscanf(search, "%d%d%d", &game.state, &game.level, &game.time);
 
-                if (game.time < game.prevTime)
+                if (sscanf(token, "%d%d%d", &game.state, &game.level, &game.time) == 3)
                 {
-                    perror("Time Error!");
-                    printGameState(&game);
+                    if (isInPlayingState(game.state) &&
+                        (game.time < game.prevTime || game.level < game.prevLevel))
+                    {
+                        perror("Internal State Error");
+                        printGameState(&game);
+                    }
+
+                    if (isInPlayingState(game.state) && game.level - game.prevLevel > 0)
+                    {
+                        // Push a data point based on the newly acquired game state.
+                        pushCurrentState(&game);
+                    }
+
+                    if (game.prevState != ACTIVE && game.state == ACTIVE)
+                    {
+                        pushHistoryElement(&history, game.level);
+                    }
+
+                    // Reset if we were looking at the game over screen and just
+                    // moved to an idle state.
+                    if (game.prevState == GAMEOVER && !isInPlayingState(game.state))
+                    {
+                        resetGame(&game);
+                        resetHistory(&history);
+                    }
+                }
+                else
+                {
+                    perror("sscanf did not find the correct number of arguments.");
                 }
 
-                if (isInPlayingState(game.state) && game.level - game.prevLevel > 0)
-                {
-                    // Push a data point based on the newly acquired game state.
-                    pushCurrentState(&game);
-                }
-
-                if (game.prevState != ACTIVE && game.state == ACTIVE)
-                {
-                    pushHistoryElement(&history, game.level);
-                }
-
-                // Reset if we were looking at the game over screen and just
-                // moved to an idle state.
-                if (game.prevState == GAMEOVER && !isInPlayingState(game.state))
-                {
-                    resetGame(&game);
-                    resetHistory(&history);
-                }
-
-                // Discard the part of the string buffer that we already
-                // processed.
-                buf = search + 1;
+                token = strtok(NULL, "\n");
             }
+
             glfwPollEvents();
 
             updateButtons(&joystick);
-            if (buttonChange(&joystick, BUTTON_D) && getButtonState(&joystick, BUTTON_D) == GLFW_PRESS)
+            if (buttonChangedToState(&joystick, BUTTON_D, GLFW_PRESS))
             {
                 scaleIndex++;
             }
