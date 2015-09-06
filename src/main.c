@@ -1,6 +1,10 @@
 #include <unistd.h>
+
 #include <sys/wait.h>
 #include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/mman.h>
+#include <fcntl.h>
 
 #include <stdbool.h>
 #include <stdlib.h>
@@ -24,22 +28,29 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    int outfd[2];
-    int infd[2];
+    const char* sharedMemKey = "tgm2p_data";
+    int fd = shm_open(sharedMemKey, O_RDWR | O_CREAT | O_TRUNC, S_IRWXO|S_IRWXG|S_IRWXU);
+    size_t vsize = sizeof(int) * 4;
 
-    int oldstdin, oldstdout;
+    // Stretch our new file to the suggested size.
+    int result = lseek(fd, vsize-1, SEEK_SET);
+    if (result == -1) {
+	perror("Error calling lseek() to 'stretch' the file");
+	exit(1);
+    }
 
-    pipe(outfd); // Where the parent is going to write to
-    pipe(infd);  // From where parent is going to read
+    result = write(fd, "", 1);
+    if (result != 1) {
+	perror("Error writing last byte of the file");
+	exit(1);
+    }
 
-    oldstdin = dup(0); // Save current stdin
-    oldstdout = dup(1); // Save stdout
-
-    close(0);
-    close(1);
-
-    dup2(outfd[0], 0); // Make the read end of outfd pipe as stdin
-    dup2(infd[1], 1); // Make the write end of infd as stdout
+    int* addr = mmap(NULL, vsize, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+    if (addr == MAP_FAILED)
+    {
+        perror("Parent: Could not map memory");
+        exit(1);
+    }
 
     int subprocessPid = fork();
     if (subprocessPid < 0) // Uh oh
@@ -49,32 +60,12 @@ int main(int argc, char *argv[])
     }
     else if (subprocessPid == 0) // Child
     {
-        // Child doesn't need to receive input from us (the parent).
-        close(outfd[0]);
-        close(outfd[1]);
-        close(infd[0]);
-        close(infd[1]);
-
         // Execute MAME. argv is guaranteed to be NULL-terminated, very
         // convenient.
         execv(argv[1], argv + 1);
     }
     else // Parent
     {
-        // Restore the original std fds of parent
-        close(0);
-        close(1);
-        dup2(oldstdin, 0);
-        dup2(oldstdout, 1);
-
-        close(outfd[0]); // These are being used by the child
-        close(infd[1]);
-
-        const int bufsize = 256;
-        char buffer[bufsize];
-
-        int incomingFD = infd[0];
-
         if (!glfwInit())
         {
             perror("Could not initialize GLFW.");
@@ -130,49 +121,39 @@ int main(int argc, char *argv[])
             }
 
             // Read input from child process
-            buffer[read(incomingFD, buffer, bufsize)] = 0;
 
-            char* token = strtok(buffer, "\n");
-            while (token)
+            game.prevState = game.state;
+            game.prevLevel = game.level;
+            game.prevTime  = game.time;
+
+            game.state = addr[0];
+            game.level = addr[1];
+            game.time  = addr[2];
+
+            if (isInPlayingState(game.state) &&
+                (game.time < game.prevTime || game.level < game.prevLevel))
             {
-                game.prevState = game.state;
-                game.prevLevel = game.level;
-                game.prevTime  = game.time;
+                perror("Internal State Error");
+                printGameState(&game);
+            }
 
-                if (sscanf(token, "%d%d%d", &game.state, &game.level, &game.time) == 3)
-                {
-                    if (isInPlayingState(game.state) &&
-                        (game.time < game.prevTime || game.level < game.prevLevel))
-                    {
-                        perror("Internal State Error");
-                        printGameState(&game);
-                    }
+            if (isInPlayingState(game.state) && game.level - game.prevLevel > 0)
+            {
+                // Push a data point based on the newly acquired game state.
+                pushCurrentState(&game);
+            }
 
-                    if (isInPlayingState(game.state) && game.level - game.prevLevel > 0)
-                    {
-                        // Push a data point based on the newly acquired game state.
-                        pushCurrentState(&game);
-                    }
+            if (game.prevState != ACTIVE && game.state == ACTIVE)
+            {
+                pushHistoryElement(&history, game.level);
+            }
 
-                    if (game.prevState != ACTIVE && game.state == ACTIVE)
-                    {
-                        pushHistoryElement(&history, game.level);
-                    }
-
-                    // Reset if we were looking at the game over screen and just
-                    // moved to an idle state.
-                    if (game.prevState == GAMEOVER && !isInPlayingState(game.state))
-                    {
-                        resetGame(&game);
-                        resetHistory(&history);
-                    }
-                }
-                else
-                {
-                    perror("sscanf did not find the correct number of arguments.");
-                }
-
-                token = strtok(NULL, "\n");
+            // Reset if we were looking at the game over screen and just
+            // moved to an idle state.
+            if (game.prevState == GAMEOVER && !isInPlayingState(game.state))
+            {
+                resetGame(&game);
+                resetHistory(&history);
             }
 
             glfwPollEvents();
@@ -208,6 +189,11 @@ int main(int argc, char *argv[])
         int childStatus = 0;
         wait(&childStatus);
     }
+
+    int status;
+    status = munmap(addr, vsize);  /* Unmap the page */
+    status = close(fd);                   /*   Close file   */
+    status = shm_unlink(sharedMemKey);     /* Unlink shared-memory object */
 
     return 0;
 }

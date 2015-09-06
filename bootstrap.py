@@ -40,7 +40,7 @@ compiler = args.cxx
 include = ['-isystem./ext/uthash/include', '-isystem./ext/stb']
 depends = []
 libdirs = []
-ldflags = ['-lGL', '-lglfw', '-lm']
+ldflags = ['-lGL', '-lglfw', '-lm', '-lrt']
 cxxflags = ['-Wall', '-Wextra', '-pedantic', '-pedantic-errors', '-std=c11']
 
 if sys.platform == 'win32':

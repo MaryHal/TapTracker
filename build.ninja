@@ -3,7 +3,7 @@ ar = ar
 cxx = clang
 cxxflags = -Wall -Wextra -pedantic -pedantic-errors -std=c11 -g -O0 -DDEBUG $
     -isystem./ext/uthash/include -isystem./ext/stb
-ldflags = -lGL -lglfw -lm
+ldflags = -lGL -lglfw -lm -lrt
 
 rule bootstrap
   command = python bootstrap.py --debug --cxx=clang
