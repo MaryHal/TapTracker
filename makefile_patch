@@ -1,0 +1,13 @@
+diff --git a/makefile_original b/makefile
+index 5602877..ace1d09 100644
+--- a/makefile_original
++++ b/makefile
+@@ -546,7 +546,7 @@ VERSIONOBJ = $(OBJ)/version.o
+ #-------------------------------------------------
+ 
+ # start with an empty set of libs
+-LIBS = 
++LIBS = -lrt
+ 
+ # add expat XML library
+ ifeq ($(BUILD_EXPAT),1)

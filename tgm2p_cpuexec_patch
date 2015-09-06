@@ -1,5 +1,5 @@
 diff --git a/cpuexec_old.c b/cpuexec.c
-index e2eea6d..028d140 100644
+index e2eea6d..d798ab9 100644
 --- a/cpuexec_old.c
 +++ b/cpuexec.c
 @@ -12,6 +12,7 @@
@@ -10,7 +10,24 @@ index e2eea6d..028d140 100644
  
  void poll_if_necessary(running_machine *machine);
  void frame_update_callback(running_machine *machine);
-@@ -259,6 +260,24 @@ void cpuexec_timeslice(running_machine *machine)
+@@ -252,6 +253,16 @@ void cpuexec_init(running_machine *machine)
+     single timeslice
+ -------------------------------------------------*/
+ 
++#include <sys/types.h>
++#include <sys/stat.h>
++#include <sys/mman.h>
++#include <fcntl.h>
++
++const char* sharedMemKey = "tgm2p_data";
++int fd = 0;
++size_t vsize = sizeof(int) * 4;
++int* addr = NULL;
++
+ void cpuexec_timeslice(running_machine *machine)
+ {
+ 	int call_debugger = ((machine->debug_flags & DEBUG_FLAG_ENABLED) != 0);
+@@ -259,6 +270,30 @@ void cpuexec_timeslice(running_machine *machine)
  	cpuexec_private *global = machine->cpuexec_data;
  	int ran;
  
@@ -19,18 +36,24 @@ index e2eea6d..028d140 100644
 +        {
 +            if (mame_stricmp(device->tag(), "maincpu") == 0)
 +            {
-+                const address_space* space = cpu_get_address_space(device, ADDRESS_SPACE_PROGRAM + (0 - EXPSPACE_PROGRAM_LOGICAL));
-+                int buffer[] =
++                if (addr == NULL)
 +                {
-+                       debug_read_byte(space, memory_address_to_byte(space, 0x06064BF5), TRUE), // p1 State
-+                       debug_read_word(space, memory_address_to_byte(space, 0x06064BBA), TRUE), // p1 Level
-+                       debug_read_word(space, memory_address_to_byte(space, 0x06064BEA), TRUE)  // p1 Timer
-+                };
++                    fd = shm_open(sharedMemKey, O_RDWR, S_IRWXO|S_IRWXG|S_IRWXU);
++                    addr = (int*)mmap(NULL, vsize, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
++                    if (addr == MAP_FAILED)
++                    {
++                        perror("Child: Could not map memory");
++                    }
++                }
++                const address_space* space = cpu_get_address_space(device, ADDRESS_SPACE_PROGRAM + (0 - EXPSPACE_PROGRAM_LOGICAL));
 +
-+                printf("%d %d %d\n", buffer[0], buffer[1], buffer[2]);
++                addr[0] = debug_read_byte(space, memory_address_to_byte(space, 0x06064BF5), TRUE); // p1 State
++                addr[1] = debug_read_word(space, memory_address_to_byte(space, 0x06064BBA), TRUE); // p1 Level
++                addr[2] = debug_read_word(space, memory_address_to_byte(space, 0x06064BEA), TRUE); // p1 Timer
++
++                /* printf("%d %d %d\n", buffer[0], buffer[1], buffer[2]); */
 +                break;
-+            }
-+        }
++            }}
 +
  	/* build the execution list if we don't have one yet */
  	if (global->executelist == NULL)
