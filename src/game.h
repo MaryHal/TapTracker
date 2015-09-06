@@ -18,9 +18,9 @@ typedef enum
     LOCKING      = 3, // Cannot be influenced anymore
     LINECLEAR    = 4, // Tetromino is being locked to the playfield.
     ENTRY        = 5,
-    GAMEOVER     = 7,
+    GAMEOVER     = 7,  // "Game Over" is being shown on screen.
     IDLE         = 10, // No game has started, just waiting...
-    FADING       = 11, // Blocks fading away when topping out
+    FADING       = 11, // Blocks fading away when topping out (losing).
     COMPLETION   = 13, // Blocks fading when completing the game
     STARTUP      = 71
 } tap_state;
