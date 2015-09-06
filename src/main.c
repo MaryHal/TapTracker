@@ -6,9 +6,7 @@
 #include <sys/mman.h>
 #include <fcntl.h>
 
-#include <stdbool.h>
 #include <stdlib.h>
-#include <string.h>
 #include <stdio.h>
 
 #include "tracker.h"

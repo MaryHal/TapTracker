@@ -1,3 +1,5 @@
+#include "tracker.h"
+
 #include <GLFW/glfw3.h>
 
 #include "game.h"
@@ -7,19 +9,22 @@
 #include "history.h"
 #include "joystick.h"
 
-#include <stdio.h>
-#include <sys/types.h>
 #include <sys/wait.h>
 
-void runTracker(int TapProcessID, int* dataPtr)
+#include <stdio.h>
+
+bool runTracker(int TapProcessID, int* dataPtr)
 {
     if (!glfwInit())
     {
         perror("Could not initialize GLFW");
-        exit(1);
+        return false;
     }
 
     GLFWwindow* window;
+
+    // Hard coded window sizes to fit tracker window + 640x480 MAME window in
+    // qHD. UI is not dynamic, so neither is this, for now.
     float ratio = 540 / 480.0;
     const unsigned int width = 960 - 640 * ratio;
     const unsigned int height = 540;
@@ -36,7 +41,7 @@ void runTracker(int TapProcessID, int* dataPtr)
         if (window == NULL)
         {
             perror("Could not create GLFW window");
-            exit(1);
+            return false;
         }
 
         glfwMakeContextCurrent(window);
@@ -56,9 +61,9 @@ void runTracker(int TapProcessID, int* dataPtr)
     struct game_t game;
     createNewGame(&game);
 
-#define SCALE_COUNT 2
+    const int SCALE_COUNT = 2;
+    float scales[] = { 45.0f, 60.0f };
     int scaleIndex = 0;
-    float scales[SCALE_COUNT] = { 45.0f, 60.0f };
 
     while (!glfwWindowShouldClose(window))
     {
@@ -133,4 +138,6 @@ void runTracker(int TapProcessID, int* dataPtr)
 
     glfwDestroyWindow(window);
     glfwTerminate();
+
+    return true;
 }
