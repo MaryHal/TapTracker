@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
     }
 
     const char* sharedMemKey = "tgm2p_data";
-    int fd = shm_open(sharedMemKey, O_RDWR | O_CREAT | O_TRUNC, S_IRWXO|S_IRWXG|S_IRWXU);
+    int fd = shm_open(sharedMemKey, O_RDWR | O_CREAT | O_TRUNC, S_IRWXO | S_IRWXG | S_IRWXU);
     size_t vsize = sizeof(int) * 4;
 
     // Stretch our new file to the suggested size.
@@ -39,6 +39,16 @@ int main(int argc, char *argv[])
 	exit(1);
     }
 
+    /* Something needs to be written at the end of the file to
+     * have the file actually have the new size.
+     * Just writing an empty string at the current file position will do.
+     *
+     * Note:
+     *  - The current position in the file is at the end of the stretched
+     *    file due to the call to lseek().
+     *  - An empty string is actually a single '\0' character, so a zero-byte
+     *    will be written at the last byte of the file.
+     */
     result = write(fd, "", 1);
     if (result != 1) {
 	perror("Error writing last byte of the file");
@@ -49,6 +59,13 @@ int main(int argc, char *argv[])
     if (addr == MAP_FAILED)
     {
         perror("Parent: Could not map memory");
+        exit(1);
+    }
+
+    // Lock the mapped region into memory
+    if(mlock(addr, vsize) != 0)
+    {
+        perror("mlock failure");
         exit(1);
     }
 
@@ -120,40 +137,41 @@ int main(int argc, char *argv[])
                 break;
             }
 
-            // Read input from child process
-
-            game.prevState = game.state;
-            game.prevLevel = game.level;
-            game.prevTime  = game.time;
-
-            game.state = addr[0];
-            game.level = addr[1];
-            game.time  = addr[2];
-
-            if (isInPlayingState(game.state) &&
-                (game.time < game.prevTime || game.level < game.prevLevel))
+            // Read input from child process and add it to the graph
             {
-                perror("Internal State Error");
-                printGameState(&game);
-            }
+                game.prevState = game.state;
+                game.prevLevel = game.level;
+                game.prevTime  = game.time;
 
-            if (isInPlayingState(game.state) && game.level - game.prevLevel > 0)
-            {
-                // Push a data point based on the newly acquired game state.
-                pushCurrentState(&game);
-            }
+                game.state = addr[0];
+                game.level = addr[1];
+                game.time  = addr[2];
 
-            if (game.prevState != ACTIVE && game.state == ACTIVE)
-            {
-                pushHistoryElement(&history, game.level);
-            }
+                if (isInPlayingState(game.state) &&
+                    (game.time < game.prevTime || game.level < game.prevLevel))
+                {
+                    perror("Internal State Error");
+                    printGameState(&game);
+                }
 
-            // Reset if we were looking at the game over screen and just
-            // moved to an idle state.
-            if (game.prevState == GAMEOVER && !isInPlayingState(game.state))
-            {
-                resetGame(&game);
-                resetHistory(&history);
+                if (isInPlayingState(game.state) && game.level - game.prevLevel > 0)
+                {
+                    // Push a data point based on the newly acquired game state.
+                    pushCurrentState(&game);
+                }
+
+                if (game.prevState != ACTIVE && game.state == ACTIVE)
+                {
+                    pushHistoryElement(&history, game.level);
+                }
+
+                // Reset if we were looking at the game over screen and just
+                // moved to an idle state.
+                if (game.prevState == GAMEOVER && !isInPlayingState(game.state))
+                {
+                    resetGame(&game);
+                    resetHistory(&history);
+                }
             }
 
             glfwPollEvents();
@@ -190,10 +208,11 @@ int main(int argc, char *argv[])
         wait(&childStatus);
     }
 
-    int status;
-    status = munmap(addr, vsize);  /* Unmap the page */
-    status = close(fd);                   /*   Close file   */
-    status = shm_unlink(sharedMemKey);     /* Unlink shared-memory object */
+    int status = 0;
+    status = munlock(addr, vsize);
+    status = munmap(addr, vsize);      /* Unmap the page */
+    status = close(fd);                /* Close file */
+    status = shm_unlink(sharedMemKey); /* Unlink shared-memory object */
 
     return 0;
 }
