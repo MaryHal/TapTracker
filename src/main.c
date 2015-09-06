@@ -30,49 +30,46 @@ int main(int argc, char *argv[])
 
     const char* sharedMemKey = "tgm2p_data";
     int fd = shm_open(sharedMemKey, O_RDWR | O_CREAT | O_TRUNC, S_IRWXO | S_IRWXG | S_IRWXU);
-    size_t vsize = sizeof(int) * 4;
+    if (fd < 0)
+    {
+        perror("Could not create shared memory object");
+    }
+
+    size_t vSize = sizeof(int) * 4;
 
     // Stretch our new file to the suggested size.
-    int result = lseek(fd, vsize-1, SEEK_SET);
-    if (result == -1) {
-	perror("Error calling lseek() to 'stretch' the file");
-	exit(1);
+    if (lseek(fd, vSize - 1, SEEK_SET) == -1)
+    {
+	perror("Could not stretch file via lseek");
+        goto file_error;
     }
 
-    /* Something needs to be written at the end of the file to
-     * have the file actually have the new size.
-     * Just writing an empty string at the current file position will do.
-     *
-     * Note:
-     *  - The current position in the file is at the end of the stretched
-     *    file due to the call to lseek().
-     *  - An empty string is actually a single '\0' character, so a zero-byte
-     *    will be written at the last byte of the file.
-     */
-    result = write(fd, "", 1);
-    if (result != 1) {
-	perror("Error writing last byte of the file");
-	exit(1);
+    // In order to change the size of the file, we need to actually write some
+    // data. In this case, we'll be writing an empty string ('\0').
+    if (write(fd, "", 1) != 1)
+    {
+	perror("Could not write the final byte in file");
+        goto file_error;
     }
 
-    int* addr = mmap(NULL, vsize, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+    int* addr = mmap(NULL, vSize, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
     if (addr == MAP_FAILED)
     {
         perror("Parent: Could not map memory");
-        exit(1);
+        goto map_error;
     }
 
     // Lock the mapped region into memory
-    if(mlock(addr, vsize) != 0)
+    if(mlock(addr, vSize) != 0)
     {
         perror("mlock failure");
-        exit(1);
+        goto map_error;
     }
 
     int subprocessPid = fork();
     if (subprocessPid < 0) // Uh oh
     {
-        perror("Could not fork process.");
+        perror("Could not fork process");
         exit(1);
     }
     else if (subprocessPid == 0) // Child
@@ -85,7 +82,8 @@ int main(int argc, char *argv[])
     {
         if (!glfwInit())
         {
-            perror("Could not initialize GLFW.");
+            perror("Could not initialize GLFW");
+            exit(1);
         }
 
         GLFWwindow* window;
@@ -104,7 +102,8 @@ int main(int argc, char *argv[])
                                       NULL);
             if (window == NULL)
             {
-                perror("Could not create GLFW window.");
+                perror("Could not create GLFW window");
+                exit(1);
             }
 
             glfwMakeContextCurrent(window);
@@ -208,11 +207,18 @@ int main(int argc, char *argv[])
         wait(&childStatus);
     }
 
-    int status = 0;
-    status = munlock(addr, vsize);
-    status = munmap(addr, vsize);      /* Unmap the page */
-    status = close(fd);                /* Close file */
-    status = shm_unlink(sharedMemKey); /* Unlink shared-memory object */
+    if (munlock(addr, vSize) != 0)
+        perror("Error unlocking memory");
+    if (munmap(addr, vSize) != 0)      /* Unmap the page */
+        perror("Error unmapping memory pointer");
+
+map_error:
+    if (close(fd) != 0)                /* Close file */
+        perror("Error closing file");
+
+file_error:
+    if (shm_unlink(sharedMemKey) != 0) /* Unlink shared-memory object */
+        perror("Error removing memory object");
 
     return 0;
 }
