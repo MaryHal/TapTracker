@@ -24,6 +24,7 @@ int main(int argc, char *argv[])
     if (fd < 0)
     {
         perror("Could not create shared memory object");
+        return 1;
     }
 
     size_t vSize = sizeof(int) * 4;

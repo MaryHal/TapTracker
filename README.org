@@ -40,6 +40,6 @@ The top portion graphs the time vs level during the last three sections. Immedia
 
 ** To-do list
 
-- Document TAP states :: I've reverse engineered (read: figured out what they mean) most of the TGM2+ states, but there are edge cases that still confuse TapTracker.
+- Document TAP states :: I've reverse engineered most of the TGM2+ states (read: I've figured out what they mean), but there are edge cases that still confuse TapTracker.
+- Implement resizable layouts :: TapTracker only supports a single window size and layout right now, and it's difficult to modify.
 - Rework OpenGL code :: It's rigid and messy right now. Not to mention it also uses a ton of immediate mode.
-- Resizable layout :: TapTracker only supports a single window size and layout right now, and it's difficult to modify.
