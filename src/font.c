@@ -218,3 +218,17 @@ void drawWideString(struct font_t* font, float x, float y, const wchar_t* string
 
     glDisable(GL_TEXTURE_2D);
 }
+
+float getStringWidth(struct font_t* font, const char* string)
+{
+    float x = 0;
+    float y = 0;
+
+    for (;*string != '\0'; ++string)
+    {
+        stbtt_aligned_quad q;
+        getPackedQuad(font, *string, &x, &y, 1, &q);
+    }
+
+    return x;
+}
