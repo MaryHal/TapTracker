@@ -3,6 +3,7 @@
 #include "game.h"
 
 #include "history.h"
+#include "colortheme.h"
 
 #include <stdio.h>
 
@@ -43,7 +44,7 @@ void drawSectionGraph(struct game_t* game, struct font_t* font,
     glTranslatef(x, y, 0.0f);
     {
         // Gridlines
-        glColor4f(1.0f, 1.0f, 1.0f, 0.1f);
+        setGLColor(COLOR_FOREGROUND, 0.1f);
         for (int i = 0; i < 10; ++i)
         {
             // Vertical lines
@@ -63,13 +64,6 @@ void drawSectionGraph(struct game_t* game, struct font_t* font,
             glEnd();
         }
 
-        float colors[4][3] = {
-            { 0.8f, 0.8f, 0.8f }, // Single
-            { 0.3f, 0.0f, 0.8f }, // Double
-            { 0.5f, 0.2f, 0.9f }, // Triple
-            { 1.0f, 1.0f, 0.0f }  // Tetris
-        };
-
         // Section-Level lines
         struct datapoint_t prevDatapoint = { 0, 0 };
         float sectionAlpha = 0.04f;
@@ -88,7 +82,7 @@ void drawSectionGraph(struct game_t* game, struct font_t* font,
                 continue;
             }
 
-            glColor4f(0.8f, 0.8f, 0.8f, sectionAlpha);
+            setGLColor(COLOR_FOREGROUND, sectionAlpha);
             glBegin(GL_LINE_STRIP);
             {
                 for (size_t j = 0; j < section->size; ++j)
@@ -101,11 +95,14 @@ void drawSectionGraph(struct game_t* game, struct font_t* font,
                     int levelDifference = datapoint.level - prevDatapoint.level;
                     prevDatapoint = datapoint;
 
-                    glColor4f(colors[levelDifference - 1][0],
-                              colors[levelDifference - 1][1],
-                              colors[levelDifference - 1][2],
-                              sectionAlpha);
-
+                    if (levelDifference > 0)
+                    {
+                        setGLColor(levelDifference - 1, sectionAlpha);
+                    }
+                    else
+                    {
+                        setGLColor(COLOR_FOREGROUND, sectionAlpha);
+                    }
                     glVertex2f(x, y);
                 }
             }
@@ -119,12 +116,12 @@ void drawSectionGraph(struct game_t* game, struct font_t* font,
         char levelStr[15];
         sprintf(levelStr, "%d", prevDatapoint.level);
 
-        glColor4f(0.8f, 0.8f, 0.8f, 1.0f);
+        setGLColor(COLOR_FOREGROUND, 1.0f);
         drawString(font, x + 4.0f, y - 4.0f, levelStr);
 
         // Draw axis
         {
-            glColor4f(0.8f, 0.8f, 0.8f, 1.0f);
+            setGLColor(COLOR_FOREGROUND, 1.0f);
             glBegin(GL_LINES);
             {
                 glVertex2f(0.0f, 0.0f);
@@ -160,7 +157,7 @@ void drawHistory(struct history_t* history, struct font_t* font,
 
         for (size_t i = history->start; i < history->end; i++)
         {
-            glColor4f(0.8f, 0.8f, 0.8f, 1.0f);
+            setGLColor(COLOR_FOREGROUND, 1.0f);
 
             char levelString[32];
             sprintf(levelString, "%d:", history->data[i % HISTORY_LENGTH].level);
@@ -172,9 +169,9 @@ void drawHistory(struct history_t* history, struct font_t* font,
             for (size_t j = 0; j < element->size; j++)
             {
                 if (element->spectrum[j].held)
-                    glColor4f(0.8f, 0.8f, 0.0f, 1.0f);
+                    setGLColor(COLOR_TETRIS, 1.0f);
                 else
-                    glColor4f(0.8f, 0.8f, 0.8f, 1.0f);
+                    setGLColor(COLOR_FOREGROUND, 1.0f);
 
                 drawChar(font, &x, &y, element->spectrum[j].key);
             }
@@ -196,7 +193,7 @@ void drawSectionLineCount(struct game_t* game, struct font_t* font,
         x = 0.0f;
         y = 0.0f;
 
-        glColor4f(0.8f, 0.8f, 0.8f, 1.0f);
+        setGLColor(COLOR_FOREGROUND, 1.0f);
 
         struct section_t* section = &game->sections[game->currentSection];
         char lineCount[64];
