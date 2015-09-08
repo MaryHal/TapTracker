@@ -24,11 +24,7 @@ Building this project requires [[https://www.python.org/][python]] and [[https:/
 
 ** Running TapTracker
 
-TapTracker expects shmupmametgm as its first argument, then each subsequent argument is passed to shmupmametgm. Example:
-
-#+BEGIN_SRC sh
-  /path/to/TapTracker shmupmametgm -c -record last.inp
-#+END_SRC
+TapTracker no longer runs shmupmametgm as a child process, but TapTracker must be run /after/ shmupmametgm has started.
 
 ** Screenshots
 

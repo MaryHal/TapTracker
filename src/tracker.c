@@ -14,7 +14,7 @@
 
 #include <GLFW/glfw3.h>
 
-bool runTracker(int TapProcessID, int* dataPtr)
+bool runTracker(int* dataPtr)
 {
     if (!glfwInit())
     {
@@ -68,13 +68,6 @@ bool runTracker(int TapProcessID, int* dataPtr)
 
     while (!glfwWindowShouldClose(window))
     {
-        // Check if child process has ended.
-        int status = 0;
-        if (waitpid(TapProcessID, &status, WNOHANG) != 0)
-        {
-            break;
-        }
-
         // Read input from child process and add it to the graph
         {
             game.prevState = game.state;
