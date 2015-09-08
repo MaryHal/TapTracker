@@ -1,5 +1,5 @@
 diff --git a/cpuexec_old.c b/cpuexec.c
-index e2eea6d..b78f147 100644
+index e2eea6d..923f083 100644
 --- a/cpuexec_old.c
 +++ b/cpuexec.c
 @@ -12,6 +12,7 @@
@@ -10,7 +10,7 @@ index e2eea6d..b78f147 100644
  
  void poll_if_necessary(running_machine *machine);
  void frame_update_callback(running_machine *machine);
-@@ -252,6 +253,25 @@ void cpuexec_init(running_machine *machine)
+@@ -252,6 +253,26 @@ void cpuexec_init(running_machine *machine)
      single timeslice
  -------------------------------------------------*/
  
@@ -22,21 +22,22 @@ index e2eea6d..b78f147 100644
 +
 +const char* sharedMemKey = "tgm2p_data";
 +int fd = 0;
-+size_t vsize = sizeof(int) * 4;
++size_t vSize = sizeof(int) * 4;
 +int* addr = NULL;
 +
 +void cleanupSharedMem()
 +{
 +    int status = 0;
-+    status = munlock(addr, vsize);
-+    status = munmap(addr, vsize);      /* Unmap the page */
-+    status = close(fd);                /* Close file */
++    status = munlock(addr, vSize);
++    status = munmap(addr, vSize);  /* Unmap the page */
++    status = close(fd);            /* Close file */
++    shm_unlink(sharedMemKey);      /* Unlink shared-memory object */
 +}
 +
  void cpuexec_timeslice(running_machine *machine)
  {
  	int call_debugger = ((machine->debug_flags & DEBUG_FLAG_ENABLED) != 0);
-@@ -259,6 +279,35 @@ void cpuexec_timeslice(running_machine *machine)
+@@ -259,6 +280,54 @@ void cpuexec_timeslice(running_machine *machine)
  	cpuexec_private *global = machine->cpuexec_data;
  	int ran;
  
@@ -47,11 +48,30 @@ index e2eea6d..b78f147 100644
 +            {
 +                if (addr == NULL)
 +                {
-+                    fd = shm_open(sharedMemKey, O_RDWR, S_IRWXO | S_IRWXG | S_IRWXU);
-+                    addr = (int*)mmap(NULL, vsize, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
++                    fd = shm_open(sharedMemKey, O_RDWR | O_CREAT | O_TRUNC, S_IRWXO | S_IRWXG | S_IRWXU);
++
++                    // Stretch our new file to the suggested size.
++                    if (lseek(fd, vSize - 1, SEEK_SET) == -1)
++                    {
++                        perror("Could not stretch file via lseek");
++                    }
++
++                    // In order to change the size of the file, we need to actually write some
++                    // data. In this case, we'll be writing an empty string ('\0').
++                    if (write(fd, "", 1) != 1)
++                    {
++                        perror("Could not write the final byte in file");
++                    }
++
++                    addr = (int*)mmap(NULL, vSize, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 +                    if (addr == MAP_FAILED)
 +                    {
-+                        perror("Child: Could not map memory");
++                        perror("Could not map memory");
++                    }
++
++                    if(mlock(addr, vSize) != 0)
++                    {
++                        perror("mlock failure");
 +                    }
 +
 +                    // Make sure we unmap our shared memory pointer.
