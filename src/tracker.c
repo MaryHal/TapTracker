@@ -1,17 +1,18 @@
 #include "tracker.h"
 
-#include <GLFW/glfw3.h>
-
 #include "game.h"
 #include "font.h"
 #include "draw.h"
 
 #include "history.h"
 #include "joystick.h"
+#include "colortheme.h"
 
 #include <sys/wait.h>
 
 #include <stdio.h>
+
+#include <GLFW/glfw3.h>
 
 bool runTracker(int TapProcessID, int* dataPtr)
 {
@@ -104,7 +105,7 @@ bool runTracker(int TapProcessID, int* dataPtr)
 
             // Reset if we were looking at the game over screen and just
             // moved to an idle state.
-            if (game.prevState == GAMEOVER && !isInPlayingState(game.state))
+            if (isInPlayingState(game.prevState) && !isInPlayingState(game.state))
             {
                 resetGame(&game);
                 resetHistory(&history);
@@ -120,7 +121,8 @@ bool runTracker(int TapProcessID, int* dataPtr)
         }
         pushCharFromJoystick(&history, &joystick);
 
-        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        /* setColorTheme(&LIGHT_THEME); */
+        setGLClearColor();
         glClear(GL_COLOR_BUFFER_BIT);
 
         float margin = 16.0f;
