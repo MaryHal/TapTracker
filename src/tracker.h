@@ -3,6 +3,6 @@
 
 #include <stdbool.h>
 
-bool runTracker(int TapProcessID, int* dataPtr);
+bool runTracker(int* dataPtr);
 
 #endif /* TRACKER_H */
