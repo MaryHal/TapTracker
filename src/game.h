@@ -4,6 +4,8 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
+#include "history.h"
+
 #define LEVEL_MAX      999
 
 #define SECTION_LENGTH 100
@@ -50,6 +52,8 @@ struct game_t
         tap_state state, prevState;
         int level, prevLevel;
         int time, prevTime;
+
+        struct history_t inputHistory;
 };
 
 float convertTime(int frames);
