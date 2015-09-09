@@ -30,180 +30,168 @@ void setupOpenGL(const unsigned int width, const unsigned int height)
 }
 
 void drawSectionGraph(struct game_t* game, struct font_t* font,
-                      float scale,
-                      float x, float y,
-                      float graphWidth, float graphHeight,
-                      float margin)
+                      float width, float height)
 {
-    x += margin;
-    y += margin;
-    graphWidth  -= 2 * margin;
-    graphHeight -= 2 * margin;
+    const float scale = 45.0f;
 
-    glPushMatrix();
-    glTranslatef(x, y, 0.0f);
+    const float graphWidth  = width;
+    const float graphHeight = height - font->pixelHeight;
+
+    // Gridlines
+    setGLColor(COLOR_FOREGROUND, 0.1f);
+    for (int i = 0; i < 10; ++i)
     {
-        // Gridlines
-        setGLColor(COLOR_FOREGROUND, 0.1f);
-        for (int i = 0; i < 10; ++i)
+        // Vertical lines
+        glBegin(GL_LINES);
         {
-            // Vertical lines
-            glBegin(GL_LINES);
-            {
-                glVertex2f(graphWidth * (i + 1) / 10.0f, graphHeight);
-                glVertex2f(graphWidth * (i + 1) / 10.0f, 0.0f);
-            }
-            glEnd();
-
-            // Horizontal lines
-            glBegin(GL_LINES);
-            {
-                glVertex2f(0.0f, graphHeight * i / 10.0f);
-                glVertex2f(graphWidth, graphHeight * i / 10.0f);
-            }
-            glEnd();
+            glVertex2f(graphWidth * (i + 1) / 10.0f, graphHeight);
+            glVertex2f(graphWidth * (i + 1) / 10.0f, 0.0f);
         }
+        glEnd();
 
-        // Section-Level lines
-        struct datapoint_t prevDatapoint = { 0, 0 };
-        float sectionAlpha = 0.04f;
-        for (int i = game->currentSection - 2; i <= (signed)game->currentSection; ++i)
+        // Horizontal lines
+        glBegin(GL_LINES);
         {
-            if (i < 0)
-            {
-                sectionAlpha *= 5;
-                continue;
-            }
-
-            struct section_t* section = &game->sections[i];
-
-            if (section->size == 0)
-            {
-                continue;
-            }
-
-            setGLColor(COLOR_FOREGROUND, sectionAlpha);
-            glBegin(GL_LINE_STRIP);
-            {
-                for (size_t j = 0; j < section->size; ++j)
-                {
-                    struct datapoint_t datapoint = section->data[j];
-
-                    x = graphWidth * (convertTime(datapoint.time - section->startTime)) / scale;
-                    y = graphHeight - graphHeight * (datapoint.level - (i * 100)) / 100.0f;
-
-                    int levelDifference = datapoint.level - prevDatapoint.level;
-                    prevDatapoint = datapoint;
-
-                    if (levelDifference > 0)
-                    {
-                        setGLColor(levelDifference - 1, sectionAlpha);
-                    }
-                    else
-                    {
-                        setGLColor(COLOR_FOREGROUND, sectionAlpha);
-                    }
-                    glVertex2f(x, y);
-                }
-            }
-            glEnd();
-
-            sectionAlpha *= 5;
+            glVertex2f(0.0f, graphHeight * i / 10.0f);
+            glVertex2f(graphWidth, graphHeight * i / 10.0f);
         }
-
-        // Print level
-        /* struct section_t* section = &game->sections[game->currentSection]; */
-        char levelStr[15];
-        sprintf(levelStr, "%d", prevDatapoint.level);
-
-        setGLColor(COLOR_FOREGROUND, 1.0f);
-        drawString(font, x + 4.0f, y - 4.0f, levelStr);
-
-        // Draw axis
-        {
-            setGLColor(COLOR_FOREGROUND, 1.0f);
-            glBegin(GL_LINES);
-            {
-                glVertex2f(0.0f, 0.0f);
-                glVertex2f(0.0f, graphHeight);
-            }
-            glEnd();
-
-            glBegin(GL_LINES);
-            {
-                glVertex2f(0.0f, graphHeight);
-                glVertex2f(graphWidth, graphHeight);
-            }
-            glEnd();
-
-            drawString(font, graphWidth / 2 - 40.0f, graphHeight + 16.0f, "Section Time");
-
-            sprintf(levelStr, "%d", (int)scale);
-            drawString(font, graphWidth - 10.0f, graphHeight + 16.0f, levelStr);
-        }
+        glEnd();
     }
-    glPopMatrix();
+
+    float x = 0.0f;
+    float y = 0.0f;
+
+    // Section-Level lines
+    struct datapoint_t prevDatapoint = { 0, 0 };
+    float sectionAlpha = 0.04f;
+    for (int i = game->currentSection - 2; i <= (signed)game->currentSection; ++i)
+    {
+        if (i < 0)
+        {
+            sectionAlpha *= 5;
+            continue;
+        }
+
+        struct section_t* section = &game->sections[i];
+
+        if (section->size == 0)
+        {
+            continue;
+        }
+
+        setGLColor(COLOR_FOREGROUND, sectionAlpha);
+        glBegin(GL_LINE_STRIP);
+        {
+            for (size_t j = 0; j < section->size; ++j)
+            {
+                struct datapoint_t datapoint = section->data[j];
+
+                x = graphWidth * (convertTime(datapoint.time - section->startTime)) / scale;
+                y = graphHeight - graphHeight * (datapoint.level - (i * 100)) / 100.0f;
+
+                int levelDifference = datapoint.level - prevDatapoint.level;
+                prevDatapoint = datapoint;
+
+                if (levelDifference > 0)
+                {
+                    setGLColor(levelDifference - 1, sectionAlpha);
+                }
+                else
+                {
+                    setGLColor(COLOR_FOREGROUND, sectionAlpha);
+                }
+                glVertex2f(x, y);
+            }
+        }
+        glEnd();
+
+        sectionAlpha *= 5;
+    }
+
+    // Print level
+    char levelStr[15];
+    sprintf(levelStr, "%d", prevDatapoint.level);
+
+    setGLColor(COLOR_FOREGROUND, 1.0f);
+    drawString(font, x + 4.0f, y - 4.0f, levelStr);
+
+    // Draw axis
+    {
+        setGLColor(COLOR_FOREGROUND, 1.0f);
+        glBegin(GL_LINES);
+        {
+            glVertex2f(0.0f, 0.0f);
+            glVertex2f(0.0f, graphHeight);
+        }
+        glEnd();
+
+        glBegin(GL_LINES);
+        {
+            glVertex2f(0.0f, graphHeight);
+            glVertex2f(graphWidth, graphHeight);
+        }
+        glEnd();
+
+        float strWidth = getStringWidth(font, "Section Time");
+        drawString(font, (width - strWidth) / 2, graphHeight + font->pixelHeight, "Section Time");
+
+        sprintf(levelStr, "%d", (int)scale);
+        drawString(font, width - 10.0f, graphHeight + font->pixelHeight, levelStr);
+    }
 }
 
-void drawHistory(struct history_t* history, struct font_t* font,
-                 float x, float y,
-                 float margin)
+void drawHistory(struct game_t* game, struct font_t* font,
+                 float width, float height)
 {
-    glPushMatrix();
+    struct history_t* inputHistory = &game->inputHistory;
+    float x = 0.0f;
+    float y = font->pixelHeight;
+
+    const float vertStride = height / HISTORY_LENGTH;
+
+    for (size_t i = inputHistory->start; i < inputHistory->end; i++)
     {
-        glTranslatef(x + margin, y + margin, 0.0f);
-        x = 0.0f;
-        y = 0.0f;
+        setGLColor(COLOR_FOREGROUND, 1.0f);
 
-        for (size_t i = history->start; i < history->end; i++)
+        char levelString[32];
+        sprintf(levelString, "%d:", inputHistory->data[i % HISTORY_LENGTH].level);
+        drawString(font, x, y, levelString);
+
+        x = 32.0f;
+
+        struct element_t* element = &inputHistory->data[i % HISTORY_LENGTH];
+        for (size_t j = 0; j < element->size; j++)
         {
-            setGLColor(COLOR_FOREGROUND, 1.0f);
+            if (element->spectrum[j].held)
+                setGLColor(COLOR_TETRIS, 1.0f);
+            else
+                setGLColor(COLOR_FOREGROUND, 1.0f);
 
-            char levelString[32];
-            sprintf(levelString, "%d:", history->data[i % HISTORY_LENGTH].level);
-            drawString(font, x, y, levelString);
-
-            x = 32.0f;
-
-            struct element_t* element = &history->data[i % HISTORY_LENGTH];
-            for (size_t j = 0; j < element->size; j++)
-            {
-                if (element->spectrum[j].held)
-                    setGLColor(COLOR_TETRIS, 1.0f);
-                else
-                    setGLColor(COLOR_FOREGROUND, 1.0f);
-
-                drawChar(font, &x, &y, element->spectrum[j].key);
-            }
-
-            x = 0.0f;
-            y += 16.0f;
+            drawChar(font, &x, &y, element->spectrum[j].key);
         }
+
+        x = 0.0f;
+        y += vertStride;
     }
-    glPopMatrix();
 }
 
 void drawSectionLineCount(struct game_t* game, struct font_t* font,
-                          float x, float y,
-                          float margin)
+                          float width, float height)
 {
-    glPushMatrix();
-    {
-        glTranslatef(x + margin, y + margin, 0.0f);
-        x = 0.0f;
-        y = 0.0f;
+    float x = 0.0f;
+    float y = font->pixelHeight;
 
-        setGLColor(COLOR_FOREGROUND, 1.0f);
+    setGLColor(COLOR_FOREGROUND, 1.0f);
 
-        struct section_t* section = &game->sections[game->currentSection];
-        char lineCount[64];
-        sprintf(lineCount, "%d : %d : %d : %d",
-                section->lines[0],
-                section->lines[1],
-                section->lines[2],
-                section->lines[3]);
+    struct section_t* section = &game->sections[game->currentSection];
+    char lineCount[64];
+    sprintf(lineCount, "%d : %d : %d : %d",
+            section->lines[0],
+            section->lines[1],
+            section->lines[2],
+            section->lines[3]);
 
-        drawString(font, x, y, lineCount);
-    }
-    glPopMatrix();
+    float strWidth = getStringWidth(font, lineCount);
+
+    drawString(font, x + (width - strWidth) / 2, y, lineCount);
 }

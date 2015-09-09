@@ -20,6 +20,8 @@ struct font_t
         unsigned int texture;
         unsigned int textureWidth;
         unsigned int textureHeight;
+
+        float pixelHeight;
 };
 
 extern struct chardata_t* dataHash;

@@ -26,11 +26,15 @@ void destroyGame(struct game_t* game, bool freeMem)
 {
     if (freeMem)
         free(game);
+
+    destroyHistory(&game->inputHistory, false);
 }
 
 void resetGame(struct game_t* game)
 {
     memset(game, 0, sizeof(struct game_t));
+
+    resetHistory(&game->inputHistory);
 
     // Push an initial data point from the game's initial state.
     pushCurrentState(game);

@@ -4,9 +4,10 @@
 #include "font.h"
 #include "draw.h"
 
-#include "history.h"
 #include "joystick.h"
 #include "colortheme.h"
+
+#include "layout.h"
 
 #include <sys/wait.h>
 
@@ -51,10 +52,7 @@ bool runTracker(int* dataPtr)
     }
 
     struct font_t font;
-    loadFont(&font, "/usr/share/fonts/TTF/DroidSansFallback.ttf", 14.0f);
-
-    struct history_t history;
-    createHistory(&history);
+    loadFont(&font, "/usr/share/fonts/TTF/DroidSansFallback.ttf", 18.0f);
 
     struct joystick_t joystick;
     createJoystick(&joystick, GLFW_JOYSTICK_1);
@@ -62,9 +60,16 @@ bool runTracker(int* dataPtr)
     struct game_t game;
     createNewGame(&game);
 
-    const int SCALE_COUNT = 2;
-    float scales[] = { 45.0f, 60.0f };
-    int scaleIndex = 0;
+    /* const int SCALE_COUNT = 2; */
+    /* float scales[] = { 45.0f, 60.0f }; */
+    /* int scaleIndex = 0; */
+
+    struct layout_container_t layout;
+    createLayoutContainer(&layout, width, height, 8.0f, 2.0f);
+
+    addToContainerRatio(&layout, &drawSectionGraph, 0.50f);
+    addToContainerFixed(&layout, &drawSectionLineCount, 26.0f);
+    addToContainerRatio(&layout, &drawHistory, 1.0f);
 
     while (!glfwWindowShouldClose(window))
     {
@@ -93,7 +98,7 @@ bool runTracker(int* dataPtr)
 
             if (game.prevState != ACTIVE && game.state == ACTIVE)
             {
-                pushHistoryElement(&history, game.level);
+                pushHistoryElement(&game.inputHistory, game.level);
             }
 
             // Reset if we were looking at the game over screen and just
@@ -101,34 +106,29 @@ bool runTracker(int* dataPtr)
             if (isInPlayingState(game.prevState) && !isInPlayingState(game.state))
             {
                 resetGame(&game);
-                resetHistory(&history);
             }
         }
 
         glfwPollEvents();
 
         updateButtons(&joystick);
-        if (buttonChangedToState(&joystick, BUTTON_D, GLFW_PRESS))
-        {
-            scaleIndex++;
-        }
-        pushCharFromJoystick(&history, &joystick);
+        /* if (buttonChangedToState(&joystick, BUTTON_D, GLFW_PRESS)) */
+        /* { */
+        /*     scaleIndex++; */
+        /* } */
+        pushCharFromJoystick(&game.inputHistory, &joystick);
 
         /* setColorTheme(&LIGHT_THEME); */
         setGLClearColor();
         glClear(GL_COLOR_BUFFER_BIT);
 
-        float margin = 16.0f;
-        drawSectionGraph(&game, &font, scales[scaleIndex % SCALE_COUNT], 0, 0, width, height / 2, margin);
-        drawSectionLineCount(&game, &font, 70.0f, height / 2, margin);
-        drawHistory(&history, &font, 0, height / 2 + 20.0f, margin);
+        drawLayout(&layout, &game, &font);
 
         glfwSwapBuffers(window);
     }
 
     destroyGame(&game, false);
     destroyJoystick(&joystick, false);
-    destroyHistory(&history, false);
     destroyFont(&font, false);
 
     glfwDestroyWindow(window);
