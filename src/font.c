@@ -51,6 +51,7 @@ struct font_t* loadFont(struct font_t* font, const char* filename, float pixelHe
     }
     font->textureWidth  = 512;
     font->textureHeight = 512;
+    font->pixelHeight = pixelHeight;
 
     /* font->dataHash = NULL; */
 
@@ -84,12 +85,12 @@ struct font_t* loadFont(struct font_t* font, const char* filename, float pixelHe
         pr[0].chardata_for_range = pdata;
         pr[0].first_unicode_codepoint_in_range = 32;
         pr[0].num_chars = 95;
-        pr[0].font_size = STBTT_POINT_SIZE(pixelHeight);
+        pr[0].font_size = pixelHeight;
 
         pr[1].chardata_for_range = pdata+256;
         pr[1].first_unicode_codepoint_in_range = 0x2190;
         pr[1].num_chars = 0x2193 - 0x2190 + 1;
-        pr[1].font_size = STBTT_POINT_SIZE(pixelHeight);
+        pr[1].font_size = pixelHeight;
 
         stbtt_PackSetOversampling(&pc, 2, 2);
 
