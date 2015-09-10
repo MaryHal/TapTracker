@@ -30,9 +30,10 @@ void setupOpenGL(const unsigned int width, const unsigned int height)
 }
 
 void drawSectionGraph(struct game_t* game, struct font_t* font,
-                      float width, float height)
+                      float width, float height,
+                      void* param)
 {
-    const float scale = 45.0f;
+    const float scale = *(float*)param;
 
     const float graphWidth  = width;
     const float graphHeight = height - font->pixelHeight;
@@ -141,15 +142,18 @@ void drawSectionGraph(struct game_t* game, struct font_t* font,
 }
 
 void drawHistory(struct game_t* game, struct font_t* font,
-                 float width, float height)
+                 float width, float height,
+                 void* param)
 {
     struct history_t* inputHistory = &game->inputHistory;
     float x = 0.0f;
     float y = font->pixelHeight;
 
-    const float vertStride = height / HISTORY_LENGTH;
+    /* const float vertStride = height / HISTORY_LENGTH; */
+    const float vertStride = font->pixelHeight;
+    const int maxIterations = height / vertStride;
 
-    for (size_t i = inputHistory->start; i < inputHistory->end; i++)
+    for (int i = inputHistory->end - 1; inputHistory->end - i <= maxIterations && i >= inputHistory->start; i--)
     {
         setGLColor(COLOR_FOREGROUND, 1.0f);
 
@@ -176,7 +180,8 @@ void drawHistory(struct game_t* game, struct font_t* font,
 }
 
 void drawSectionLineCount(struct game_t* game, struct font_t* font,
-                          float width, float height)
+                          float width, float height,
+                          void* param)
 {
     float x = 0.0f;
     float y = font->pixelHeight;

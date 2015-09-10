@@ -13,11 +13,11 @@ float DARK_THEME[6][3] =
 };
 float LIGHT_THEME[6][3] =
 {
-    { 0.12f, 0.15f, 0.17f }, // Single
+    { 0.40f, 0.40f, 0.40f }, // Single
     { 0.80f, 0.00f, 0.80f }, // Double
     { 0.00f, 0.80f, 0.80f }, // Triple
     { 0.90f, 0.90f, 0.00f }, // Tetris
-    { 0.12f, 0.15f, 0.17f }, // Foreground
+    { 0.40f, 0.40f, 0.40f }, // Foreground
     { 0.95f, 0.96f, 0.96f }  // Background
 };
 

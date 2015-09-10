@@ -7,7 +7,7 @@
 #include "joystick.h"
 
 #define MAX_STRING_LENGTH 18
-#define HISTORY_LENGTH    12
+#define HISTORY_LENGTH    8
 
 struct button_t
 {
@@ -25,8 +25,8 @@ struct element_t
 struct history_t
 {
         struct element_t data[HISTORY_LENGTH];
-        size_t start;
-        size_t end;
+        int start;
+        int end;
 
         struct button_t* heldButtons[BUTTON_COUNT];
 

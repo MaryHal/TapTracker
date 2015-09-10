@@ -15,7 +15,7 @@ struct layout_element_t
         float width;
         float height;
 
-        void (*drawFunc)(struct game_t* game, struct font_t* font, float width, float height);
+        void (*drawFunc)(struct game_t* game, struct font_t* font, float width, float height, void* param);
 };
 
 // Vertical only for now
@@ -37,13 +37,13 @@ void destroyContainer(struct layout_container_t* c, bool freeMe);
 
 // Add a draw function to the layout and make sure it fills (ratio)% of the remaining area.
 void addToContainerRatio(struct layout_container_t* container,
-                         void (*drawFunc)(struct game_t* game, struct font_t* font, float width, float height),
+                         void (*drawFunc)(struct game_t* game, struct font_t* font, float width, float height, void* param),
                          float ratio);
 
 void addToContainerFixed(struct layout_container_t* container,
-                         void (*drawFunc)(struct game_t* game, struct font_t* font, float width, float height),
+                         void (*drawFunc)(struct game_t* game, struct font_t* font, float width, float height, void* param),
                          float pixelHeight);
 
-void drawLayout(struct layout_container_t* container, struct game_t* game, struct font_t* font);
+void drawLayout(struct layout_container_t* container, struct game_t* game, struct font_t* font, void* param);
 
 #endif /* LAYOUT_H */
