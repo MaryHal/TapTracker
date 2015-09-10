@@ -182,7 +182,7 @@ void drawChar(struct font_t* font, float* x, float* y, wchar_t c)
     glBegin(GL_QUADS);
     {
         stbtt_aligned_quad q;
-        getPackedQuad(font, c, x, y, 1, &q);
+        getPackedQuad(font, c, x, y, 0, &q);
 
         glTexCoord2f(q.s0,q.t0); glVertex2f(q.x0,q.y0);
         glTexCoord2f(q.s1,q.t0); glVertex2f(q.x1,q.y0);
