@@ -29,14 +29,14 @@ void destroyContainer(struct layout_container_t* c, bool freeMe)
 }
 
 void addToContainerRatio(struct layout_container_t* container,
-                         void (*drawFunc)(struct game_t* game, struct font_t* font, float width, float height),
+                         void (*drawFunc)(struct game_t* game, struct font_t* font, float width, float height, void* param),
                          float ratio)
 {
     addToContainerFixed(container, drawFunc, container->leftoverHeight * ratio);
 }
 
 void addToContainerFixed(struct layout_container_t* container,
-                         void (*drawFunc)(struct game_t* game, struct font_t* font, float width, float height),
+                         void (*drawFunc)(struct game_t* game, struct font_t* font, float width, float height, void* param),
                          float pixelHeight)
 {
     struct layout_element_t* prevElement = container->size > 0 ? &container->elements[container->size - 1] : NULL;
@@ -56,7 +56,7 @@ void addToContainerFixed(struct layout_container_t* container,
     container->size++;
 }
 
-void drawLayout(struct layout_container_t* container, struct game_t* game, struct font_t* font)
+void drawLayout(struct layout_container_t* container, struct game_t* game, struct font_t* font, void* param)
 {
     glPushMatrix();
     glTranslatef(container->outerMargin, container->outerMargin, 0.0f);
@@ -73,7 +73,7 @@ void drawLayout(struct layout_container_t* container, struct game_t* game, struc
         glPushMatrix();
         glTranslatef(adjustedX, adjustedY, 0.0f);
         {
-            e->drawFunc(game, font, adjustedWidth, adjustedHeight);
+            e->drawFunc(game, font, adjustedWidth, adjustedHeight, param);
 
             /* glColor4f(0.0f, 0.0f, 1.0f, 1.0f); */
             /* glBegin(GL_LINE_LOOP); */

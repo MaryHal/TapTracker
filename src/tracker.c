@@ -60,14 +60,14 @@ bool runTracker(int* dataPtr)
     struct game_t game;
     createNewGame(&game);
 
-    /* const int SCALE_COUNT = 2; */
-    /* float scales[] = { 45.0f, 60.0f }; */
-    /* int scaleIndex = 0; */
+    const int SCALE_COUNT = 2;
+    float scales[] = { 45.0f, 60.0f };
+    int scaleIndex = 0;
 
     struct layout_container_t layout;
-    createLayoutContainer(&layout, width, height, 8.0f, 2.0f);
+    createLayoutContainer(&layout, width, height, 14.0f, 2.0f);
 
-    addToContainerRatio(&layout, &drawSectionGraph, 0.50f);
+    addToContainerRatio(&layout, &drawSectionGraph, 0.70f);
     addToContainerFixed(&layout, &drawSectionLineCount, 26.0f);
     addToContainerRatio(&layout, &drawHistory, 1.0f);
 
@@ -83,12 +83,13 @@ bool runTracker(int* dataPtr)
             game.level = dataPtr[1];
             game.time  = dataPtr[2];
 
-            if (isInPlayingState(game.state) &&
-                (game.time < game.prevTime || game.level < game.prevLevel))
-            {
-                perror("Internal State Error");
-                printGameState(&game);
-            }
+            // Always prints an error in versus mode
+            /* if (isInPlayingState(game.state) && */
+            /*     (game.time < game.prevTime || game.level < game.prevLevel)) */
+            /* { */
+            /*     perror("Internal State Error"); */
+            /*     printGameState(&game); */
+            /* } */
 
             if (isInPlayingState(game.state) && game.level - game.prevLevel > 0)
             {
@@ -101,8 +102,7 @@ bool runTracker(int* dataPtr)
                 pushHistoryElement(&game.inputHistory, game.level);
             }
 
-            // Reset if we were looking at the game over screen and just
-            // moved to an idle state.
+            // Check if a game has ended
             if (isInPlayingState(game.prevState) && !isInPlayingState(game.state))
             {
                 resetGame(&game);
@@ -112,17 +112,17 @@ bool runTracker(int* dataPtr)
         glfwPollEvents();
 
         updateButtons(&joystick);
-        /* if (buttonChangedToState(&joystick, BUTTON_D, GLFW_PRESS)) */
-        /* { */
-        /*     scaleIndex++; */
-        /* } */
+        if (buttonChangedToState(&joystick, BUTTON_D, GLFW_PRESS))
+        {
+            scaleIndex++;
+        }
         pushCharFromJoystick(&game.inputHistory, &joystick);
 
         /* setColorTheme(&LIGHT_THEME); */
         setGLClearColor();
         glClear(GL_COLOR_BUFFER_BIT);
 
-        drawLayout(&layout, &game, &font);
+        drawLayout(&layout, &game, &font, &scales[scaleIndex % SCALE_COUNT]);
 
         glfwSwapBuffers(window);
     }
