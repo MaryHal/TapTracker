@@ -34,6 +34,8 @@ UI is a work-in-progress.
 
 The top portion graphs the time vs level during the last three sections. Immediately below that is a counter for line clears (singles : doubles : triples : tetrises). Then below that is a input display per level.
 
+[[https://www.youtube.com/watch?v=6sReyaKpt70][Video of TapTracker (without input viewer)]]
+
 ** To-do list
 
 - Document TAP states :: I've reverse engineered most of the TGM2+ states (read: I've figured out what they mean), but there are edge cases that still confuse TapTracker.
