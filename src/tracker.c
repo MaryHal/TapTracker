@@ -68,7 +68,7 @@ bool runTracker(int* dataPtr)
     createLayoutContainer(&layout, width, height, 14.0f, 2.0f);
 
     addToContainerRatio(&layout, &drawSectionGraph, 0.70f);
-    addToContainerFixed(&layout, &drawSectionLineCount, 26.0f);
+    addToContainerFixed(&layout, &drawSectionLineCount, 22.0f);
     addToContainerRatio(&layout, &drawHistory, 1.0f);
 
     while (!glfwWindowShouldClose(window))
