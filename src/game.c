@@ -6,7 +6,7 @@
 
 float convertTime(int frames)
 {
-    return frames / TAP_FPS;
+    return frames / 60.0f;
 }
 
 struct game_t* createNewGame(struct game_t* game)
