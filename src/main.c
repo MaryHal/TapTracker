@@ -33,10 +33,10 @@ int main(int argc, char *argv[])
 
     runTracker(addr);
 
-    if (munmap(addr, vSize) != 0)      /* Unmap the page */
+    if (munmap(addr, vSize) != 0)
         perror("Error unmapping memory pointer");
 
-    if (close(fd) != 0)                /* Close file */
+    if (close(fd) != 0)
         perror("Error closing file");
 
     return 0;
