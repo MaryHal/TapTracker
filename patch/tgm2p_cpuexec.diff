@@ -1,5 +1,5 @@
 diff --git a/cpuexec_old.c b/cpuexec.c
-index e2eea6d..923f083 100644
+index e2eea6d..6f7ce93 100644
 --- a/cpuexec_old.c
 +++ b/cpuexec.c
 @@ -12,6 +12,7 @@
@@ -10,7 +10,7 @@ index e2eea6d..923f083 100644
  
  void poll_if_necessary(running_machine *machine);
  void frame_update_callback(running_machine *machine);
-@@ -252,6 +253,26 @@ void cpuexec_init(running_machine *machine)
+@@ -252,6 +253,25 @@ void cpuexec_init(running_machine *machine)
      single timeslice
  -------------------------------------------------*/
  
@@ -27,22 +27,20 @@ index e2eea6d..923f083 100644
 +
 +void cleanupSharedMem()
 +{
-+    int status = 0;
-+    status = munlock(addr, vSize);
-+    status = munmap(addr, vSize);  /* Unmap the page */
-+    status = close(fd);            /* Close file */
++    munlock(addr, vSize);
++    munmap(addr, vSize);  /* Unmap the page */
++    close(fd);            /* Close file */
 +    shm_unlink(sharedMemKey);      /* Unlink shared-memory object */
 +}
 +
  void cpuexec_timeslice(running_machine *machine)
  {
  	int call_debugger = ((machine->debug_flags & DEBUG_FLAG_ENABLED) != 0);
-@@ -259,6 +280,54 @@ void cpuexec_timeslice(running_machine *machine)
+@@ -259,6 +279,53 @@ void cpuexec_timeslice(running_machine *machine)
  	cpuexec_private *global = machine->cpuexec_data;
  	int ran;
  
-+	running_device *device;
-+	for (device = machine->devicelist.first(); device != NULL; device = device->next)
++	for (running_device *device = machine->devicelist.first(); device != NULL; device = device->next)
 +        {
 +            if (mame_stricmp(device->tag(), "maincpu") == 0)
 +            {
