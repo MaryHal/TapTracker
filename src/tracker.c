@@ -67,8 +67,8 @@ bool runTracker(int* dataPtr)
     struct layout_container_t layout;
     createLayoutContainer(&layout, width, height, 14.0f, 2.0f);
 
-    addToContainerRatio(&layout, &drawSectionGraph, 0.70f);
-    addToContainerFixed(&layout, &drawSectionLineCount, 22.0f);
+    addToContainerRatio(&layout, &drawSectionGraph, 0.60f);
+    addToContainerRatio(&layout, &drawSectionTable, 0.50f);
     addToContainerRatio(&layout, &drawHistory, 1.0f);
 
     while (!glfwWindowShouldClose(window))
