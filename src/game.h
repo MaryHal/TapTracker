@@ -19,8 +19,8 @@ typedef enum
     NONE         = 0,
     /* PRE_ENTRY   = 1, */
     ACTIVE       = 2,
-    LOCKING      = 3, // Cannot be influenced anymore
-    LINECLEAR    = 4, // Tetromino is being locked to the playfield.
+    LOCKING      = 3,  // Cannot be influenced anymore
+    LINECLEAR    = 4,  // Tetromino is being locked to the playfield.
     ENTRY        = 5,
     GAMEOVER     = 7,  // "Game Over" is being shown on screen.
     IDLE         = 10, // No game has started, just waiting...
