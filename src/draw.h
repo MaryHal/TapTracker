@@ -15,8 +15,8 @@ void drawHistory(struct game_t* game, struct font_t* font,
                  float width, float height,
                  void* param);
 
-void drawSectionLineCount(struct game_t* game, struct font_t* font,
-                          float width, float height,
-                          void* param);
+void drawSectionTable(struct game_t* game, struct font_t* font,
+                      float width, float height,
+                      void* param);
 
 #endif /* DRAW_H */

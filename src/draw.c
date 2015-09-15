@@ -179,24 +179,44 @@ void drawHistory(struct game_t* game, struct font_t* font,
     }
 }
 
-void drawSectionLineCount(struct game_t* game, struct font_t* font,
-                          float width, float height,
-                          void* param)
+void drawSectionTable(struct game_t* game, struct font_t* font,
+                      float width, float height,
+                      void* param)
 {
-    float x = 0.0f;
-    float y = font->pixelHeight;
+    const float vertStride = font->pixelHeight;
+    const int maxIterations = height / vertStride;
 
-    setGLColor(COLOR_FOREGROUND, 1.0f);
+    float y = vertStride;
 
-    struct section_t* section = &game->sections[game->currentSection];
-    char lineCount[64];
-    sprintf(lineCount, "%d : %d : %d : %d",
-            section->lines[0],
-            section->lines[1],
-            section->lines[2],
-            section->lines[3]);
+    for (int i = game->currentSection - maxIterations; i <= (signed)game->currentSection; ++i)
+    {
+        if (i < 0)
+        {
+            continue;
+        }
 
-    float strWidth = getStringWidth(font, lineCount);
+        struct section_t* section = &game->sections[i];
 
-    drawString(font, x + (width - strWidth) / 2, y, lineCount);
+        // Calculate how long this section took / is taking.
+        float sectionTime = convertTime(game->level >= (i + 1) * 100 ? section->endTime - section->startTime : game->time - section->startTime);
+
+        char sectionString[16];
+        sprintf(sectionString, "%3d - %3d:", i * 100, (i + 1) * 100);
+
+        char timeString[32];
+        sprintf(timeString, "%.2f", sectionTime);
+
+        char lineCount[20];
+        sprintf(lineCount, "%d : %d : %d : %d",
+                section->lines[0],
+                section->lines[1],
+                section->lines[2],
+                section->lines[3]);
+
+        drawString(font,   0.0f, y, sectionString);
+        drawString(font,  64.0f, y, timeString);
+        drawString(font, 114.0f, y, lineCount);
+
+        y += vertStride;
+    }
 }
