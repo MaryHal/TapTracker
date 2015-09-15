@@ -12,6 +12,8 @@
 #define SECTION_MAX    100
 #define SECTION_COUNT  10
 
+#define TAP_FPS        61.6f
+
 typedef enum
 {
     NONE         = 0,
@@ -39,6 +41,7 @@ struct section_t
         size_t size;
 
         int startTime; // Frame count for when this section began.
+        int endTime;
         int lines[4];
 };
 
