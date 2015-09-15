@@ -6,8 +6,7 @@
 
 float convertTime(int frames)
 {
-    // Sadly shmupmame runs TAP at 60 fps instead of the native ~61.7 fps.
-    return frames / 60.0f;
+    return frames / TAP_FPS;
 }
 
 struct game_t* createNewGame(struct game_t* game)
@@ -74,6 +73,7 @@ void pushCurrentState(struct game_t* game)
 
     if (currentLevel >= levelBoundary)
     {
+        section->endTime = currentTime;
         addDataPointToSection(game, section, currentLevel, currentTime);
 
         // Section advance!
