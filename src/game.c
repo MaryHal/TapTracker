@@ -144,7 +144,7 @@ bool testMasterConditions(struct game_t* game)
 {
     int sectionSum = 0;
 
-    for (unsigned int i = 0; i <= game->currentSection; i++)
+    for (unsigned int i = 0; i < game->currentSection; i++)
     {
         struct section_t* section = &game->sections[i];
         // First 5 sections must be completed in 1:05:00 or less
@@ -162,7 +162,8 @@ bool testMasterConditions(struct game_t* game)
                 return false;
             }
         }
-        // Sixth section (500-600) must be less than two seconds slower than the average of the first 5 sections.
+        // Sixth section (500-600) must be less than two seconds slower than the
+        // average of the first 5 sections.
         else if (i == 5)
         {
             if (section->endTime - section->startTime > sectionSum / 5 + 2 * 60)
@@ -176,7 +177,8 @@ bool testMasterConditions(struct game_t* game)
                 return false;
             }
         }
-        // Last three sections must be less than two seconds slower than the previous section.
+        // Last four sections must be less than two seconds slower than the
+        // previous section.
         else
         {
             struct section_t* prevSection = &game->sections[i - 1];
@@ -185,7 +187,8 @@ bool testMasterConditions(struct game_t* game)
                 return false;
             }
 
-            // One tetris is required for the last four sections.
+            // One tetris is required for the last four sections EXCEPT the last
+            // one.
             if (section->lines[3] < 1)
             {
                 return false;
@@ -193,10 +196,22 @@ bool testMasterConditions(struct game_t* game)
         }
     }
 
-    // Finally, an S9 grade is required at level 999 along with the same requirements as the eigth section.
-    if (game->level == 999 && game->grade < 31)
+    // Finally, an S9 grade is required at level 999 along with the same time
+    // requirements as the eigth section.
+    if (game->level == 999)
     {
-        return false;
+        if (game->grade < 31)
+        {
+            return false;
+        }
+
+        // Test section time vs previous section
+        struct section_t* section = &game->sections[8];
+        struct section_t* prevSection = &game->sections[9];
+        if (section->endTime - section->startTime > prevSection->endTime - prevSection->startTime + 2 * 60)
+        {
+            return false;
+        }
     }
 
     return true;
