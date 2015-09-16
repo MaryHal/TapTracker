@@ -56,12 +56,14 @@ void pushCurrentState(struct game_t* game)
 
     struct section_t* section = &game->sections[game->currentSection];
 
-    // Test if we're still qualified!
-    game->masterQualified = testMasterConditions(game);
-
     // If we're at the end of the game, don't do anything.
     if (section->data[section->size].level >= LEVEL_MAX)
     {
+        section->endTime = game->time;
+
+        // Test if we're still qualified!
+        game->masterQualified = testMasterConditions(game);
+
         return;
     }
 
@@ -76,6 +78,9 @@ void pushCurrentState(struct game_t* game)
 
     if (currentLevel >= levelBoundary)
     {
+        // Test if we're still qualified!
+        game->masterQualified = testMasterConditions(game);
+
         section->endTime = currentTime;
         addDataPointToSection(game, section, currentLevel, currentTime);
 
@@ -201,6 +206,12 @@ bool testMasterConditions(struct game_t* game)
     if (game->level == 999)
     {
         if (game->grade < 31)
+        {
+            return false;
+        }
+
+        // Hard time requirement over the entire game is 8:45:00
+        if (game->sections[9].endTime - game->sections[0].startTime > (8 * 60 + 45) * 60)
         {
             return false;
         }
