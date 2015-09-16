@@ -140,6 +140,11 @@ void drawSectionGraph(struct game_t* game, struct font_t* font,
         drawString(font, width - 10.0f, graphHeight + font->pixelHeight, levelStr);
 
         // Draw grade and grade points
+        if (game->masterQualified)
+            glColor4f(0.3f, 1.0f, 0.3f, 1.0f);
+        else
+            glColor4f(1.0f, 0.3f, 0.3f, 1.0f);
+
         sprintf(levelStr, "%2d %2d", game->grade, game->gradePoints);
         drawString(font, width - 28.0f, graphHeight - 2.0f, levelStr);
     }
@@ -197,6 +202,8 @@ void drawSectionTable(struct game_t* game, struct font_t* font,
     const int maxIterations = height / vertStride;
 
     float y = vertStride;
+
+    setGLColor(COLOR_FOREGROUND, 1.0f);
 
     for (int i = game->currentSection - maxIterations; i <= (signed)game->currentSection; ++i)
     {
