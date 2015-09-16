@@ -87,7 +87,7 @@ void drawSectionGraph(struct game_t* game, struct font_t* font,
             {
                 struct datapoint_t datapoint = section->data[j];
 
-                x = graphWidth * (convertTime(datapoint.time - section->startTime)) / scale;
+                x = graphWidth * (frameTimeToSeconds(datapoint.time - section->startTime)) / scale;
                 y = graphHeight - graphHeight * (datapoint.level - (i * 100)) / 100.0f;
 
                 int levelDifference = datapoint.level - prevDatapoint.level;
@@ -215,10 +215,18 @@ void drawSectionTable(struct game_t* game, struct font_t* font,
         struct section_t* section = &game->sections[i];
 
         // Calculate how long this section took / is taking.
-        float sectionTime = convertTime(game->level >= (i + 1) * 100 ? section->endTime - section->startTime : game->time - section->startTime);
+        float sectionTime = 0.0f;
+        if (game->level >= (i + 1) * SECTION_LENGTH || game->level == LEVEL_MAX)
+        {
+            sectionTime = frameTime(section->endTime - section->startTime);
+        }
+        else
+        {
+            sectionTime = frameTime(game->time - section->startTime);
+        }
 
         char sectionString[16];
-        sprintf(sectionString, "%03d-%03d:", i * 100, (i + 1) * 100 - 1);
+        sprintf(sectionString, "%03d-%03d:", i * SECTION_LENGTH, (i + 1) * SECTION_LENGTH - 1);
 
         char timeString[32];
         sprintf(timeString, "%.2f", sectionTime);

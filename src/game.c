@@ -4,9 +4,19 @@
 #include <string.h>
 #include <assert.h>
 
-float convertTime(int frames)
+float frameTimeToSeconds(int frames)
 {
-    return frames / 60.0f;
+    return frames / TIMER_FPS;
+}
+
+int frameTime(float seconds)
+{
+    return (int)(seconds * TIMER_FPS);
+}
+
+int getSectionTime(struct section_t* section)
+{
+    return section->endTime - section->startTime;
 }
 
 struct game_t* createNewGame(struct game_t* game)
@@ -152,14 +162,15 @@ bool testMasterConditions(struct game_t* game)
     for (unsigned int i = 0; i < game->currentSection; i++)
     {
         struct section_t* section = &game->sections[i];
+
         // First 5 sections must be completed in 1:05:00 or less
         if (i < 5)
         {
-            if (section->endTime - section->startTime > 65 * 60)
+            if (getSectionTime(section) > frameTime(65))
             {
                 return false;
             }
-            sectionSum += section->endTime - section->startTime;
+            sectionSum += getSectionTime(section);
 
             // Two tetrises per section is required for the first 5 sections.
             if (section->lines[3] < 2)
@@ -171,7 +182,7 @@ bool testMasterConditions(struct game_t* game)
         // average of the first 5 sections.
         else if (i == 5)
         {
-            if (section->endTime - section->startTime > sectionSum / 5 + 2 * 60)
+            if (getSectionTime(section) > frameTime(sectionSum / 5 + 2))
             {
                 return false;
             }
@@ -187,7 +198,8 @@ bool testMasterConditions(struct game_t* game)
         else
         {
             struct section_t* prevSection = &game->sections[i - 1];
-            if (section->endTime - section->startTime > prevSection->endTime - prevSection->startTime + 2 * 60)
+
+            if (getSectionTime(section) > getSectionTime(prevSection) + frameTime(2))
             {
                 return false;
             }
@@ -203,15 +215,15 @@ bool testMasterConditions(struct game_t* game)
 
     // Finally, an S9 grade is required at level 999 along with the same time
     // requirements as the eigth section.
-    if (game->level == 999)
+    if (game->level == LEVEL_MAX)
     {
-        if (game->grade < 31)
+        if (game->grade < MASTER_S9_INTERNAL_GRADE)
         {
             return false;
         }
 
         // Hard time requirement over the entire game is 8:45:00
-        if (game->sections[9].endTime - game->sections[0].startTime > (8 * 60 + 45) * 60)
+        if (game->sections[9].endTime - game->sections[0].startTime > frameTime(8 * 60 + 45))
         {
             return false;
         }
@@ -219,7 +231,8 @@ bool testMasterConditions(struct game_t* game)
         // Test section time vs previous section
         struct section_t* section = &game->sections[8];
         struct section_t* prevSection = &game->sections[9];
-        if (section->endTime - section->startTime > prevSection->endTime - prevSection->startTime + 2 * 60)
+
+        if (getSectionTime(section) > getSectionTime(prevSection) + frameTime(2))
         {
             return false;
         }

@@ -12,7 +12,13 @@
 #define SECTION_MAX    100
 #define SECTION_COUNT  10
 
+#define TIMER_FPS      60.0f
 #define TAP_FPS        61.6f
+
+#define MASTER_S9_INTERNAL_GRADE 31
+
+float frameTimeToSeconds(int frames);
+int frameTime(float seconds);
 
 typedef enum
 {
@@ -45,6 +51,8 @@ struct section_t
         int lines[4];
 };
 
+int getSectionTime(struct section_t* section);
+
 struct game_t
 {
         struct section_t sections[SECTION_COUNT];
@@ -63,8 +71,6 @@ struct game_t
 
         struct history_t inputHistory;
 };
-
-float convertTime(int frames);
 
 // (Re)sets all game data.
 // If passed NULL, allocate new game data.
