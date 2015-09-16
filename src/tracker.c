@@ -86,13 +86,11 @@ bool runTracker(int* dataPtr)
             game.grade = dataPtr[3];
             game.gradePoints = dataPtr[4];
 
-            // Always prints an error in versus mode
-            /* if (isInPlayingState(game.state) && */
-            /*     (game.time < game.prevTime || game.level < game.prevLevel)) */
-            /* { */
-            /*     perror("Internal State Error"); */
-            /*     printGameState(&game); */
-            /* } */
+            if (isInPlayingState(game.state) && game.time < game.prevTime)
+            {
+                perror("Internal State Error");
+                printGameState(&game);
+            }
 
             if (isInPlayingState(game.state) && game.level - game.prevLevel > 0)
             {
@@ -121,7 +119,6 @@ bool runTracker(int* dataPtr)
         }
         pushCharFromJoystick(&game.inputHistory, &joystick);
 
-        /* setColorTheme(&LIGHT_THEME); */
         setGLClearColor();
         glClear(GL_COLOR_BUFFER_BIT);
 
