@@ -52,7 +52,7 @@ bool runTracker(int* dataPtr)
     }
 
     struct font_t font;
-    loadFont(&font, "/usr/share/fonts/TTF/DroidSansFallback.ttf", 18.0f);
+    loadFont(&font, "/usr/share/fonts/TTF/PragmataPro/PragmataPro.ttf", 12.0f);
 
     struct joystick_t joystick;
     createJoystick(&joystick, GLFW_JOYSTICK_1);
@@ -67,9 +67,9 @@ bool runTracker(int* dataPtr)
     struct layout_container_t layout;
     createLayoutContainer(&layout, width, height, 14.0f, 2.0f);
 
-    addToContainerRatio(&layout, &drawSectionGraph, 0.60f);
-    addToContainerRatio(&layout, &drawSectionTable, 0.50f);
-    addToContainerRatio(&layout, &drawHistory, 1.0f);
+    addToContainerRatio(&layout, &drawSectionGraph, 0.75f);
+    addToContainerRatio(&layout, &drawSectionTable, 1.00f);
+    /* addToContainerRatio(&layout, &drawInputHistory, 1.00f); */
 
     while (!glfwWindowShouldClose(window))
     {

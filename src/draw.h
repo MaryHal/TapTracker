@@ -11,9 +11,9 @@ void drawSectionGraph(struct game_t* game, struct font_t* font,
                       float width, float height,
                       void* param);
 
-void drawHistory(struct game_t* game, struct font_t* font,
-                 float width, float height,
-                 void* param);
+void drawInputHistory(struct game_t* game, struct font_t* font,
+                      float width, float height,
+                      void* param);
 
 void drawSectionTable(struct game_t* game, struct font_t* font,
                       float width, float height,

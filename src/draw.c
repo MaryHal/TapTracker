@@ -141,9 +141,9 @@ void drawSectionGraph(struct game_t* game, struct font_t* font,
     }
 }
 
-void drawHistory(struct game_t* game, struct font_t* font,
-                 float width, float height,
-                 void* param)
+void drawInputHistory(struct game_t* game, struct font_t* font,
+                      float width, float height,
+                      void* param)
 {
     struct history_t* inputHistory = &game->inputHistory;
     float x = 0.0f;
@@ -153,8 +153,14 @@ void drawHistory(struct game_t* game, struct font_t* font,
     const float vertStride = font->pixelHeight;
     const int maxIterations = height / vertStride;
 
-    for (int i = inputHistory->end - 1; inputHistory->end - i <= maxIterations && i >= inputHistory->start; i--)
+    /* for (int i = inputHistory->end - 1; inputHistory->end - i <= maxIterations && i >= inputHistory->start; i--) */
+    for (int i = inputHistory->end - maxIterations; i < inputHistory->end; i++)
     {
+        if (i < inputHistory->start)
+        {
+            continue;
+        }
+
         setGLColor(COLOR_FOREGROUND, 1.0f);
 
         char levelString[32];
@@ -201,21 +207,21 @@ void drawSectionTable(struct game_t* game, struct font_t* font,
         float sectionTime = convertTime(game->level >= (i + 1) * 100 ? section->endTime - section->startTime : game->time - section->startTime);
 
         char sectionString[16];
-        sprintf(sectionString, "%3d - %3d:", i * 100, (i + 1) * 100);
+        sprintf(sectionString, "%03d-%03d:", i * 100, (i + 1) * 100 - 1);
 
         char timeString[32];
         sprintf(timeString, "%.2f", sectionTime);
 
         char lineCount[20];
-        sprintf(lineCount, "%d : %d : %d : %d",
+        sprintf(lineCount, "%2d : %2d : %2d : %2d",
                 section->lines[0],
                 section->lines[1],
                 section->lines[2],
                 section->lines[3]);
 
         drawString(font,   0.0f, y, sectionString);
-        drawString(font,  64.0f, y, timeString);
-        drawString(font, 114.0f, y, lineCount);
+        drawString(font,  58.0f, y, timeString);
+        drawString(font, 106.0f, y, lineCount);
 
         y += vertStride;
     }
