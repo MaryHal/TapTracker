@@ -56,6 +56,9 @@ struct game_t
         int level, prevLevel;
         int time, prevTime;
 
+        char grade;
+        char gradePoints;
+
         struct history_t inputHistory;
 };
 

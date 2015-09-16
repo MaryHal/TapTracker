@@ -83,6 +83,9 @@ bool runTracker(int* dataPtr)
             game.level = dataPtr[1];
             game.time  = dataPtr[2];
 
+            game.grade = dataPtr[3];
+            game.gradePoints = dataPtr[4];
+
             // Always prints an error in versus mode
             /* if (isInPlayingState(game.state) && */
             /*     (game.time < game.prevTime || game.level < game.prevLevel)) */
