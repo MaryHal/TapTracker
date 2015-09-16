@@ -138,6 +138,10 @@ void drawSectionGraph(struct game_t* game, struct font_t* font,
 
         sprintf(levelStr, "%d", (int)scale);
         drawString(font, width - 10.0f, graphHeight + font->pixelHeight, levelStr);
+
+        // Draw grade and grade points
+        sprintf(levelStr, "%2d %2d", game->grade, game->gradePoints);
+        drawString(font, width - 28.0f, graphHeight - 2.0f, levelStr);
     }
 }
 
