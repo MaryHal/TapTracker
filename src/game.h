@@ -59,6 +59,8 @@ struct game_t
         char grade;
         char gradePoints;
 
+        bool masterQualified;
+
         struct history_t inputHistory;
 };
 
@@ -79,6 +81,9 @@ void addDataPointToSection(struct game_t* game, struct section_t* section, int c
 
 // Returns section data for a single section.
 struct section_t* getSection(struct game_t* game, int sectionIndex);
+
+// Will return true if _currently_ not invalidated from getting M-rank.
+bool testMasterConditions(struct game_t* game);
 
 void printGameState(struct game_t* game);
 

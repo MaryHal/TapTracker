@@ -56,6 +56,9 @@ void pushCurrentState(struct game_t* game)
 
     struct section_t* section = &game->sections[game->currentSection];
 
+    // Test if we're still qualified!
+    game->masterQualified = testMasterConditions(game);
+
     // If we're at the end of the game, don't do anything.
     if (section->data[section->size].level >= LEVEL_MAX)
     {
@@ -135,4 +138,66 @@ void printGameState(struct game_t* game)
            game->prevState, game->state,
            game->prevLevel, game->level,
            game->prevTime, game->time);
+}
+
+bool testMasterConditions(struct game_t* game)
+{
+    int sectionSum = 0;
+
+    for (unsigned int i = 0; i <= game->currentSection; i++)
+    {
+        struct section_t* section = &game->sections[i];
+        // First 5 sections must be completed in 1:05:00 or less
+        if (i < 5)
+        {
+            if (section->endTime - section->startTime > 65 * 60)
+            {
+                return false;
+            }
+            sectionSum += section->endTime - section->startTime;
+
+            // Two tetrises per section is required for the first 5 sections.
+            if (section->lines[3] < 2)
+            {
+                return false;
+            }
+        }
+        // Sixth section (500-600) must be less than two seconds slower than the average of the first 5 sections.
+        else if (i == 5)
+        {
+            if (section->endTime - section->startTime > sectionSum / 5 + 2 * 60)
+            {
+                return false;
+            }
+
+            // One tetris is required for the sixth section.
+            if (section->lines[3] < 1)
+            {
+                return false;
+            }
+        }
+        // Last three sections must be less than two seconds slower than the previous section.
+        else
+        {
+            struct section_t* prevSection = &game->sections[i - 1];
+            if (section->endTime - section->startTime > prevSection->endTime - prevSection->startTime + 2 * 60)
+            {
+                return false;
+            }
+
+            // One tetris is required for the last four sections.
+            if (section->lines[3] < 1)
+            {
+                return false;
+            }
+        }
+    }
+
+    // Finally, an S9 grade is required at level 999 along with the same requirements as the eigth section.
+    if (game->level == 999 && game->grade < 31)
+    {
+        return false;
+    }
+
+    return true;
 }
