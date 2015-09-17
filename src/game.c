@@ -67,15 +67,15 @@ void pushCurrentState(struct game_t* game)
     struct section_t* section = &game->sections[game->currentSection];
 
     // If we're at the end of the game, don't do anything.
-    if (section->data[section->size].level >= LEVEL_MAX)
+    if (section->data[section->size].level >= LEVEL_MAX && section->endTime == 0)
     {
         section->endTime = game->time;
-
-        // Test if we're still qualified!
         game->masterQualified = testMasterConditions(game);
 
         return;
     }
+
+    game->masterQualified = testMasterConditions(game);
 
     const int levelBoundary = (game->currentSection + 1) * SECTION_LENGTH;
 
@@ -88,9 +88,6 @@ void pushCurrentState(struct game_t* game)
 
     if (currentLevel >= levelBoundary)
     {
-        // Test if we're still qualified!
-        game->masterQualified = testMasterConditions(game);
-
         section->endTime = currentTime;
         addDataPointToSection(game, section, currentLevel, currentTime);
 
