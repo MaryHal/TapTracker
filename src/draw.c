@@ -218,11 +218,11 @@ void drawSectionTable(struct game_t* game, struct font_t* font,
         float sectionTime = 0.0f;
         if (game->level >= (i + 1) * SECTION_LENGTH || game->level == LEVEL_MAX)
         {
-            sectionTime = frameTime(section->endTime - section->startTime);
+            sectionTime = frameTimeToSeconds(section->endTime - section->startTime);
         }
         else
         {
-            sectionTime = frameTime(game->time - section->startTime);
+            sectionTime = frameTimeToSeconds(game->time - section->startTime);
         }
 
         char sectionString[16];

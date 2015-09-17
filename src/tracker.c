@@ -86,7 +86,7 @@ bool runTracker(int* dataPtr)
             game.grade = dataPtr[3];
             game.gradePoints = dataPtr[4];
 
-            if (isInPlayingState(game.state) && game.time < game.prevTime)
+            if (isInPlayingState(game.state) && game.level < game.prevLevel)
             {
                 perror("Internal State Error");
                 printGameState(&game);
