@@ -67,10 +67,13 @@ void pushCurrentState(struct game_t* game)
     struct section_t* section = &game->sections[game->currentSection];
 
     // If we're at the end of the game, don't do anything.
-    if (section->data[section->size].level >= LEVEL_MAX && section->endTime == 0)
+    if (section->data[section->size].level >= LEVEL_MAX)
     {
-        section->endTime = game->time;
-        game->masterQualified = testMasterConditions(game);
+        if (section->endTime == 0)
+        {
+            section->endTime = game->time;
+            game->masterQualified = testMasterConditions(game);
+        }
 
         return;
     }
