@@ -67,6 +67,10 @@ struct game_t
         char grade;
         char gradePoints;
 
+        char MrollFlags;
+        bool inCreditRoll;
+        char sectionIndex; // reported by mame
+
         bool masterQualified;
 
         struct history_t inputHistory;
@@ -80,6 +84,8 @@ void resetGame(struct game_t* game);
 
 bool isGameComplete(struct game_t* game);
 bool isInPlayingState(tap_state game);
+
+void updateGameState(struct game_t* game, int* dataPtr);
 
 // Adds datapoint to section data if level has incremented.
 void pushCurrentState(struct game_t* game);
