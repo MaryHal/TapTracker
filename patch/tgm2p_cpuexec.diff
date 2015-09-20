@@ -1,5 +1,5 @@
 diff --git a/cpuexec_old.c b/cpuexec.c
-index e2eea6d..c7b865d 100644
+index e2eea6d..23351d9 100644
 --- a/cpuexec_old.c
 +++ b/cpuexec.c
 @@ -12,6 +12,7 @@
@@ -22,7 +22,7 @@ index e2eea6d..c7b865d 100644
 +
 +const char* sharedMemKey = "tgm2p_data";
 +int fd = 0;
-+const size_t vSize = sizeof(int) * 6;
++const size_t vSize = sizeof(int) * 8;
 +int* addr = NULL;
 +
 +void cleanupSharedMem()
@@ -36,7 +36,7 @@ index e2eea6d..c7b865d 100644
  void cpuexec_timeslice(running_machine *machine)
  {
  	int call_debugger = ((machine->debug_flags & DEBUG_FLAG_ENABLED) != 0);
-@@ -259,6 +279,55 @@ void cpuexec_timeslice(running_machine *machine)
+@@ -259,6 +279,58 @@ void cpuexec_timeslice(running_machine *machine)
  	cpuexec_private *global = machine->cpuexec_data;
  	int ran;
  
@@ -83,6 +83,9 @@ index e2eea6d..c7b865d 100644
 +                addr[2] = debug_read_word(space, memory_address_to_byte(space, 0x06064BEA), TRUE); // p1 Timer
 +                addr[3] = debug_read_byte(space, memory_address_to_byte(space, 0x06079378), TRUE); // Master-mode internal grade
 +                addr[4] = debug_read_byte(space, memory_address_to_byte(space, 0x06079379), TRUE); // Master-mode internal grade points
++                addr[5] = debug_read_byte(space, memory_address_to_byte(space, 0x06064BD0), TRUE); // M-Roll flags
++                addr[6] = debug_read_byte(space, memory_address_to_byte(space, 0x06066845), TRUE); // p1 in-credit-roll
++                addr[7] = debug_read_byte(space, memory_address_to_byte(space, 0x06064C25), TRUE); // p1 section index
 +
 +                /* printf("%d %d %d\n", buffer[0], buffer[1], buffer[2]); */
 +                break;

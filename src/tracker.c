@@ -73,42 +73,7 @@ bool runTracker(int* dataPtr)
 
     while (!glfwWindowShouldClose(window))
     {
-        // Read input from child process and add it to the graph
-        {
-            game.prevState = game.state;
-            game.prevLevel = game.level;
-            game.prevTime  = game.time;
-
-            game.state = dataPtr[0];
-            game.level = dataPtr[1];
-            game.time  = dataPtr[2];
-
-            game.grade = dataPtr[3];
-            game.gradePoints = dataPtr[4];
-
-            if (isInPlayingState(game.state) && game.level < game.prevLevel)
-            {
-                perror("Internal State Error");
-                printGameState(&game);
-            }
-
-            if (isInPlayingState(game.state) && game.level - game.prevLevel > 0)
-            {
-                // Push a data point based on the newly acquired game state.
-                pushCurrentState(&game);
-            }
-
-            if (game.prevState != ACTIVE && game.state == ACTIVE)
-            {
-                pushHistoryElement(&game.inputHistory, game.level);
-            }
-
-            // Check if a game has ended
-            if (isInPlayingState(game.prevState) && !isInPlayingState(game.state))
-            {
-                resetGame(&game);
-            }
-        }
+        updateGameState(&game, dataPtr);
 
         glfwPollEvents();
 
