@@ -22,32 +22,30 @@ int frameTime(float seconds);
 
 typedef enum
 {
-    NONE         = 0,
-    START        = 1,
-    ACTIVE       = 2,
-    LOCKING      = 3,  // Cannot be influenced anymore
-    LINECLEAR    = 4,  // Tetromino is being locked to the playfield.
-    ENTRY        = 5,
-    GAMEOVER     = 7,  // "Game Over" is being shown on screen.
-    IDLE         = 10, // No game has started, just waiting...
-    FADING       = 11, // Blocks fading away when topping out (losing).
-    COMPLETION   = 13, // Blocks fading when completing the game
-    STARTUP      = 71
+    TAP_NONE         = 0,
+    TAP_START        = 1,
+    TAP_ACTIVE       = 2,
+    TAP_LOCKING      = 3,  // Cannot be influenced anymore
+    TAP_LINECLEAR    = 4,  // Tetromino is being locked to the playfield.
+    TAP_ENTRY        = 5,
+    TAP_GAMEOVER     = 7,  // "Game Over" is being shown on screen.
+    TAP_IDLE         = 10, // No game has started, just waiting...
+    TAP_FADING       = 11, // Blocks fading away when topping out (losing).
+    TAP_COMPLETION   = 13, // Blocks fading when completing the game
+    TAP_STARTUP      = 71
 } tap_state;
 
 typedef enum
 {
-    NEUTRAL = 48,
+    M_NEUTRAL  = 48,
 
-    // Failure states
-    FAIL_1 = 17,
-    FAIL_2 = 19,
-    END_FAIL   = 31,
+    M_FAIL_1   = 17,
+    M_FAIL_2   = 19,
+    M_FAIL_END = 31,
 
-    // Passing States
-    PASSING  = 49,
-    SECOND_HALF_PASSING = 51,
-    SUCCESS = 127,
+    M_PASS_1   = 49,
+    M_PASS_2   = 51,
+    M_SUCCESS  = 127,
 } tap_mroll_flags;
 
 struct datapoint_t

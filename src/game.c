@@ -57,7 +57,7 @@ bool isGameComplete(struct game_t* game)
 
 bool isInPlayingState(tap_state state)
 {
-    return state != NONE && state != IDLE && state != STARTUP;
+    return state != TAP_NONE && state != TAP_IDLE && state != TAP_STARTUP;
 }
 
 void updateGameState(struct game_t* game, int* dataPtr)
@@ -90,7 +90,7 @@ void updateGameState(struct game_t* game, int* dataPtr)
         pushCurrentState(game);
     }
 
-    if (game->prevState != ACTIVE && game->state == ACTIVE)
+    if (game->prevState != TAP_ACTIVE && game->state == TAP_ACTIVE)
     {
         pushHistoryElement(&game->inputHistory, game->level);
     }
@@ -174,7 +174,7 @@ void addDataPointToSection(struct game_t* game, struct section_t* section,
         /*     perror("Line clear is on LOCKING state instead of LINECLEAR state!\n"); */
         /* } */
         /* if (section->size >= 2 && (game->state == LINECLEAR || game->state == LOCKING)) */
-        if (section->size >= 2 && (game->prevState == LOCKING || game->state == LINECLEAR))
+        if (section->size >= 2 && (game->prevState == TAP_LOCKING || game->state == TAP_LINECLEAR))
         {
             section->lines[levelDifference - 1]++;
         }
@@ -200,10 +200,10 @@ void printGameState(struct game_t* game)
 bool testMasterConditions(struct game_t* game)
 {
     return
-        game->MrollFlags == NEUTRAL ||
-        game->MrollFlags == PASSING ||
-        game->MrollFlags == SECOND_HALF_PASSING ||
-        game->MrollFlags == SUCCESS;
+        game->MrollFlags == M_NEUTRAL ||
+        game->MrollFlags == M_PASS_1  ||
+        game->MrollFlags == M_PASS_2  ||
+        game->MrollFlags == M_SUCCESS;
 }
 
 bool calculateMasterConditions_(struct game_t* game)
