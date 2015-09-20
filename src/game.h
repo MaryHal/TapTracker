@@ -23,7 +23,7 @@ int frameTime(float seconds);
 typedef enum
 {
     NONE         = 0,
-    /* PRE_ENTRY   = 1, */
+    START        = 1,
     ACTIVE       = 2,
     LOCKING      = 3,  // Cannot be influenced anymore
     LINECLEAR    = 4,  // Tetromino is being locked to the playfield.
@@ -34,6 +34,21 @@ typedef enum
     COMPLETION   = 13, // Blocks fading when completing the game
     STARTUP      = 71
 } tap_state;
+
+typedef enum
+{
+    NEUTRAL = 48,
+
+    // Failure states
+    FAIL_1 = 17,
+    FAIL_2 = 19,
+    END_FAIL   = 31,
+
+    // Passing States
+    PASSING  = 49,
+    SECOND_HALF_PASSING = 51,
+    SUCCESS = 127,
+} tap_mroll_flags;
 
 struct datapoint_t
 {
@@ -94,8 +109,11 @@ void addDataPointToSection(struct game_t* game, struct section_t* section, int c
 // Returns section data for a single section.
 struct section_t* getSection(struct game_t* game, int sectionIndex);
 
-// Will return true if _currently_ not invalidated from getting M-rank.
 bool testMasterConditions(struct game_t* game);
+
+// Will return true if _currently_ not invalidated from getting M-rank.
+// Deprecated since we pull the flag from MAME.
+bool calculateMasterConditions_(struct game_t* game);
 
 void printGameState(struct game_t* game);
 
