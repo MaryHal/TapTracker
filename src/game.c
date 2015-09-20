@@ -199,6 +199,15 @@ void printGameState(struct game_t* game)
 
 bool testMasterConditions(struct game_t* game)
 {
+    return
+        game->MrollFlags == NEUTRAL ||
+        game->MrollFlags == PASSING ||
+        game->MrollFlags == SECOND_HALF_PASSING ||
+        game->MrollFlags == SUCCESS;
+}
+
+bool calculateMasterConditions_(struct game_t* game)
+{
     int sectionSum = 0;
 
     for (unsigned int i = 0; i < game->currentSection; i++)
