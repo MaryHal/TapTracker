@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    const size_t vSize = sizeof(int) * 6;
+    const size_t vSize = sizeof(int) * 8;
 
     int* addr = mmap(NULL, vSize, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
     if (addr == MAP_FAILED)

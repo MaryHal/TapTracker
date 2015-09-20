@@ -60,6 +60,48 @@ bool isInPlayingState(tap_state state)
     return state != NONE && state != IDLE && state != STARTUP;
 }
 
+void updateGameState(struct game_t* game, int* dataPtr)
+{
+    game->prevState = game->state;
+    game->prevLevel = game->level;
+    game->prevTime  = game->time;
+
+    game->state        = dataPtr[0];
+    game->level        = dataPtr[1];
+    game->time         = dataPtr[2];
+
+    game->grade        = dataPtr[3];
+    game->gradePoints  = dataPtr[4];
+    game->MrollFlags   = dataPtr[5];
+
+    game->inCreditRoll = dataPtr[6];
+    game->sectionIndex = dataPtr[7];
+
+
+    if (isInPlayingState(game->state) && game->level < game->prevLevel)
+    {
+        perror("Internal State Error");
+        printGameState(game);
+    }
+
+    if (isInPlayingState(game->state) && game->level - game->prevLevel > 0)
+    {
+        // Push a data point based on the newly acquired game state.
+        pushCurrentState(game);
+    }
+
+    if (game->prevState != ACTIVE && game->state == ACTIVE)
+    {
+        pushHistoryElement(&game->inputHistory, game->level);
+    }
+
+    // Check if a game has ended
+    if (isInPlayingState(game->prevState) && !isInPlayingState(game->state))
+    {
+        resetGame(game);
+    }
+}
+
 void pushCurrentState(struct game_t* game)
 {
     assert(game->currentSection >= 0 && game->currentSection < SECTION_COUNT);
@@ -229,8 +271,8 @@ bool testMasterConditions(struct game_t* game)
         }
 
         // Test section time vs previous section
-        struct section_t* section = &game->sections[8];
-        struct section_t* prevSection = &game->sections[9];
+        struct section_t* section = &game->sections[9];
+        struct section_t* prevSection = &game->sections[8];
 
         if (getSectionTime(section) > getSectionTime(prevSection) + frameTime(2))
         {
