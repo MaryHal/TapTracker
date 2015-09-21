@@ -84,8 +84,6 @@ struct game_t
         bool inCreditRoll;
         char sectionIndex; // reported by mame
 
-        bool masterQualified;
-
         struct history_t inputHistory;
 };
 
