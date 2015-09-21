@@ -140,19 +140,15 @@ void drawSectionGraph(struct game_t* game, struct font_t* font,
         drawString(font, width - 10.0f, graphHeight + font->pixelHeight, levelStr);
 
         // Draw grade and grade points
-        if (game->masterQualified)
+        if (testMasterConditions(game))
             glColor4f(0.3f, 1.0f, 0.3f, 1.0f);
         else
             glColor4f(1.0f, 0.3f, 0.3f, 1.0f);
 
-        sprintf(levelStr, "%2d %2d %2d %2d %2d",
-                game->MrollFlags,
-                game->inCreditRoll,
-                game->sectionIndex,
+        sprintf(levelStr, "%2d %2d",
                 game->grade,
                 game->gradePoints);
-        /* drawString(font, width - 28.0f, graphHeight - 2.0f, levelStr); */
-        drawString(font, width - 80.0f, graphHeight - 2.0f, levelStr);
+        drawString(font, width - 28.0f, graphHeight - 2.0f, levelStr);
     }
 }
 

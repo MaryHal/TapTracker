@@ -15,7 +15,7 @@
 
 #include <GLFW/glfw3.h>
 
-bool runTracker(int* dataPtr)
+bool runTracker(int* dataPtr, unsigned int width, unsigned int height)
 {
     if (!glfwInit())
     {
@@ -25,31 +25,23 @@ bool runTracker(int* dataPtr)
 
     GLFWwindow* window;
 
-    // Hard coded window sizes to fit tracker window + 640x480 MAME window in
-    // qHD. UI is not dynamic, so neither is this, for now.
-    float ratio = 540 / 480.0;
-    const unsigned int width = 960 - 640 * ratio;
-    const unsigned int height = 540;
+    glfwWindowHint(GLFW_RESIZABLE, false);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 
+    window = glfwCreateWindow(width, height,
+                              "TapTracker",
+                              NULL,
+                              NULL);
+    if (window == NULL)
     {
-        glfwWindowHint(GLFW_RESIZABLE, false);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-
-        window = glfwCreateWindow(width, height,
-                                  "TapTracker",
-                                  NULL,
-                                  NULL);
-        if (window == NULL)
-        {
-            perror("Could not create GLFW window");
-            return false;
-        }
-
-        glfwMakeContextCurrent(window);
-
-        setupOpenGL(width, height);
+        perror("Could not create GLFW window");
+        return false;
     }
+
+    glfwMakeContextCurrent(window);
+
+    setupOpenGL(width, height);
 
     struct font_t font;
     loadFont(&font, "/usr/share/fonts/TTF/PragmataPro/PragmataPro.ttf", 12.0f);
