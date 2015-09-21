@@ -3,6 +3,6 @@
 
 #include <stdbool.h>
 
-bool runTracker(int* dataPtr);
+bool runTracker(int* dataPtr, unsigned int width, unsigned int height);
 
 #endif /* TRACKER_H */

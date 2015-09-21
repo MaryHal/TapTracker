@@ -114,13 +114,13 @@ void pushCurrentState(struct game_t* game)
         if (section->endTime == 0)
         {
             section->endTime = game->time;
-            game->masterQualified = testMasterConditions(game);
+            /* game->masterQualified = testMasterConditions(game); */
         }
 
         return;
     }
 
-    game->masterQualified = testMasterConditions(game);
+    /* game->masterQualified = testMasterConditions(game); */
 
     const int levelBoundary = (game->currentSection + 1) * SECTION_LENGTH;
 
