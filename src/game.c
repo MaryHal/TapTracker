@@ -114,69 +114,64 @@ void pushCurrentState(struct game_t* game)
         if (section->endTime == 0)
         {
             section->endTime = game->time;
-            /* game->masterQualified = testMasterConditions(game); */
         }
 
         return;
     }
 
-    /* game->masterQualified = testMasterConditions(game); */
-
     const int levelBoundary = (game->currentSection + 1) * SECTION_LENGTH;
 
-    // TODO: Figure out what causes the input (from MAME) inconsistency that
-    // distorts the game state for a single frame. To patch this, we will use
-    // the previous frame's state if a problem occurs. The main will still
-    // output an error during these inconsistent frames.
-    int currentLevel = (game->level < game->prevLevel) ? game->prevLevel : game->level;
-    int currentTime  = (game->time < game->prevTime) ? game->prevTime : game->time;
-
-    if (currentLevel >= levelBoundary)
+    if (game->level >= levelBoundary)
     {
-        section->endTime = currentTime;
-        addDataPointToSection(game, section, currentLevel, currentTime);
+        section->endTime = game->time;
+        addDataPointToSection(game, section);
 
         // Section advance!
         game->currentSection++;
         section = &game->sections[game->currentSection];
     }
 
-    addDataPointToSection(game, section, currentLevel, currentTime);
+    addDataPointToSection(game, section);
 }
 
-void addDataPointToSection(struct game_t* game, struct section_t* section,
-                           int currentLevel, int currentTime)
+void addDataPointToSection(struct game_t* game, struct section_t* section)
 {
-    // Only push the data point if level has been incremented.
-    int levelDifference = 0;
-    if (section->size == 0 ||
-        (levelDifference = currentLevel - section->data[section->size - 1].level) > 0)
+    // We can run into this if the player is level-stopped at X99 for a VERY
+    // long time.
+    if (section->size >= SECTION_MAX)
     {
-        // levelDifference will be zero if this is the first level of the section.
-        /* assert(levelDifference >= 0 && levelDifference <= 4); */
-        assert(levelDifference >= 0);
+        return;
+    }
 
+    if (section->size == 0)
+    {
         // This section just began, as we have no datapoints yet.
         if (section->size == 0)
         {
-            section->startTime = currentTime;
+            section->startTime = game->time;
         }
 
         // Push datapoint to the end of the section.
-        section->data[section->size] = (struct datapoint_t) { currentLevel, currentTime };
+        section->data[section->size] = (struct datapoint_t) { game->level, game->time };
         section->size++;
+    }
+    else
+    {
+        // Only push the data point if level has been incremented.
+        int levelDifference = levelDifference = game->level - section->data[section->size - 1].level;
 
-        // If we have at least two elements in this section, we can check if we
-        // scored some phat lines. Sometimes the state on line clear is not set
-        // at the correct time (it stays in the LOCKING state).
-        /* if (game->state == LOCKING) */
-        /* { */
-        /*     perror("Line clear is on LOCKING state instead of LINECLEAR state!\n"); */
-        /* } */
-        /* if (section->size >= 2 && (game->state == LINECLEAR || game->state == LOCKING)) */
-        if (section->size >= 2 && (game->prevState == TAP_LOCKING || game->state == TAP_LINECLEAR))
+        if (levelDifference > 0)
         {
-            section->lines[levelDifference - 1]++;
+            // Push datapoint to the end of the section.
+            section->data[section->size] = (struct datapoint_t) { game->level, game->time };
+            section->size++;
+
+            // Check if we scored some phat lines. Sometimes the state on line clear
+            // is not set at the correct time (it stays in the LOCKING state).
+            if (section->size >= 2 && (game->prevState == TAP_LOCKING || game->state == TAP_LINECLEAR))
+            {
+                section->lines[levelDifference - 1]++;
+            }
         }
     }
 
@@ -189,14 +184,6 @@ struct section_t* getSection(struct game_t* game, int sectionIndex)
     return &game->sections[sectionIndex];
 }
 
-void printGameState(struct game_t* game)
-{
-    printf("state: %d -> %d, level %d -> %d, time %d -> %d\n",
-           game->prevState, game->state,
-           game->prevLevel, game->level,
-           game->prevTime, game->time);
-}
-
 bool testMasterConditions(struct game_t* game)
 {
     return
@@ -206,7 +193,7 @@ bool testMasterConditions(struct game_t* game)
         game->MrollFlags == M_SUCCESS;
 }
 
-bool calculateMasterConditions_(struct game_t* game)
+bool testMasterConditions_(struct game_t* game)
 {
     int sectionSum = 0;
 
@@ -290,4 +277,12 @@ bool calculateMasterConditions_(struct game_t* game)
     }
 
     return true;
+}
+
+void printGameState(struct game_t* game)
+{
+    printf("state: %d -> %d, level %d -> %d, time %d -> %d\n",
+           game->prevState, game->state,
+           game->prevLevel, game->level,
+           game->prevTime, game->time);
 }

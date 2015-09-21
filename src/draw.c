@@ -138,8 +138,10 @@ void drawSectionGraph(struct game_t* game, struct font_t* font,
 
         sprintf(levelStr, "%d", (int)scale);
         drawString(font, width - 10.0f, graphHeight + font->pixelHeight, levelStr);
+    }
 
-        // Draw grade and grade points
+    // Draw grade and grade points
+    {
         if (testMasterConditions(game))
             glColor4f(0.3f, 1.0f, 0.3f, 1.0f);
         else
@@ -156,6 +158,8 @@ void drawInputHistory(struct game_t* game, struct font_t* font,
                       float width, float height,
                       void* param)
 {
+    (void) width, (void) param;
+
     struct history_t* inputHistory = &game->inputHistory;
     float x = 0.0f;
     float y = font->pixelHeight;
@@ -164,7 +168,6 @@ void drawInputHistory(struct game_t* game, struct font_t* font,
     const float vertStride = font->pixelHeight;
     const int maxIterations = height / vertStride;
 
-    /* for (int i = inputHistory->end - 1; inputHistory->end - i <= maxIterations && i >= inputHistory->start; i--) */
     for (int i = inputHistory->end - maxIterations; i < inputHistory->end; i++)
     {
         if (i < inputHistory->start)
@@ -200,6 +203,8 @@ void drawSectionTable(struct game_t* game, struct font_t* font,
                       float width, float height,
                       void* param)
 {
+    (void) width, (void) param;
+
     const float vertStride = font->pixelHeight;
     const int maxIterations = height / vertStride;
 
