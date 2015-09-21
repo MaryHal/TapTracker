@@ -87,8 +87,7 @@ struct game_t
         struct history_t inputHistory;
 };
 
-// (Re)sets all game data.
-// If passed NULL, allocate new game data.
+// (Re)sets all game data. If passed NULL, allocate new game data.
 struct game_t* createNewGame(struct game_t* game);
 void destroyGame(struct game_t* game, bool freeMem);
 void resetGame(struct game_t* game);
@@ -96,20 +95,22 @@ void resetGame(struct game_t* game);
 bool isGameComplete(struct game_t* game);
 bool isInPlayingState(tap_state game);
 
+// Load game state from MAME into our game structure. This also handles adding
+// data points to our section data.
 void updateGameState(struct game_t* game, int* dataPtr);
 
 // Adds datapoint to section data if level has incremented.
 void pushCurrentState(struct game_t* game);
-void addDataPointToSection(struct game_t* game, struct section_t* section, int currentLevel, int currentTime);
+void addDataPointToSection(struct game_t* game, struct section_t* section);
 
 // Returns section data for a single section.
 struct section_t* getSection(struct game_t* game, int sectionIndex);
 
+// Will return true if _currently_ not invalidated from getting M-rank.
 bool testMasterConditions(struct game_t* game);
 
-// Will return true if _currently_ not invalidated from getting M-rank.
-// Deprecated since we pull the flag from MAME.
-bool calculateMasterConditions_(struct game_t* game);
+// Deprecated since we now pull the flag directly from MAME.
+bool testMasterConditions_(struct game_t* game);
 
 void printGameState(struct game_t* game);
 
