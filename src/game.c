@@ -66,6 +66,7 @@ void updateGameState(struct game_t* game, int* dataPtr)
     game->prevLevel = game->level;
     game->prevTime  = game->time;
 
+    // Retrieve the data that we set in the MAME process.
     game->state        = dataPtr[0];
     game->level        = dataPtr[1];
     game->time         = dataPtr[2];
@@ -76,7 +77,6 @@ void updateGameState(struct game_t* game, int* dataPtr)
 
     game->inCreditRoll = dataPtr[6];
     game->sectionIndex = dataPtr[7];
-
 
     if (isInPlayingState(game->state) && game->level < game->prevLevel)
     {
@@ -109,18 +109,15 @@ void pushCurrentState(struct game_t* game)
     struct section_t* section = &game->sections[game->currentSection];
 
     // If we're at the end of the game, don't do anything.
-    if (section->data[section->size].level >= LEVEL_MAX)
+    if (game->level >= LEVEL_MAX)
     {
         if (section->endTime == 0)
         {
             section->endTime = game->time;
         }
-
-        return;
     }
 
     const int levelBoundary = (game->currentSection + 1) * SECTION_LENGTH;
-
     if (game->level >= levelBoundary)
     {
         section->endTime = game->time;
@@ -136,12 +133,7 @@ void pushCurrentState(struct game_t* game)
 
 void addDataPointToSection(struct game_t* game, struct section_t* section)
 {
-    // We can run into this if the player is level-stopped at X99 for a VERY
-    // long time.
-    if (section->size >= SECTION_MAX)
-    {
-        return;
-    }
+    assert(section->size < SECTION_MAX);
 
     if (section->size == 0)
     {
@@ -193,7 +185,7 @@ bool testMasterConditions(struct game_t* game)
         game->MrollFlags == M_SUCCESS;
 }
 
-bool testMasterConditions_(struct game_t* game)
+bool calculateMasterConditions_(struct game_t* game)
 {
     int sectionSum = 0;
 
