@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
     (void) argc, (void)argv;
 
     const char* sharedMemKey = "tgm2p_data";
-    int fd = shm_open(sharedMemKey, O_RDWR, S_IRWXO | S_IRWXG | S_IRWXU);
+    int fd = shm_open(sharedMemKey, O_RDONLY, S_IRWXO | S_IRWXG | S_IRWXU);
     if (fd < 0)
     {
         perror("Could not create shared memory object");
@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
 
     const size_t vSize = sizeof(int) * 8;
 
-    int* addr = mmap(NULL, vSize, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+    int* addr = mmap(NULL, vSize, PROT_READ, MAP_SHARED, fd, 0);
     if (addr == MAP_FAILED)
     {
         perror("Parent: Could not map memory");
