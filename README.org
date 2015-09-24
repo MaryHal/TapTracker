@@ -36,6 +36,8 @@ The top portion graphs the time vs level during the last three sections. Immedia
 
 [[https://www.youtube.com/watch?v=6sReyaKpt70][Video of TapTracker (without input viewer)]]
 
+[[https://www.youtube.com/watch?v=NTJTRTVM19w][Old Video of BlockTracker]]
+
 ** To-do list
 
 - Document TAP states :: I've reverse engineered most of the TGM2+ states (read: I've figured out what they mean), but there are edge cases that still confuse TapTracker.
