@@ -110,7 +110,7 @@ struct section_t* getSection(struct game_t* game, int sectionIndex);
 bool testMasterConditions(struct game_t* game);
 
 // Deprecated since we now pull the flag directly from MAME.
-bool testMasterConditions_(struct game_t* game);
+bool calculateMasterConditions_(struct game_t* game);
 
 void printGameState(struct game_t* game);
 
