@@ -15,7 +15,7 @@ After cloning this repository, retrieve all the submodules:
   git submodule update --init --recursive
 #+END_SRC
 
-Building this project requires [[https://www.python.org/][python]] and [[https://martine.github.io/ninja/][ninja]]:
+Building this project requires [[https://www.python.org/][python]], [[https://martine.github.io/ninja/][ninja]], and [[http://www.glfw.org/][glfw]]:
 
 #+BEGIN_SRC sh
   python bootstrap.py
