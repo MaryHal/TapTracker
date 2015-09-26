@@ -30,6 +30,7 @@ void addCharData(int codepoint, stbtt_packedchar pchar);
 struct chardata_t* getCharData(int codepoint);
 void deleteCharData();
 
+void createBitmapFont(const char* imgFile, const char* binFile, const char* ttfFile, float pixelHeight);
 void exportBitmap(const char* imgFile, struct font_t* font, uint8_t* bitmap);
 void exportFontData(const char* binFile, struct font_t* font, stbtt_pack_range* pr, int num_ranges);
 
