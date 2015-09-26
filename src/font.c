@@ -10,8 +10,11 @@
 
 #include <stb_rect_pack.h>
 
-/* #define STB_IMAGE_WRITE_IMPLEMENTATION */
-/* #include <stb_image_write.h> */
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
+
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include <stb_image_write.h>
 
 struct chardata_t* dataHash = NULL;
 
@@ -43,7 +46,38 @@ void deleteCharData(struct chardata_t* cdata)
     free(cdata);
 }
 
-struct font_t* loadFont(struct font_t* font, const char* filename, float pixelHeight)
+void exportBitmap(const char* imgFile, struct font_t* font, uint8_t* bitmap)
+{
+    stbi_write_png(imgFile, font->textureWidth, font->textureHeight, 1, bitmap, 0);
+}
+
+void exportFontData(const char* binFile, struct font_t* font, stbtt_pack_range* pr, int num_ranges)
+{
+    FILE* binOutput = fopen(binFile, "wb");
+
+    if (!binOutput)
+    {
+        perror("Could not open file for font data output");
+        return;
+    }
+
+    fwrite(font, sizeof(struct font_t), 1, binOutput);
+
+    for (int i = 0; i < num_ranges; i++)
+    {
+        for (int j = 0; j < pr[i].num_chars; ++j)
+        {
+            int codepoint = pr[i].first_unicode_codepoint_in_range + j;
+
+            fwrite(&codepoint, sizeof(int), 1, binOutput);
+            fwrite(pr[i].chardata_for_range + j, sizeof(stbtt_packedchar), 1, binOutput);
+        }
+    }
+
+    fclose(binOutput);
+}
+
+struct font_t* loadTTF(struct font_t* font, const char* filename, float pixelHeight)
 {
     if (font == NULL)
     {
@@ -57,6 +91,12 @@ struct font_t* loadFont(struct font_t* font, const char* filename, float pixelHe
 
     FILE* ttf_file = fopen(filename, "rb");
 
+    if (!ttf_file)
+    {
+        perror("Could not open TTF file");
+        return NULL;
+    }
+
     // Get filesize so we know how much memory to allocate.
     fseek(ttf_file, 0L, SEEK_END);
     size_t filesize = ftell(ttf_file);
@@ -66,7 +106,6 @@ struct font_t* loadFont(struct font_t* font, const char* filename, float pixelHe
     uint8_t temp_bitmap[font->textureWidth * font->textureHeight];
 
     fread(ttf_buffer, 1, filesize, fopen(filename, "rb"));
-
     fclose(ttf_file);
 
     // Pack our font
@@ -101,7 +140,10 @@ struct font_t* loadFont(struct font_t* font, const char* filename, float pixelHe
         }
 
         stbtt_PackEnd(&pc);
-        /* stbi_write_png("fonttest3.png", font->textureWidth, font->textureHeight, 1, temp_bitmap, 0); */
+
+        // Export bitmap font
+        exportBitmap("PP.png", font, temp_bitmap);
+        exportFontData("PP.bin", font, pr, NUM_RANGES);
 
         // Move all rects to hash table.
         for (int i = 0; i < NUM_RANGES; i++)
@@ -125,6 +167,57 @@ struct font_t* loadFont(struct font_t* font, const char* filename, float pixelHe
     // can free temp_bitmap at this point
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    return font;
+}
+
+struct font_t* loadBitmapFont(struct font_t* font, const char* imgFile, const char* binFile)
+{
+    if (font == NULL)
+    {
+        font = (struct font_t*)malloc(sizeof(struct font_t));
+    }
+
+    FILE* binInput = fopen(binFile, "rb");
+
+    if (!binInput)
+    {
+        perror("Could not open file for font data output");
+        return NULL;
+    }
+
+    fread(font, sizeof(struct font_t), 1, binInput);
+
+    // Load char data.
+    int codepoint = 0;
+    stbtt_packedchar pchar;
+
+    while (fread(&codepoint, sizeof(int), 1, binInput) == 1 &&
+           fread(&pchar, sizeof(stbtt_packedchar), 1, binInput) == 1)
+    {
+        addCharData(codepoint, pchar);
+    }
+
+    fclose(binInput);
+
+    // Load bitmap and set it up for OpenGL to use.
+    int x, y, n;
+    uint8_t* temp_bitmap = stbi_load(imgFile, &x, &y, &n, 0);
+
+    assert(x == font->textureWidth);
+    assert(y == font->textureHeight);
+
+    glGenTextures(1, &font->texture);
+    glBindTexture(GL_TEXTURE_2D, font->texture);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA,
+                 font->textureWidth, font->textureHeight, 0, GL_ALPHA, GL_UNSIGNED_BYTE, temp_bitmap);
+
+    // can free temp_bitmap at this point
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    stbi_image_free(temp_bitmap);
 
     return font;
 }
