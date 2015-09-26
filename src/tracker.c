@@ -44,7 +44,8 @@ bool runTracker(int* dataPtr, unsigned int width, unsigned int height)
     setupOpenGL(width, height);
 
     struct font_t font;
-    loadFont(&font, "/usr/share/fonts/TTF/PragmataPro/PragmataPro.ttf", 12.0f);
+    /* loadTTF(&font, "/usr/share/fonts/TTF/PP821/PragmataPro.ttf", 13.0f); */
+    loadBitmapFont(&font, "PP.png", "PP.bin");
 
     struct joystick_t joystick;
     createJoystick(&joystick, GLFW_JOYSTICK_1);

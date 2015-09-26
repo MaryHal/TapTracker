@@ -147,11 +147,10 @@ void drawSectionGraph(struct game_t* game, struct font_t* font,
         else
             glColor4f(1.0f, 0.3f, 0.3f, 1.0f);
 
-        sprintf(levelStr, "%2d %2d %2d",
-                game->MrollFlags,
+        sprintf(levelStr, "%2d %2d",
                 game->grade,
                 game->gradePoints);
-        drawString(font, width - 56.0f, graphHeight - 2.0f, levelStr);
+        drawString(font, width - 28.0f, graphHeight - 2.0f, levelStr);
     }
 }
 
