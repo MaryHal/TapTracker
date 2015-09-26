@@ -18,8 +18,8 @@ struct chardata_t
 struct font_t
 {
         unsigned int texture;
-        unsigned int textureWidth;
-        unsigned int textureHeight;
+        int textureWidth;
+        int textureHeight;
 
         float pixelHeight;
 };
@@ -30,7 +30,11 @@ void addCharData(int codepoint, stbtt_packedchar pchar);
 struct chardata_t* getCharData(int codepoint);
 void deleteCharData();
 
-struct font_t* loadFont(struct font_t* font, const char* filename, float pixelHeight);
+void exportBitmap(const char* imgFile, struct font_t* font, uint8_t* bitmap);
+void exportFontData(const char* binFile, struct font_t* font, stbtt_pack_range* pr, int num_ranges);
+
+struct font_t* loadTTF(struct font_t* font, const char* filename, float pixelHeight);
+struct font_t* loadBitmapFont(struct font_t* font, const char* imgFile, const char* binFile);
 void destroyFont(struct font_t* font, bool freeFont);
 
 void getPackedQuad(struct font_t* font, int codepoint,
