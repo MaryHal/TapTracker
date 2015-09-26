@@ -46,6 +46,74 @@ void deleteCharData(struct chardata_t* cdata)
     free(cdata);
 }
 
+void createBitmapFont(const char* imgFile, const char* binFile, const char* ttfFile, float pixelHeight)
+{
+    struct font_t font;
+
+    font.textureWidth  = 512;
+    font.textureHeight = 512;
+    font.pixelHeight = pixelHeight;
+
+    /* font->dataHash = NULL; */
+
+    FILE* ttf_file = fopen(ttfFile, "rb");
+
+    if (!ttf_file)
+    {
+        perror("Could not open TTF file");
+        return;
+    }
+
+    // Get filesize so we know how much memory to allocate.
+    fseek(ttf_file, 0L, SEEK_END);
+    size_t filesize = ftell(ttf_file);
+    rewind(ttf_file);
+
+    uint8_t ttf_buffer[filesize];
+    uint8_t temp_bitmap[font.textureWidth * font.textureHeight];
+
+    fread(ttf_buffer, 1, filesize, ttf_file);
+    fclose(ttf_file);
+
+    // Pack our font
+    {
+        stbtt_pack_context pc;
+
+        if (!stbtt_PackBegin(&pc, temp_bitmap, font.textureWidth, font.textureHeight, 0, 1, NULL))
+        {
+            perror("stbtt_PackBegin error");
+        }
+
+        const int NUM_RANGES = 2;
+        stbtt_pack_range pr[NUM_RANGES];
+        stbtt_packedchar pdata[256*2];
+
+        pr[0].chardata_for_range = pdata;
+        pr[0].first_unicode_codepoint_in_range = 32;
+        pr[0].num_chars = 95;
+        pr[0].font_size = pixelHeight;
+
+        pr[1].chardata_for_range = pdata+256;
+        pr[1].first_unicode_codepoint_in_range = 0x2190;
+        pr[1].num_chars = 0x2193 - 0x2190 + 1;
+        pr[1].font_size = pixelHeight;
+
+        stbtt_PackSetOversampling(&pc, 2, 2);
+
+        if (!stbtt_PackFontRanges(&pc, ttf_buffer, 0, pr, 2))
+        {
+            perror("stbtt_PackFontRanges error. Chars cannot fit on bitmap?");
+            return;
+        }
+
+        stbtt_PackEnd(&pc);
+
+        // Export bitmap font
+        exportBitmap(imgFile, &font, temp_bitmap);
+        exportFontData(binFile, &font, pr, NUM_RANGES);
+    }
+}
+
 void exportBitmap(const char* imgFile, struct font_t* font, uint8_t* bitmap)
 {
     stbi_write_png(imgFile, font->textureWidth, font->textureHeight, 1, bitmap, 0);
@@ -105,7 +173,7 @@ struct font_t* loadTTF(struct font_t* font, const char* filename, float pixelHei
     uint8_t ttf_buffer[filesize];
     uint8_t temp_bitmap[font->textureWidth * font->textureHeight];
 
-    fread(ttf_buffer, 1, filesize, fopen(filename, "rb"));
+    fread(ttf_buffer, 1, filesize, ttf_file);
     fclose(ttf_file);
 
     // Pack our font
@@ -140,10 +208,6 @@ struct font_t* loadTTF(struct font_t* font, const char* filename, float pixelHei
         }
 
         stbtt_PackEnd(&pc);
-
-        // Export bitmap font
-        exportBitmap("PP.png", font, temp_bitmap);
-        exportFontData("PP.bin", font, pr, NUM_RANGES);
 
         // Move all rects to hash table.
         for (int i = 0; i < NUM_RANGES; i++)
