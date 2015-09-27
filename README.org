@@ -24,7 +24,7 @@ Building this project requires [[https://www.python.org/][python]], [[https://ma
 
 ** Running TapTracker
 
-TapTracker no longer runs shmupmametgm as a child process, but TapTracker must be run /after/ shmupmametgm has started.
+TapTracker no longer runs shmupmametgm as a child process, but TapTracker must be run /after/ shmupmametgm has started. For now, TapTracker only logs stats for player 1.
 
 ** Screenshots
 
