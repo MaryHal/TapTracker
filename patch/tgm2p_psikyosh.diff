@@ -1,0 +1,19 @@
+diff --git a/psikyosh_old.c b/psikyosh.c
+index 95f045b..0055b05 100644
+--- a/psikyosh_old.c
++++ b/psikyosh.c
+@@ -844,7 +844,13 @@ static MACHINE_DRIVER_START( psikyo3v1 )
+ 	MDRV_SCREEN_VBLANK_TIME(ATTOSECONDS_IN_USEC(0))
+ 	MDRV_SCREEN_FORMAT(BITMAP_FORMAT_RGB32)
+ 	MDRV_SCREEN_SIZE(64*8, 32*8)
+-	MDRV_SCREEN_VISIBLE_AREA(0, 40*8-1, 0, 28*8-1)
++
++	/* MDRV_SCREEN_VISIBLE_AREA(0, 40*8-1, 0, 28*8-1) */
++
++    /* Backport correct refresh rate for tgm:2 */
++    /* Measured Hsync 16.165 KHz, Vsync 61.68 Hz */
++    /* Ideally this would be driven off the video register. However, it doesn't changeat runtime and MAME will pick a better screen resolution if it knows upfront */
++    MDRV_SCREEN_RAW_PARAMS(MASTER_CLOCK/8, 443, 0, 40*8, 262, 0, 30*8)
+ 
+ 	MDRV_GFXDECODE(psikyosh)
+ 	MDRV_PALETTE_LENGTH(0x5000/4)

@@ -1,5 +1,5 @@
 diff --git a/cpuexec_old.c b/cpuexec.c
-index e2eea6d..96f69f7 100644
+index e2eea6d..23351d9 100644
 --- a/cpuexec_old.c
 +++ b/cpuexec.c
 @@ -12,6 +12,7 @@
@@ -95,16 +95,3 @@ index e2eea6d..96f69f7 100644
  	/* build the execution list if we don't have one yet */
  	if (global->executelist == NULL)
  		rebuild_execute_list(machine);
-@@ -597,6 +669,12 @@ static DEVICE_RESET( cpu )
- 
- 		assert(screen != NULL);
- 		video_screen_register_vblank_callback(screen, on_vblank, NULL);
-+
-+		int width = video_screen_get_width(screen);
-+		int height = video_screen_get_height(screen);
-+		const rectangle *visarea = video_screen_get_visible_area(screen);
-+
-+		video_screen_configure(screen, width, height, visarea, HZ_TO_ATTOSECONDS(61.681f));
- 	}
- 
- 	/* reconfigure periodic interrupts */
