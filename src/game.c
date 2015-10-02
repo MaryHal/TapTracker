@@ -45,7 +45,7 @@ void resetGame(struct game_t* game)
 
     resetHistory(&game->inputHistory);
 
-    // Push an initial data point from the game's initial state.
+    // Push an initial (blank) data point from the game's initial state.
     pushCurrentState(game);
 }
 
@@ -115,6 +115,8 @@ void pushCurrentState(struct game_t* game)
         {
             section->endTime = game->time;
         }
+
+        return;
     }
 
     const int levelBoundary = (game->currentSection + 1) * SECTION_LENGTH;
@@ -135,13 +137,10 @@ void addDataPointToSection(struct game_t* game, struct section_t* section)
 {
     assert(section->size < SECTION_MAX);
 
+    // Section just began
     if (section->size == 0)
     {
-        // This section just began, as we have no datapoints yet.
-        if (section->size == 0)
-        {
-            section->startTime = game->time;
-        }
+        section->startTime = game->time;
 
         // Push datapoint to the end of the section.
         section->data[section->size] = (struct datapoint_t) { game->level, game->time };
@@ -188,6 +187,7 @@ bool testMasterConditions(struct game_t* game)
 bool calculateMasterConditions_(struct game_t* game)
 {
     int sectionSum = 0;
+    const int TETRIS_INDEX = 3;
 
     for (unsigned int i = 0; i < game->currentSection; i++)
     {
@@ -203,7 +203,7 @@ bool calculateMasterConditions_(struct game_t* game)
             sectionSum += getSectionTime(section);
 
             // Two tetrises per section is required for the first 5 sections.
-            if (section->lines[3] < 2)
+            if (section->lines[TETRIS_INDEX] < 2)
             {
                 return false;
             }
@@ -218,7 +218,7 @@ bool calculateMasterConditions_(struct game_t* game)
             }
 
             // One tetris is required for the sixth section.
-            if (section->lines[3] < 1)
+            if (section->lines[TETRIS_INDEX] < 1)
             {
                 return false;
             }
@@ -236,7 +236,7 @@ bool calculateMasterConditions_(struct game_t* game)
 
             // One tetris is required for the last four sections EXCEPT the last
             // one.
-            if (section->lines[3] < 1)
+            if (section->lines[TETRIS_INDEX] < 1)
             {
                 return false;
             }
