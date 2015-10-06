@@ -13,7 +13,7 @@
 #define SECTION_COUNT  10
 
 #define TIMER_FPS      60.0f
-#define TAP_FPS        61.6f
+#define TAP_FPS        61.618f
 
 #define MASTER_S9_INTERNAL_GRADE 31
 
@@ -37,12 +37,11 @@ typedef enum
 
 typedef enum
 {
-    M_NEUTRAL  = 48,
-
     M_FAIL_1   = 17,
     M_FAIL_2   = 19,
     M_FAIL_END = 31,
 
+    M_NEUTRAL  = 48,
     M_PASS_1   = 49,
     M_PASS_2   = 51,
     M_SUCCESS  = 127,
