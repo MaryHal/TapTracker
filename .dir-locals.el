@@ -1,0 +1,15 @@
+((nil . ((projectile-project-compilation-cmd . "ninja && ninja -t compdb compile >! compile_commands.json")
+         (projectile-project-test-cmd . "./test/bin/btest")
+         (eval . (progn
+                   (global-set-key (kbd "<f5>") (lambda()
+                                                  (interactive)
+                                                  (cd (projectile-project-root))
+                                                  (shell-command "python bootstrap.py --cxx=clang")
+                                                  ))
+
+                   (global-set-key (kbd "C-<f5>") (lambda()
+                                                    (interactive)
+                                                    (cd (projectile-project-root))
+                                                    (shell-command "python bootstrap.py --debug --cxx=clang")
+                                                    ))
+                   )))))
