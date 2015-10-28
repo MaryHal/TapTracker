@@ -78,6 +78,12 @@ void updateGameState(struct game_t* game, int* dataPtr)
     game->inCreditRoll = dataPtr[6];
     game->sectionIndex = dataPtr[7];
 
+    game->currentBlock    = dataPtr[8];
+    game->nextBlock       = dataPtr[9];
+    game->currentBlockX   = dataPtr[10];
+    game->currentBlockY   = dataPtr[11];
+    game->currentRotState = dataPtr[12];
+
     if (isInPlayingState(game->state) && game->level < game->prevLevel)
     {
         perror("Internal State Error");
