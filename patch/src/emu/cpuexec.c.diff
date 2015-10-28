@@ -1,5 +1,5 @@
 diff --git a/cpuexec_old.c b/cpuexec.c
-index e2eea6d..2820e77 100644
+index e2eea6d..9625031 100644
 --- a/cpuexec_old.c
 +++ b/cpuexec.c
 @@ -12,6 +12,7 @@
@@ -22,7 +22,7 @@ index e2eea6d..2820e77 100644
 +
 +const char* sharedMemKey = "tgm2p_data";
 +int fd = 0;
-+const size_t vSize = sizeof(int) * 8;
++const size_t vSize = sizeof(int) * 13;
 +int* addr = NULL;
 +
 +void cleanupSharedMem()
@@ -36,7 +36,7 @@ index e2eea6d..2820e77 100644
  void cpuexec_timeslice(running_machine *machine)
  {
  	int call_debugger = ((machine->debug_flags & DEBUG_FLAG_ENABLED) != 0);
-@@ -259,6 +279,58 @@ void cpuexec_timeslice(running_machine *machine)
+@@ -259,6 +279,63 @@ void cpuexec_timeslice(running_machine *machine)
  	cpuexec_private *global = machine->cpuexec_data;
  	int ran;
  
@@ -78,16 +78,21 @@ index e2eea6d..2820e77 100644
 +
 +                const address_space* space = cpu_get_address_space(device, ADDRESS_SPACE_PROGRAM + (0 - EXPSPACE_PROGRAM_LOGICAL));
 +
-+                addr[0] = debug_read_byte(space, memory_address_to_byte(space, 0x06064BF5), TRUE); // p1 State
-+                addr[1] = debug_read_word(space, memory_address_to_byte(space, 0x06064BBA), TRUE); // p1 Level
-+                addr[2] = debug_read_word(space, memory_address_to_byte(space, 0x06064BEA), TRUE); // p1 Timer
-+                addr[3] = debug_read_byte(space, memory_address_to_byte(space, 0x06079378), TRUE); // Master-mode internal grade
-+                addr[4] = debug_read_byte(space, memory_address_to_byte(space, 0x06079379), TRUE); // Master-mode internal grade points
-+                addr[5] = debug_read_byte(space, memory_address_to_byte(space, 0x06064BD0), TRUE); // M-Roll flags
-+                addr[6] = debug_read_byte(space, memory_address_to_byte(space, 0x06066845), TRUE); // p1 in-credit-roll
-+                addr[7] = debug_read_byte(space, memory_address_to_byte(space, 0x06064C25), TRUE); // p1 section index
++                addr[0]  = debug_read_byte(space, memory_address_to_byte(space, 0x06064BF5), TRUE); // p1 State
++                addr[1]  = debug_read_word(space, memory_address_to_byte(space, 0x06064BBA), TRUE); // p1 Level
++                addr[2]  = debug_read_word(space, memory_address_to_byte(space, 0x06064BEA), TRUE); // p1 Timer
++                addr[3]  = debug_read_byte(space, memory_address_to_byte(space, 0x06079378), TRUE); // Master-mode internal grade
++                addr[4]  = debug_read_byte(space, memory_address_to_byte(space, 0x06079379), TRUE); // Master-mode internal grade points
++                addr[5]  = debug_read_byte(space, memory_address_to_byte(space, 0x06064BD0), TRUE); // M-Roll flags
++                addr[6]  = debug_read_byte(space, memory_address_to_byte(space, 0x06066845), TRUE); // p1 in-credit-roll
++                addr[7]  = debug_read_byte(space, memory_address_to_byte(space, 0x06064C25), TRUE); // p1 section index
 +
-+                /* printf("%d %d %d\n", buffer[0], buffer[1], buffer[2]); */
++                addr[8]  = debug_read_word(space, memory_address_to_byte(space, 0x06064BF6), TRUE); // Current block
++                addr[9]  = debug_read_word(space, memory_address_to_byte(space, 0x06064BF8), TRUE); // Next block
++                addr[10] = debug_read_word(space, memory_address_to_byte(space, 0x06064BFC), TRUE); // Current block X position
++                addr[11] = debug_read_word(space, memory_address_to_byte(space, 0x06064C00), TRUE); // Current block Y position
++                addr[12] = debug_read_byte(space, memory_address_to_byte(space, 0x06064BFA), TRUE); // Current block rotation state
++
 +                break;
 +            }
 +        }
@@ -95,7 +100,7 @@ index e2eea6d..2820e77 100644
  	/* build the execution list if we don't have one yet */
  	if (global->executelist == NULL)
  		rebuild_execute_list(machine);
-@@ -328,7 +400,7 @@ void cpuexec_timeslice(running_machine *machine)
+@@ -328,7 +405,7 @@ void cpuexec_timeslice(running_machine *machine)
  						classdata->cycles_stolen = 0;
  						global->executingcpu = classdata->device;
  						*classdata->icount = classdata->cycles_running;

@@ -83,6 +83,12 @@ struct game_t
         bool inCreditRoll;
         char sectionIndex; // reported by mame
 
+        int currentBlock;
+        int nextBlock;
+        int currentBlockX;
+        int currentBlockY;
+        int currentRotState;
+
         struct history_t inputHistory;
 };
 
