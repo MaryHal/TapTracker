@@ -110,7 +110,7 @@ void drawSectionGraph(struct game_t* game, struct font_t* font,
     }
 
     // Print level
-    char levelStr[8];
+    char levelStr[16];
     sprintf(levelStr, "%d", prevDatapoint.level);
 
     setGLColor(COLOR_FOREGROUND, 1.0f);
@@ -151,6 +151,15 @@ void drawSectionGraph(struct game_t* game, struct font_t* font,
                 game->grade,
                 game->gradePoints);
         drawString(font, width - 28.0f, graphHeight - 2.0f, levelStr);
+
+        /* // Draw some block data */
+        /* sprintf(levelStr, "%d %d %d %d %d", */
+        /*         game->currentBlock, */
+        /*         game->nextBlock, */
+        /*         game->currentBlockX, */
+        /*         game->currentBlockY, */
+        /*         game->currentRotState); */
+        /* drawString(font, width - 100.0f, graphHeight - 40, levelStr); */
     }
 }
 
