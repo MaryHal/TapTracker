@@ -48,3 +48,43 @@ Newer versions of TapTracker include a section table that logs section timings a
 - [Partially complete] Implement resizable layouts :: TapTracker only supports a single window size and layout right now, and it's difficult to modify.
 - Rework OpenGL code :: It's rigid and messy right now. Not to mention it also uses a ton of immediate mode.
 - Player 2 support :: Log stats for Player 2 too.
+- Create a [[http://fumen.zui.jp/][Fumen]] diagram during play
+
+** Useful RAM addresses
+
+All these addresses are for player 1. I still need to double check some of these.
+
+- From a [[http://tetrisconcept.net/wiki/User:Zzymyn#Memory_Addresses][relatively hidden part]] of the TetrisConcept Wiki:
+
+|    Address | Type      | Description                         | Notes           |
+|------------+-----------+-------------------------------------+-----------------|
+| 0x06064B99 | int8_t    | ARE/Line Clear Delay Time Remaining |                 |
+| 0x06064BA8 | uint32_t  | Random Number Generator State       |                 |
+| 0x06064BC8 | int32_t   | Score                               |                 |
+| 0x06064BE1 | uint8_t   | DAS Counter                         | Can overflow(!) |
+| 0x06064BE4 | int32_t   | Total Time                          |                 |
+| 0x06064BE8 | int32_t   | Game Time                           |                 |
+| 0x06064BF5 | int8_t    | Block State                         |                 |
+| 0x06064BF6 | int16_t   | Current Block                       |                 |
+| 0x06064BF8 | int16_t   | Next Block                          |                 |
+| 0x06064BFC | int16_t   | Current Block X Position            |                 |
+| 0x06064C00 | int16_t   | Current Block Y Position            |                 |
+| 0x06064C02 | int8_t    | Gravity Left                        |                 |
+| 0x06064C04 | int8_t[4] | Block History                       |                 |
+| 0x06064C2A | int16_t   | RO Badge Score                      |                 |
+| 0x06064C2C | int16_t   | Number of Blocks Rotated            |                 |
+| 0x06064C2E | int16_t   | Current Block Rotation Count        |                 |
+| 0x06064C34 | int16_t   | Current Block Alive Time            |                 |
+
+- Extra:
+
+|    Address | Type    | Description                  | Notes |
+|------------+---------+------------------------------+-------|
+| 0x06064BFA | int8_t  | Current Block Rotation State |       |
+| 0x06064BBA | int16_t | Player 1 Level               |       |
+| 0x06064BEA | int16_t | Player 1 Timer               |       |
+| 0x06079378 | int8_t  | Internal Grade               |       |
+| 0x06079379 | int8_t  | Internal Grade Points        |       |
+| 0x06064BD0 | int8_t  | M-Roll Progress State        |       |
+| 0x06066845 | int8_t  | M-Roll Flag                  |       |
+| 0x06064C25 | int8_t  | Section Index                |       |
