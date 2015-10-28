@@ -88,3 +88,7 @@ All these addresses are for player 1. I still need to double check some of these
 | 0x06064BD0 | int8_t  | M-Roll Progress State        |       |
 | 0x06066845 | int8_t  | M-Roll Flag                  |       |
 | 0x06064C25 | int8_t  | Section Index                |       |
+
+** Index -> Block Mapping
+0 1 2 3 4 5 6
+I Z S J L O T
