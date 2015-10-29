@@ -7,7 +7,7 @@ ldflags = -lGL -lglfw -lm -lrt
 
 rule bootstrap
   command = python bootstrap.py --debug --cxx=clang
-  generator = 1
+ dme generator = 1
 rule compile
   command = $cxx -MMD -MF $out.d -c $cxxflags $in -o $out
   description = Compiling $in to $out
