@@ -29,16 +29,16 @@ TapToFumenMapping = [0, 0, 1, 4, 7, 6, 2, 3, 5]
 def fixCoordinates(block, rotation):
     """Given a fumen tetromino index and rotation state, output a tuple (x, y) that
     represents how far to offset TGM2+'s (x, y) location coordinate."""
-    if block == 0:
+    if block == 1:
         if rotation == 1 or rotation == 3:
             return (1, 0)
-    elif block == 3:
-        if rotation == 2:
-            return (0, -1)
-    elif block == 4:
-        if rotation == 2:
-            return (0, -1)
     elif block == 6:
+        if rotation == 2:
+            return (0, -1)
+    elif block == 2:
+        if rotation == 2:
+            return (0, -1)
+    elif block == 5:
         if rotation == 2:
             return (0, -1)
     return (0, 0)
@@ -59,7 +59,7 @@ def main():
         while True:
             prevState = state
             state = int(mm[0])
-            currentBlock = int(mm[8 * 4])
+            currentBlock = TapToFumenMapping[int(mm[8 * 4])]
             currentX = int(mm[10 * 4])
             currentY = int(mm[11 * 4])
             rotState = int(mm[12 * 4])
@@ -77,7 +77,7 @@ def main():
 
             # Set the current frame's tetromino + location
             frame.willlock = True
-            frame.piece.kind = TapToFumenMapping[currentBlock]
+            frame.piece.kind = currentBlock
             frame.piece.rot = rotState
             frame.piece.pos = 220 - currentY * 10 + currentX
 
@@ -88,6 +88,11 @@ def main():
 
             # If the game is over...
             if isInPlayingState(prevState) and not isInPlayingState(state):
+                # Lock the previous piece and place the killing piece. It's
+                # state is not set, so the above lock check will not be run.
+                frameList.append(frame.copy())
+                frame = frame.next()
+
                 fumenURL = fumen.make(frameList, 0)
                 print (fumenURL, '\n')
                 pyperclip.copy(fumenURL)
