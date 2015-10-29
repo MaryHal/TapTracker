@@ -25,3 +25,4 @@ obj/
 
 /bin/TapTracker
 /bin/fonttest3.png
+*.pyc
