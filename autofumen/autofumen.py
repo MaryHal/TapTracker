@@ -20,20 +20,18 @@ class TapState(Enum):
     Completion   = 13 # Blocks fading when completing the game
     Startup      = 71
 
-# 0 1 2 3 4 5 6
+# TGM2+ indexes its pieces slightly differently to fumen, so when encoding a
+# diagram we gotta convert the index.
+# 2 3 4 5 6 7 8
 # I Z S J L O T
-TapToFumenTranslation = [1, 4, 7, 6, 2, 3, 5]
-
-def isInPlayingState(state):
-    return state != TapState.NONE.value and state != TapState.Idle.value and state != TapState.Startup.value
+TapToFumenMapping = [0, 0, 1, 4, 7, 6, 2, 3, 5]
 
 def fixCoordinates(block, rotation):
+    """Given a fumen tetromino index and rotation state, output a tuple (x, y) that
+    represents how far to offset TGM2+'s (x, y) location coordinate."""
     if block == 0:
         if rotation == 1 or rotation == 3:
             return (1, 0)
-    # elif block == 1:
-    #     if rotation == 0 or rotation == 2:
-    #         return (0, 1)
     elif block == 3:
         if rotation == 2:
             return (0, -1)
@@ -44,6 +42,10 @@ def fixCoordinates(block, rotation):
         if rotation == 2:
             return (0, -1)
     return (0, 0)
+
+def isInPlayingState(state):
+    """Given the game's current state, determine whether or not we're in game."""
+    return state != TapState.NONE.value and state != TapState.Idle.value and state != TapState.Startup.value
 
 def main():
     with open("/dev/shm/tgm2p_data", "r+b") as f:
@@ -57,13 +59,13 @@ def main():
         while True:
             prevState = state
             state = int(mm[0])
-            currentBlock = int(mm[8 * 4]) - 2
+            currentBlock = int(mm[8 * 4])
             currentX = int(mm[10 * 4])
             currentY = int(mm[11 * 4])
             rotState = int(mm[12 * 4])
 
-            # Even inspecting the actual memory addresses, currentX underflows,
-            # so let's "fix" that.
+            # When inspecting the game's memory, I found that currentX
+            # underflows, so let's "fix" that.
             if currentX > 10:
                 currentX = -1
 
@@ -73,17 +75,18 @@ def main():
             currentX += offsetX
             currentY += offsetY
 
+            # Set the current frame's tetromino + location
             frame.willlock = True
-            frame.piece.kind = TapToFumenTranslation[currentBlock]
+            frame.piece.kind = TapToFumenMapping[currentBlock]
             frame.piece.rot = rotState
             frame.piece.pos = 220 - currentY * 10 + currentX
 
-            # If a piece is locked in
+            # If a piece is locked in...
             if isInPlayingState(state) and prevState == TapState.Active.value and state == TapState.Locking.value:
                 frameList.append(frame.copy())
                 frame = frame.next()
 
-            # Game is over
+            # If the game is over...
             if isInPlayingState(prevState) and not isInPlayingState(state):
                 fumenURL = fumen.make(frameList, 0)
                 print (fumenURL, '\n')
