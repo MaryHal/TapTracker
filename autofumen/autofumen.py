@@ -5,20 +5,33 @@ import mmap
 
 import pyperclip
 
-from enum import Enum
+def enum(**enums):
+    return type('Enum', (), enums)
 
-class TapState(Enum):
-    NONE         = 0
-    Start        = 1
-    Active       = 2
-    Locking      = 3  # Cannot be influenced anymore
-    Lineclear    = 4  # Tetromino is being locked to the playfield.
-    Entry        = 5
-    Gameover     = 7  # "Game Over" is being shown on screen.
-    Idle         = 10 # No game has started just waiting...
-    Fading       = 11 # Blocks fading away when topping out (losing).
-    Completion   = 13 # Blocks fading when completing the game
-    Startup      = 71
+TapState = enum(
+    NONE=0,
+    Start=1,
+    Active=2,
+    Locking=3,     # Cannot be influenced anymore
+    Lineclear=4,   # Tetromino is being locked to the playfield.
+    Entry=5,
+    Gameover=7,    # "Game Over" is being shown on screen.
+    Idle=10,       # No game has started just waiting...
+    Fading=11,     # Blocks fading away when topping out (losing).
+    Completion=13, # Blocks fading when completing the game
+    Startup=71
+)
+
+TapMRollFlags = enum(
+    M_FAIL_1   = 17,
+    M_FAIL_2   = 19,
+    M_FAIL_END = 31,
+
+    M_NEUTRAL  = 48,
+    M_PASS_1   = 49,
+    M_PASS_2   = 51,
+    M_SUCCESS  = 127,
+)
 
 # TGM2+ indexes its pieces slightly differently to fumen, so when encoding a
 # diagram we gotta convert the index.
@@ -45,7 +58,12 @@ def fixCoordinates(block, rotation):
 
 def isInPlayingState(state):
     """Given the game's current state, determine whether or not we're in game."""
-    return state != TapState.NONE.value and state != TapState.Idle.value and state != TapState.Startup.value
+    return state != TapState.NONE and state != TapState.Idle and state != TapState.Startup
+
+def testMasterConditions(flags):
+    """Given TGM2+'s M-Roll flags, return true if all the requirements so far have
+been met. If any condition has failed, return false."""
+    return flags == M_NEUTRAL or flags == M_PASS_1 or flags == M_PASS_2 or flags == M_SUCCESS
 
 def main():
     with open("/dev/shm/tgm2p_data", "r+b") as f:
@@ -55,10 +73,14 @@ def main():
         frameList = []
         frame = fumen.Frame()
 
+        prevInCreditRoll = inCreditRoll = 0
         prevState = state = 0
         while True:
             prevState = state
             state = int(mm[0])
+            prevInCreditRoll = inCreditRoll
+            inCreditRoll = int(mm[6 * 4])
+            mrollFlags = int(mm[5 * 4])
             currentBlock = TapToFumenMapping[int(mm[8 * 4])]
             currentX = int(mm[10 * 4])
             currentY = int(mm[11 * 4])
@@ -81,8 +103,15 @@ def main():
             frame.piece.rot = rotState
             frame.piece.pos = 220 - currentY * 10 + currentX
 
+
+            # If we've entered the M-Roll, clear the field. This doesn't test
+            # for a specific mode yet, only if the M-Roll conditions have been
+            # met.
+            if not prevInCreditRoll and inCreditRoll and testMasterConditions(mrollFlags):
+                frame.field = []
+
             # If a piece is locked in...
-            if isInPlayingState(state) and prevState == TapState.Active.value and state == TapState.Locking.value:
+            if isInPlayingState(state) and prevState == TapState.Active and state == TapState.Locking:
                 frameList.append(frame.copy())
                 frame = frame.next()
 
