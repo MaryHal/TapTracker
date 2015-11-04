@@ -63,7 +63,7 @@ def isInPlayingState(state):
 def testMasterConditions(flags):
     """Given TGM2+'s M-Roll flags, return true if all the requirements so far have
 been met. If any condition has failed, return false."""
-    return flags == M_NEUTRAL or flags == M_PASS_1 or flags == M_PASS_2 or flags == M_SUCCESS
+    return flags == TapMRollFlags.M_NEUTRAL or flags == TapMRollFlags.M_PASS_1 or flags == TapMRollFlags.M_PASS_2 or flags == TapMRollFlags.M_SUCCESS
 
 def main():
     with open("/dev/shm/tgm2p_data", "r+b") as f:
@@ -73,14 +73,14 @@ def main():
         frameList = []
         frame = fumen.Frame()
 
-        prevInCreditRoll = inCreditRoll = 0
+        creditReset = False
+
         prevState = state = 0
         while True:
             prevState = state
             state = int(mm[0])
-            prevInCreditRoll = inCreditRoll
+            # mrollFlags = int(mm[5 * 4])
             inCreditRoll = int(mm[6 * 4])
-            mrollFlags = int(mm[5 * 4])
             currentBlock = TapToFumenMapping[int(mm[8 * 4])]
             currentX = int(mm[10 * 4])
             currentY = int(mm[11 * 4])
@@ -94,21 +94,21 @@ def main():
             # Coordinates from TAP do not perfectly align with fumen's
             # coordinates.
             offsetX, offsetY = fixCoordinates(currentBlock, rotState)
-            currentX += offsetX
-            currentY += offsetY
 
             # Set the current frame's tetromino + location
             frame.willlock = True
             frame.piece.kind = currentBlock
             frame.piece.rot = rotState
-            frame.piece.pos = 220 - currentY * 10 + currentX
-
+            frame.piece.pos = 220 - (currentX + offsetX) * 10 + (currentY + offsetY)
 
             # If we've entered the M-Roll, clear the field. This doesn't test
             # for a specific mode yet, only if the M-Roll conditions have been
             # met.
-            if not prevInCreditRoll and inCreditRoll and testMasterConditions(mrollFlags):
-                frame.field = []
+            if not creditReset and inCreditRoll:
+                frameList.append(frame.copy())
+                frame = frame.next()
+                frame = fumen.Frame()
+                creditReset = True
 
             # If a piece is locked in...
             if isInPlayingState(state) and prevState == TapState.Active and state == TapState.Locking:
@@ -116,7 +116,7 @@ def main():
                 frame = frame.next()
 
             # If the game is over...
-            if isInPlayingState(prevState) and not isInPlayingState(state):
+            if prevState != TapState.Gameover and state == TapState.Gameover:
                 # Lock the previous piece and place the killing piece. It's
                 # state is not set, so the above lock check will not be run.
                 frameList.append(frame.copy())
@@ -128,6 +128,7 @@ def main():
 
                 frameList = []
                 frame = fumen.Frame()
+                creditReset = False
 
 if __name__ == '__main__':
     main()
