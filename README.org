@@ -1,4 +1,14 @@
 * TapTracker
+** Table of Contents
+- [[#about][About]]
+- [[#building-taptracker][Building TapTracker]]
+- [[#running-taptracker][Running TapTracker]]
+- [[#screenshots][Screenshots]]
+- [[#to-do-list][To-do List]]
+- [[#appendix][Appendix]]
+  - [[#useful-ram-addresses][Useful RAM Addresses]]
+  - [[#block-indices][Block Indices]]
+** About
 This project aims to log various game data (and inputs) during a game of [[https://en.wikipedia.org/wiki/Tetris:_The_Grand_Master][Tetris: The Grandmaster 2 Plus]] (TGM2p/TGM2+/TAP) when run in an emulator ([[http://mamedev.org/][MAME]]). TapTracker runs alongside the emulator and performs its logging in real-time. This is linux-only for now.
 
 [[https://github.com/sanford1/BlockTracker][BlockTracker]] was my first attempt at this. It was done by interacting with [[https://github.com/scanmem/scanmem][scanmem]] as a child process. Ultimately, this meant every time I started up the game, I had to probe for the memory address holding level data (not unlike someone using [[http://www.cheatengine.org/][cheat-engine]]) then pass the proper memory addresses to BlockTracker. Along the way I wrote quite possibly the worst code I've ever written. Despite being such a small program, it wasn't too pleasant for me to look at and maintain. (There's one upside though: this method was game-agnostic; I could probe any TGM-style game for level data).
@@ -8,7 +18,6 @@ In contrast, TapTracker takes a more direct route by modifying a version of MAME
 The patch uses debug functions in MAME, so debug functionality must be enabled with =-debug= or the =-c= switch (enables the cheat engine).
 
 Another patch (=patch/src/mame/drivers/psikyosh.c.diff=) will modify TGM2+'s framerate to the correct ~61.681 hz. The file to-be-patched is at $MAME/src/mame/drivers/psikyosh.c.
-
 ** Building TapTracker
 
 After cloning this repository, retrieve all the submodules:
@@ -50,7 +59,8 @@ Newer versions of TapTracker include a section table that logs section timings a
 - Player 2 support :: Log stats for Player 2 too.
 - Diagram Generation :: Create a [[http://fumen.zui.jp/][Fumen]] diagram during play. A prototype (written in Python) can be found in the =autofumen= directory.
 
-** Useful RAM addresses
+** Appendix
+*** Useful RAM Addresses
 
 All these addresses are for player 1. I still need to double check some of these.
 
@@ -89,7 +99,7 @@ All these addresses are for player 1. I still need to double check some of these
 | 0x06066845 | int8_t  | M-Roll Flag                  |       |
 | 0x06064C25 | int8_t  | Section Index                |       |
 
-** Index -> Block Mapping
+*** Block Indices
 
 | Index | Block |
 |-------+-------|
