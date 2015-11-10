@@ -114,13 +114,24 @@ void pushCurrentState(struct game_t* game)
 
     struct section_t* section = &game->sections[game->currentSection];
 
-    // If we're at the end of the game, don't do anything.
+    // Special case for when we're at the end of the game (level 999). The
+    // in-game timer seems to reset back to 00:00:00 on the same exact frame
+    // that level 999 is reached. So when we're adding our data point, we must
+    // use the previous frame's timer value.
     if (game->level >= LEVEL_MAX)
     {
         if (section->endTime == 0)
         {
-            section->endTime = game->time;
+            section->endTime = game->prevTime;
         }
+
+        int tempTime = game->time;
+        game->time = game->prevTime;
+
+        addDataPointToSection(game, section);
+
+        // For consistency, restore original time value.
+        game->time = tempTime;
 
         return;
     }
