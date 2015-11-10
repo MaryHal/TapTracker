@@ -232,7 +232,7 @@ void drawSectionTable(struct game_t* game, struct font_t* font,
 
         // Calculate how long this section took / is taking.
         float sectionTime = 0.0f;
-        if (game->level >= (i + 1) * SECTION_LENGTH || game->level == LEVEL_MAX)
+        if (game->level >= (i + 1) * SECTION_LENGTH || game->level >= LEVEL_MAX)
         {
             sectionTime = frameTimeToSeconds(section->endTime - section->startTime);
         }
