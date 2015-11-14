@@ -25,7 +25,7 @@ class Frame:
                 # colors of blocks (0=black, ..., 8=gray)
                 # extra rows at top and bottom of playfield
                 self.field = [0 for i in range(220)]
-                
+
                 self.willlock = False
                 self.rise = False
                 self.mirror = False
