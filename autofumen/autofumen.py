@@ -79,6 +79,7 @@ def main():
         while True:
             prevState = state
             state = int(mm[0])
+            level = int(mm[1 * 4])
             # mrollFlags = int(mm[5 * 4])
             inCreditRoll = int(mm[6 * 4])
             currentBlock = TapToFumenMapping[int(mm[8 * 4])]
@@ -99,7 +100,7 @@ def main():
             frame.willlock = True
             frame.piece.kind = currentBlock
             frame.piece.rot = rotState
-            frame.piece.pos = 220 - (currentX + offsetX) * 10 + (currentY + offsetY)
+            frame.piece.pos = 220 - (currentY + offsetY) * 10 + (currentX + offsetX)
 
             # If we've entered the M-Roll, clear the field. This doesn't test
             # for a specific mode yet, only if the M-Roll conditions have been
@@ -112,6 +113,7 @@ def main():
 
             # If a piece is locked in...
             if isInPlayingState(state) and prevState == TapState.Active and state == TapState.Locking:
+                # print (currentBlock, rotState, currentX, currentY, frame.piece.pos)
                 frameList.append(frame.copy())
                 frame = frame.next()
 
@@ -123,7 +125,7 @@ def main():
                 frame = frame.next()
 
                 fumenURL = fumen.make(frameList, 0)
-                print (fumenURL, '\n')
+                print (level, fumenURL, '\n')
                 pyperclip.copy(fumenURL)
 
                 frameList = []
