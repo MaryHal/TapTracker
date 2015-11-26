@@ -4,6 +4,7 @@ import fumen
 import mmap
 
 import struct
+import time
 
 import pyperclip
 
@@ -136,6 +137,8 @@ def main():
                 frameList = []
                 frame = fumen.Frame()
                 creditReset = False
+
+            time.sleep(0.01)
 
 if __name__ == '__main__':
     main()
