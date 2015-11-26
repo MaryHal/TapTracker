@@ -1,4 +1,8 @@
-#author: raincomplex
+# original author: raincomplex
+
+from __future__ import print_function
+import sys
+
 import math
 import pyperclip
 
@@ -38,7 +42,11 @@ class Frame:
         def lock(self):
                 if self.piece.kind != 0:
                         for j in range(4):
-                                self.field[self.piece.pos + piecedata[self.piece.kind * 32 + self.piece.rot * 8 + j * 2 + 1] * 10 + piecedata[self.piece.kind * 32 + self.piece.rot * 8 + j * 2] - 11] = self.piece.kind
+                                # Check if the field blocks we're writing to are empty or not
+                                if self.field[self.piece.getFieldCoordinate(j)]:
+                                        print("Warning: Overlapping blocks in playfield!", file=sys.stderr)
+
+                                self.field[self.piece.getFieldCoordinate(j)] = self.piece.kind
                         self.piece = Piece()
 
         def copy(self):
@@ -74,6 +82,11 @@ class Piece:
                 p.rot = self.rot
                 p.pos = self.pos
                 return p
+
+        def getFieldCoordinate(self, segmentIndex):
+                """Given a segmentIndex [0, 4], output the field coordinate of an individual
+                square in this piece."""
+                return self.pos + piecedata[self.kind * 32 + self.rot * 8 + segmentIndex * 2 + 1] * 10 + piecedata[self.kind * 32 + self.rot * 8 + segmentIndex * 2] - 11
 
 def write(data, n, *args):
         val = 0
