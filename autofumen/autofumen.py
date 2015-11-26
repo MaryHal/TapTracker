@@ -3,6 +3,8 @@
 import fumen
 import mmap
 
+import struct
+
 import pyperclip
 
 def enum(**enums):
@@ -65,6 +67,9 @@ def testMasterConditions(flags):
 been met. If any condition has failed, return false."""
     return flags == TapMRollFlags.M_NEUTRAL or flags == TapMRollFlags.M_PASS_1 or flags == TapMRollFlags.M_PASS_2 or flags == TapMRollFlags.M_SUCCESS
 
+def unpack_mmap_block(mm, word_index):
+    return struct.unpack("<L", mm[word_index*4:(word_index+1)*4])[0]
+
 def main():
     with open("/dev/shm/tgm2p_data", "r+b") as f:
         vSize = 4 * 13
@@ -78,17 +83,17 @@ def main():
         prevState = state = 0
         while True:
             prevState = state
-            state = int(mm[0])
-            level = int(mm[1 * 4])
-            # mrollFlags = int(mm[5 * 4])
-            inCreditRoll = int(mm[6 * 4])
-            currentBlock = TapToFumenMapping[int(mm[8 * 4])]
-            currentX = int(mm[10 * 4])
-            currentY = int(mm[11 * 4])
-            rotState = int(mm[12 * 4])
+            state = unpack_mmap_block(mm, 0)
+            level = unpack_mmap_block(mm, 1)
+            # mrollFlags = unpack_mmap_block(mm, 5)
+            inCreditRoll = unpack_mmap_block(mm, 6)
+            currentBlock = TapToFumenMapping[unpack_mmap_block(mm, 8)]
+            currentX = unpack_mmap_block(mm, 10)
+            currentY = unpack_mmap_block(mm, 11)
+            rotState = unpack_mmap_block(mm, 12)
 
             # When inspecting the game's memory, I found that currentX
-            # underflows, so let's "fix" that.
+            # underflows for the I tetromino, so let's "fix" that.
             if currentX > 10:
                 currentX = -1
 
@@ -113,7 +118,7 @@ def main():
 
             # If a piece is locked in...
             if isInPlayingState(state) and prevState == TapState.Active and state == TapState.Locking:
-                # print (currentBlock, rotState, currentX, currentY, frame.piece.pos)
+                print (currentBlock, rotState, currentX, currentY, frame.piece.pos)
                 frameList.append(frame.copy())
                 frame = frame.next()
 
