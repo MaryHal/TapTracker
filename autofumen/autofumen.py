@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
+
 import fumen
 import mmap
 
@@ -38,8 +40,9 @@ TapMRollFlags = enum(
 
 # TGM2+ indexes its pieces slightly differently to fumen, so when encoding a
 # diagram we gotta convert the index.
-# 2 3 4 5 6 7 8
+# 2 3 4 5 6 7 8 (TAP)
 # I Z S J L O T
+# 1 4 7 6 2 3 5 (Fumen)
 TapToFumenMapping = [0, 0, 1, 4, 7, 6, 2, 3, 5]
 
 def fixCoordinates(block, rotation):
