@@ -118,12 +118,12 @@ def main():
 
             # If a piece is locked in...
             if isInPlayingState(state) and prevState == TapState.Active and state == TapState.Locking:
-                print (currentBlock, rotState, currentX, currentY, frame.piece.pos)
+                # print (currentBlock, rotState, currentX, currentY, frame.piece.pos)
                 frameList.append(frame.copy())
                 frame = frame.next()
 
             # If the game is over...
-            if prevState != TapState.Gameover and state == TapState.Gameover:
+            if isInPlayingState(prevState) and not isInPlayingState(state):
                 # Lock the previous piece and place the killing piece. It's
                 # state is not set, so the above lock check will not be run.
                 frameList.append(frame.copy())
