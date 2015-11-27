@@ -83,6 +83,9 @@ class Piece:
                 p.pos = self.pos
                 return p
 
+        def setPosition(self, x, y):
+                self.pos = 220 - y * 10 + x
+
         def getFieldCoordinate(self, segmentIndex):
                 """Given a segmentIndex [0, 4], output the field coordinate of an individual
                 square in this piece."""
