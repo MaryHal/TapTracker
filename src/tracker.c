@@ -15,7 +15,7 @@
 
 #include <GLFW/glfw3.h>
 
-bool runTracker(int* dataPtr, unsigned int width, unsigned int height)
+bool runTracker(int32_t* dataPtr, unsigned int width, unsigned int height)
 {
     if (!glfwInit())
     {
