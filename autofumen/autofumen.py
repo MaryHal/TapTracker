@@ -45,7 +45,7 @@ TapMRollFlags = enum(
 # 1 4 7 6 2 3 5 (Fumen)
 TapToFumenMapping = [0, 0, 1, 4, 7, 6, 2, 3, 5]
 
-def fixCoordinates(block, rotation):
+def calculateFumenOffset(block, rotation):
     """Given a fumen tetromino index and rotation state, output a tuple (x, y) that
     represents how far to offset TGM2+'s (x, y) location coordinate."""
     if block == 1:
@@ -62,7 +62,7 @@ def fixCoordinates(block, rotation):
             return (0, -1)
     return (0, 0)
 
-def isInPlayingState(state):
+def inPlayingState(state):
     """Given the game's current state, determine whether or not we're in game."""
     return state != TapState.NONE and state != TapState.Idle and state != TapState.Startup
 
@@ -71,8 +71,9 @@ def testMasterConditions(flags):
 been met. If any condition has failed, return false."""
     return flags == TapMRollFlags.M_NEUTRAL or flags == TapMRollFlags.M_PASS_1 or flags == TapMRollFlags.M_PASS_2 or flags == TapMRollFlags.M_SUCCESS
 
-def unpack_mmap_block(mm, word_index):
-    return struct.unpack("<L", mm[word_index*4:(word_index+1)*4])[0]
+def unpack_mmap_block(mm, n):
+    """Decode the nth 4-byte long byte string from mapped memory."""
+    return struct.unpack("<L", mm[n*4:(n+1)*4])[0]
 
 def main():
     with open("/dev/shm/tgm2p_data", "r+b") as f:
@@ -88,6 +89,8 @@ def main():
         prevLevel = level = 0
         prevGametime = gametime = 0
         while True:
+            # We want to detect /changes/ in game state, so we should keep track
+            # of the previous game state...
             prevState = state
 
             # At the end of a game, we'll be clearing level and time data, we
@@ -112,7 +115,7 @@ def main():
 
             # Coordinates from TAP do not perfectly align with fumen's
             # coordinates.
-            offsetX, offsetY = fixCoordinates(currentBlock, rotState)
+            offsetX, offsetY = calculateFumenOffset(currentBlock, rotState)
 
             # Set the current frame's tetromino + location
             frame.willlock = True
@@ -130,13 +133,13 @@ def main():
                 creditReset = True
 
             # If a piece is locked in...
-            if isInPlayingState(state) and prevState == TapState.Active and state == TapState.Locking:
+            if inPlayingState(state) and prevState == TapState.Active and state == TapState.Locking:
                 # print (currentBlock, rotState, currentX, currentY, frame.piece.pos)
                 frameList.append(frame.copy())
                 frame = frame.next()
 
             # If the game is over...
-            if isInPlayingState(prevState) and not isInPlayingState(state):
+            if inPlayingState(prevState) and not inPlayingState(state):
                 # Lock the previous piece and place the killing piece. It's
                 # state is not set, so the above lock check will not be run.
                 frameList.append(frame.copy())
