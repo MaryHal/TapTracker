@@ -38,6 +38,8 @@ TapMRollFlags = enum(
     M_SUCCESS  = 127,
 )
 
+DATA_BLOCK_SIZE = 4
+
 # TGM2+ indexes its pieces slightly differently to fumen, so when encoding a
 # diagram we gotta convert the index.
 # 2 3 4 5 6 7 8 (TAP)
@@ -73,11 +75,11 @@ been met. If any condition has failed, return false."""
 
 def unpack_mmap_block(mm, n):
     """Decode the nth 4-byte long byte string from mapped memory."""
-    return struct.unpack("<L", mm[n*4:(n+1)*4])[0]
+    return struct.unpack("<L", mm[n*DATA_BLOCK_SIZE:(n+1)*DATA_BLOCK_SIZE])[0]
 
 def main():
     with open("/dev/shm/tgm2p_data", "r+b") as f:
-        vSize = 4 * 13
+        vSize = DATA_BLOCK_SIZE * 13
         mm = mmap.mmap(f.fileno(), vSize)
 
         frameList = []
@@ -121,7 +123,7 @@ def main():
             frame.willlock = True
             frame.piece.kind = currentBlock
             frame.piece.rot = rotState
-            frame.piece.pos = 220 - (currentY + offsetY) * 10 + (currentX + offsetX)
+            frame.piece.setPosition(currentX + offsetX, currentY + offsetY)
 
             # If we've entered the M-Roll, clear the field. This doesn't test
             # for a specific mode yet, only if the M-Roll conditions have been
@@ -134,7 +136,6 @@ def main():
 
             # If a piece is locked in...
             if inPlayingState(state) and prevState == TapState.Active and state == TapState.Locking:
-                # print (currentBlock, rotState, currentX, currentY, frame.piece.pos)
                 frameList.append(frame.copy())
                 frame = frame.next()
 
@@ -154,7 +155,6 @@ def main():
                 creditReset = False
 
             time.sleep(0.01)
-
         mm.close()
 
 if __name__ == '__main__':
