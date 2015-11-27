@@ -1,5 +1,5 @@
 diff --git a/cpuexec_old.c b/cpuexec.c
-index e2eea6d..9625031 100644
+index e2eea6d..7c66a4f 100644
 --- a/cpuexec_old.c
 +++ b/cpuexec.c
 @@ -12,6 +12,7 @@
@@ -10,7 +10,7 @@ index e2eea6d..9625031 100644
  
  void poll_if_necessary(running_machine *machine);
  void frame_update_callback(running_machine *machine);
-@@ -252,6 +253,25 @@ void cpuexec_init(running_machine *machine)
+@@ -252,6 +253,27 @@ void cpuexec_init(running_machine *machine)
      single timeslice
  -------------------------------------------------*/
  
@@ -20,10 +20,12 @@ index e2eea6d..9625031 100644
 +#include <fcntl.h>
 +#include <unistd.h>
 +
++#include <stdint.h>
++
 +const char* sharedMemKey = "tgm2p_data";
 +int fd = 0;
-+const size_t vSize = sizeof(int) * 13;
-+int* addr = NULL;
++const size_t vSize = sizeof(int32_t) * 13;
++int32_t* addr = NULL;
 +
 +void cleanupSharedMem()
 +{
@@ -36,7 +38,7 @@ index e2eea6d..9625031 100644
  void cpuexec_timeslice(running_machine *machine)
  {
  	int call_debugger = ((machine->debug_flags & DEBUG_FLAG_ENABLED) != 0);
-@@ -259,6 +279,63 @@ void cpuexec_timeslice(running_machine *machine)
+@@ -259,6 +281,63 @@ void cpuexec_timeslice(running_machine *machine)
  	cpuexec_private *global = machine->cpuexec_data;
  	int ran;
  
@@ -61,7 +63,7 @@ index e2eea6d..9625031 100644
 +                        perror("Could not write the final byte in file");
 +                    }
 +
-+                    addr = (int*)mmap(NULL, vSize, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
++                    addr = (int32_t*)mmap(NULL, vSize, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 +                    if (addr == MAP_FAILED)
 +                    {
 +                        perror("Could not map memory");
@@ -100,7 +102,7 @@ index e2eea6d..9625031 100644
  	/* build the execution list if we don't have one yet */
  	if (global->executelist == NULL)
  		rebuild_execute_list(machine);
-@@ -328,7 +405,7 @@ void cpuexec_timeslice(running_machine *machine)
+@@ -328,7 +407,7 @@ void cpuexec_timeslice(running_machine *machine)
  						classdata->cycles_stolen = 0;
  						global->executingcpu = classdata->device;
  						*classdata->icount = classdata->cycles_running;
