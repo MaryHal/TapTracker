@@ -85,10 +85,19 @@ def main():
         creditReset = False
 
         prevState = state = 0
+        prevLevel = level = 0
+        prevGametime = gametime = 0
         while True:
             prevState = state
+
+            # At the end of a game, we'll be clearing level and time data, we
+            # should store a copy of it for output.
+            prevLevel = level
+            prevGametime = gametime
+
             state = unpack_mmap_block(mm, 0)
             level = unpack_mmap_block(mm, 1)
+            gametime = unpack_mmap_block(mm, 2)
             # mrollFlags = unpack_mmap_block(mm, 5)
             inCreditRoll = unpack_mmap_block(mm, 6)
             currentBlock = TapToFumenMapping[unpack_mmap_block(mm, 8)]
@@ -134,7 +143,7 @@ def main():
                 frame = frame.next()
 
                 fumenURL = fumen.make(frameList, 0)
-                print (level, fumenURL, '\n')
+                print("level %03d @ %02d:%02d\n%s\n" % (prevLevel, prevGametime / 60 / 60, prevGametime / 60 % 60, fumenURL))
                 pyperclip.copy(fumenURL)
 
                 frameList = []
@@ -142,6 +151,8 @@ def main():
                 creditReset = False
 
             time.sleep(0.01)
+
+        mm.close()
 
 if __name__ == '__main__':
     main()
