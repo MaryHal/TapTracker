@@ -51,7 +51,7 @@ void resetGame(struct game_t* game)
 {
     memset(game, 0, sizeof(struct game_t));
 
-    resetHistory(&game->inputHistory);
+    /* resetHistory(&game->inputHistory); */
 
     // Push an initial (blank) data point from the game's initial state.
     pushCurrentState(game);

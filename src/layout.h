@@ -6,8 +6,12 @@
 
 #define MAX_LAYOUT_ELEMENTS 4
 
+
 struct game_t;
 struct font_t;
+
+typedef void (*draw_function_p)(struct game_t* game, struct font_t* font, float width, float height, void* param);
+
 struct layout_element_t
 {
         float x;
@@ -15,7 +19,7 @@ struct layout_element_t
         float width;
         float height;
 
-        void (*drawFunc)(struct game_t* game, struct font_t* font, float width, float height, void* param);
+        draw_function_p drawFunc;
 };
 
 // Vertical only for now
@@ -36,14 +40,15 @@ struct layout_container_t* createLayoutContainer(struct layout_container_t* c,
 void destroyContainer(struct layout_container_t* c, bool freeMe);
 
 // Add a draw function to the layout and make sure it fills (ratio)% of the remaining area.
-void addToContainerRatio(struct layout_container_t* container,
-                         void (*drawFunc)(struct game_t* game, struct font_t* font, float width, float height, void* param),
+void addToContainerRatio(struct layout_container_t* container, draw_function_p drawFunc,
                          float ratio);
 
-void addToContainerFixed(struct layout_container_t* container,
-                         void (*drawFunc)(struct game_t* game, struct font_t* font, float width, float height, void* param),
+// Add a draw function to the layout and ensure it's pixelHeight pixels tall.
+void addToContainerFixed(struct layout_container_t* container, draw_function_p drawFunc,
                          float pixelHeight);
 
-void drawLayout(struct layout_container_t* container, struct game_t* game, struct font_t* font, void* param);
+// Draw our layout container. If the debug flag is checked, this function will
+// also draw borders for layout element.
+void drawLayout(struct layout_container_t* container, struct game_t* game, struct font_t* font, void* param, bool debug);
 
 #endif /* LAYOUT_H */

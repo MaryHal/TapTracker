@@ -9,8 +9,6 @@
 
 #include "layout.h"
 
-#include <sys/wait.h>
-
 #include <stdio.h>
 
 #include <GLFW/glfw3.h>
@@ -72,13 +70,13 @@ bool runTracker(int32_t* dataPtr, unsigned int width, unsigned int height)
             scaleIndex++;
         }
 
-        /* // Update input history */
-        /* pushCharFromJoystick(&game.inputHistory, &joystick); */
+        // Update input history
+        pushCharFromJoystick(&game->inputHistory, joystick);
 
         setGLClearColor();
         glClear(GL_COLOR_BUFFER_BIT);
 
-        drawLayout(layout, game, font, &scales[scaleIndex % SCALE_COUNT]);
+        drawLayout(layout, game, font, &scales[scaleIndex % SCALE_COUNT], true);
 
         glfwSwapBuffers(window);
     }
