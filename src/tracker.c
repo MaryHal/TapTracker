@@ -41,7 +41,9 @@ bool runTracker(int32_t* dataPtr, unsigned int width, unsigned int height)
 
     setupOpenGL(width, height);
 
-    /* loadTTF(&font, "/usr/share/fonts/TTF/PP821/PragmataPro.ttf", 13.0f); */
+    /* struct font_t* font = loadTTF(NULL, "/usr/share/fonts/TTF/PP821/PragmataPro.ttf", 13.0f); */
+    /* exportBitmap("PP.png", font); */
+    /* exportFontData("PP.bin", font); */
     struct font_t* font = loadBitmapFont(NULL, "PP.png", "PP.bin");
 
     struct joystick_t* joystick = createJoystick(NULL, GLFW_JOYSTICK_1);
@@ -76,7 +78,7 @@ bool runTracker(int32_t* dataPtr, unsigned int width, unsigned int height)
         setGLClearColor();
         glClear(GL_COLOR_BUFFER_BIT);
 
-        drawLayout(layout, game, font, &scales[scaleIndex % SCALE_COUNT], true);
+        drawLayout(layout, game, font, &scales[scaleIndex % SCALE_COUNT], false);
 
         glfwSwapBuffers(window);
     }
