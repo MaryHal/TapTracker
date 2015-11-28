@@ -4,6 +4,14 @@
 #include <string.h>
 #include <assert.h>
 
+const char* DISPLAYED_GRADE[GRADE_COUNT] =
+{
+    "9", "8", "7", "6", "5", "4-", "4+", "3-", "3+", "2-", "2", "2+", "1-",
+    "1", "1+", "S1-", "S1", "S1+", "S2", "S3", "S4-", "S4", "S4+", "S5-",
+    "S5+", "S6-", "S6+", "S7-", "S7+", "S8-", "S8+", "S9"
+};
+
+
 float frameTimeToSeconds(int frames)
 {
     return frames / TIMER_FPS;
@@ -60,7 +68,7 @@ bool isInPlayingState(tap_state state)
     return state != TAP_NONE && state != TAP_IDLE && state != TAP_STARTUP;
 }
 
-void updateGameState(struct game_t* game, int* dataPtr)
+void updateGameState(struct game_t* game, int32_t* dataPtr)
 {
     game->prevState = game->state;
     game->prevLevel = game->level;
@@ -145,6 +153,8 @@ void pushCurrentState(struct game_t* game)
         // Section advance!
         game->currentSection++;
         section = &game->sections[game->currentSection];
+
+        assert(game->currentSection >= 0 && game->currentSection < SECTION_COUNT);
     }
 
     addDataPointToSection(game, section);
@@ -152,7 +162,7 @@ void pushCurrentState(struct game_t* game)
 
 void addDataPointToSection(struct game_t* game, struct section_t* section)
 {
-    assert(section->size < SECTION_MAX);
+    assert(section->size < SECTION_MAX - 1);
 
     // Section just began
     if (section->size == 0)
@@ -167,6 +177,8 @@ void addDataPointToSection(struct game_t* game, struct section_t* section)
     {
         // Only push the data point if level has been incremented.
         int levelDifference = levelDifference = game->level - section->data[section->size - 1].level;
+
+        /* printf("%zu %d %d\n", section->size, section->data[section->size - 1].level, levelDifference); */
 
         if (levelDifference > 0)
         {
