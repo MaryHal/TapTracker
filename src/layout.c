@@ -1,6 +1,7 @@
 #include "layout.h"
 
 #include <stdlib.h>
+#include <assert.h>
 
 #include <GLFW/glfw3.h>
 
@@ -19,6 +20,8 @@ struct layout_container_t* createLayoutContainer(struct layout_container_t* c,
     c->leftoverWidth = width - 2 * outerMargin;
     c->leftoverHeight = height - 2 * outerMargin;
 
+    c->size = 0;
+
     return c;
 }
 
@@ -32,6 +35,8 @@ void addToContainerRatio(struct layout_container_t* container,
                          void (*drawFunc)(struct game_t* game, struct font_t* font, float width, float height, void* param),
                          float ratio)
 {
+    assert(container != NULL);
+
     addToContainerFixed(container, drawFunc, container->leftoverHeight * ratio);
 }
 
@@ -39,6 +44,8 @@ void addToContainerFixed(struct layout_container_t* container,
                          void (*drawFunc)(struct game_t* game, struct font_t* font, float width, float height, void* param),
                          float pixelHeight)
 {
+    assert(container != NULL && container->size < MAX_LAYOUT_ELEMENTS);
+
     struct layout_element_t* prevElement = container->size > 0 ? &container->elements[container->size - 1] : NULL;
 
     container->elements[container->size] =
