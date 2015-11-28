@@ -95,6 +95,15 @@ void drawSectionGraph(struct game_t* game, struct font_t* font,
 
                 if (levelDifference > 0)
                 {
+                    // Since we color our line based on how many levels we
+                    // advance, if for some reason we jump a huge amount of
+                    // levels, grabbing a color from our color array will result
+                    // in an index out of bounds error.
+                    if (levelDifference > 4)
+                    {
+                        levelDifference = 4;
+                    }
+
                     setGLColor(levelDifference - 1, sectionAlpha);
                 }
                 else
