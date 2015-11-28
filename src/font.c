@@ -284,6 +284,15 @@ void destroyFont(struct font_t* font, bool freeFont)
 {
     glDeleteTextures(1, &font->texture);
 
+    struct chardata_t* current_cdata = NULL;
+    struct chardata_t* tmp = NULL;
+
+    HASH_ITER(hh, dataHash, current_cdata, tmp)
+    {
+        HASH_DEL(dataHash, current_cdata);
+        free(current_cdata);
+    }
+
     if (freeFont)
         free(font);
 }
