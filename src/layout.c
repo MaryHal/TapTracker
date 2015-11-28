@@ -31,8 +31,7 @@ void destroyContainer(struct layout_container_t* c, bool freeMe)
         free(c);
 }
 
-void addToContainerRatio(struct layout_container_t* container,
-                         void (*drawFunc)(struct game_t* game, struct font_t* font, float width, float height, void* param),
+void addToContainerRatio(struct layout_container_t* container, draw_function_p drawFunc,
                          float ratio)
 {
     assert(container != NULL);
@@ -40,8 +39,7 @@ void addToContainerRatio(struct layout_container_t* container,
     addToContainerFixed(container, drawFunc, container->leftoverHeight * ratio);
 }
 
-void addToContainerFixed(struct layout_container_t* container,
-                         void (*drawFunc)(struct game_t* game, struct font_t* font, float width, float height, void* param),
+void addToContainerFixed(struct layout_container_t* container, draw_function_p drawFunc,
                          float pixelHeight)
 {
     assert(container != NULL && container->size < MAX_LAYOUT_ELEMENTS);
@@ -63,7 +61,7 @@ void addToContainerFixed(struct layout_container_t* container,
     container->size++;
 }
 
-void drawLayout(struct layout_container_t* container, struct game_t* game, struct font_t* font, void* param)
+void drawLayout(struct layout_container_t* container, struct game_t* game, struct font_t* font, void* param, bool debug)
 {
     glPushMatrix();
     glTranslatef(container->outerMargin, container->outerMargin, 0.0f);
@@ -82,31 +80,37 @@ void drawLayout(struct layout_container_t* container, struct game_t* game, struc
         {
             e->drawFunc(game, font, adjustedWidth, adjustedHeight, param);
 
-            /* glColor4f(0.0f, 0.0f, 1.0f, 1.0f); */
-            /* glBegin(GL_LINE_LOOP); */
-            /* { */
-            /*     glVertex2f(0.0f, 0.0f); */
-            /*     glVertex2f(adjustedWidth, 0.0f); */
-            /*     glVertex2f(adjustedWidth, adjustedHeight); */
-            /*     glVertex2f(0.0f, adjustedHeight); */
-            /* } */
-            /* glEnd(); */
+            if (debug)
+            {
+                glColor4f(0.0f, 0.0f, 1.0f, 1.0f);
+                glBegin(GL_LINE_LOOP);
+                {
+                    glVertex2f(0.0f, 0.0f);
+                    glVertex2f(adjustedWidth, 0.0f);
+                    glVertex2f(adjustedWidth, adjustedHeight);
+                    glVertex2f(0.0f, adjustedHeight);
+                }
+                glEnd();
+            }
         }
         glPopMatrix();
 
-        /* glPushMatrix(); */
-        /* { */
-        /*     glColor4f(1.0f, 0.0f, 0.0f, 1.0f); */
-        /*     glBegin(GL_LINE_LOOP); */
-        /*     { */
-        /*         glVertex2f(e->x, e->y); */
-        /*         glVertex2f(e->x + e->width, e->y); */
-        /*         glVertex2f(e->x + e->width, e->y + e->height); */
-        /*         glVertex2f(e->x, e->y + e->height); */
-        /*     } */
-        /*     glEnd(); */
-        /* } */
-        /* glPopMatrix(); */
+        if (debug)
+        {
+            glPushMatrix();
+            {
+                glColor4f(1.0f, 0.0f, 0.0f, 1.0f);
+                glBegin(GL_LINE_LOOP);
+                {
+                    glVertex2f(e->x, e->y);
+                    glVertex2f(e->x + e->width, e->y);
+                    glVertex2f(e->x + e->width, e->y + e->height);
+                    glVertex2f(e->x, e->y + e->height);
+                }
+                glEnd();
+            }
+            glPopMatrix();
+        }
     }
     glPopMatrix();
 }
