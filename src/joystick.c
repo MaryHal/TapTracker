@@ -23,6 +23,8 @@ struct joystick_t* createJoystick(struct joystick_t* joystick, int joystickNum)
     }
 
     joystick->id = joystickNum;
+    joystick->buttonCount = 0;
+    joystick->axisCount = 0;
 
     if (!glfwJoystickPresent(joystick->id))
     {

@@ -4,6 +4,8 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
+#include <stdint.h>
+
 #include "history.h"
 
 #define LEVEL_MAX      999
@@ -16,6 +18,9 @@
 #define TAP_FPS        61.618f
 
 #define MASTER_S9_INTERNAL_GRADE 31
+#define GRADE_COUNT 32
+
+extern const char* DISPLAYED_GRADE[GRADE_COUNT];
 
 float frameTimeToSeconds(int frames);
 int frameTime(float seconds);
@@ -102,7 +107,7 @@ bool isInPlayingState(tap_state game);
 
 // Load game state from MAME into our game structure. This also handles adding
 // data points to our section data.
-void updateGameState(struct game_t* game, int* dataPtr);
+void updateGameState(struct game_t* game, int32_t* dataPtr);
 
 // Adds datapoint to section data if level has incremented.
 void pushCurrentState(struct game_t* game);

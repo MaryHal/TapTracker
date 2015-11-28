@@ -17,13 +17,13 @@
 
 bool runTracker(int32_t* dataPtr, unsigned int width, unsigned int height)
 {
-    if (!glfwInit())
+    if (glfwInit() == GL_FALSE)
     {
         perror("Could not initialize GLFW");
         return false;
     }
 
-    GLFWwindow* window;
+    GLFWwindow* window = NULL;
 
     glfwWindowHint(GLFW_RESIZABLE, false);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
@@ -43,51 +43,50 @@ bool runTracker(int32_t* dataPtr, unsigned int width, unsigned int height)
 
     setupOpenGL(width, height);
 
-    struct font_t font;
     /* loadTTF(&font, "/usr/share/fonts/TTF/PP821/PragmataPro.ttf", 13.0f); */
-    loadBitmapFont(&font, "PP.png", "PP.bin");
+    struct font_t* font = loadBitmapFont(NULL, "PP.png", "PP.bin");
 
-    struct joystick_t joystick;
-    createJoystick(&joystick, GLFW_JOYSTICK_1);
+    struct joystick_t* joystick = createJoystick(NULL, GLFW_JOYSTICK_1);
 
-    struct game_t game;
-    createNewGame(&game);
+    struct game_t* game = createNewGame(NULL);
 
     const int SCALE_COUNT = 2;
     float scales[] = { 45.0f, 60.0f };
     int scaleIndex = 0;
 
-    struct layout_container_t layout;
-    createLayoutContainer(&layout, width, height, 14.0f, 2.0f);
+    struct layout_container_t* layout = createLayoutContainer(NULL, width, height, 14.0f, 2.0f);
 
-    addToContainerRatio(&layout, &drawSectionGraph, 0.75f);
-    addToContainerRatio(&layout, &drawSectionTable, 1.00f);
+    addToContainerRatio(layout, &drawSectionGraph, 0.75f);
+    addToContainerRatio(layout, &drawSectionTable, 1.00f);
     /* addToContainerRatio(&layout, &drawInputHistory, 1.00f); */
 
     while (!glfwWindowShouldClose(window))
     {
-        updateGameState(&game, dataPtr);
+        updateGameState(game, dataPtr);
 
         glfwPollEvents();
 
-        updateButtons(&joystick);
-        if (buttonChangedToState(&joystick, BUTTON_D, GLFW_PRESS))
+        updateButtons(joystick);
+        if (buttonChangedToState(joystick, BUTTON_D, GLFW_PRESS))
         {
             scaleIndex++;
         }
-        pushCharFromJoystick(&game.inputHistory, &joystick);
+
+        /* // Update input history */
+        /* pushCharFromJoystick(&game.inputHistory, &joystick); */
 
         setGLClearColor();
         glClear(GL_COLOR_BUFFER_BIT);
 
-        drawLayout(&layout, &game, &font, &scales[scaleIndex % SCALE_COUNT]);
+        drawLayout(layout, game, font, &scales[scaleIndex % SCALE_COUNT]);
 
         glfwSwapBuffers(window);
     }
 
-    destroyGame(&game, false);
-    destroyJoystick(&joystick, false);
-    destroyFont(&font, false);
+    destroyContainer(layout, true);
+    destroyGame(game, true);
+    destroyJoystick(joystick, true);
+    destroyFont(font, true);
 
     glfwDestroyWindow(window);
     glfwTerminate();
