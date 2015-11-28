@@ -40,14 +40,6 @@ Building this project requires [[https://www.python.org/][python]], [[https://ma
 
 TapTracker no longer runs shmupmametgm as a child process, but TapTracker must be run /after/ shmupmametgm has started. For now, TapTracker only logs stats for player 1.
 
-In the past I've run into issues where TapTracker would sometimes crash when /not/ run from [[https://www.gnu.org/software/gdb/][gdb]] (Just my luck, that makes it just about a million times more difficult to pinpoint where the problems occur). If you run into the same issues, you can immediately run gdb and TapTracker like this:
-
-#+BEGIN_SRC sh
-gdb -ex run ./TapTracker
-#+END_SRC
-
-Then enter =q= once you exit TapTracker to quit gdb.
-
 ** Screenshots
 
 UI is a work-in-progress.
