@@ -73,7 +73,7 @@ int getSectionTime(struct section_t* section);
 struct game_t
 {
         struct section_t sections[SECTION_COUNT];
-        unsigned int currentSection;
+        int currentSection;
 
         // We want to detect change on each frame, so we'll keep track of how
         // things looked on the previous frame for comparison.
