@@ -13,7 +13,8 @@ enum COLOR_INDEX
     COLOR_TRIPLE = 2,
     COLOR_TETRIS = 3,
     COLOR_FOREGROUND = 4,
-    COLOR_BACKGROUND = 5
+    COLOR_BACKGROUND = 5,
+    NUM_COLORS = 6
 };
 
 void setColorTheme(float (*theme)[6][3]);
