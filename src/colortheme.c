@@ -2,7 +2,9 @@
 
 #include <GLFW/glfw3.h>
 
-float DARK_THEME[6][3] =
+#include <assert.h>
+
+float DARK_THEME[NUM_COLORS][3] =
 {
     { 0.97f, 0.97f, 0.97f }, // Single
     { 0.80f, 0.00f, 0.80f }, // Double
@@ -11,7 +13,7 @@ float DARK_THEME[6][3] =
     { 0.97f, 0.97f, 0.97f }, // Foreground
     { 0.05f, 0.05f, 0.05f }  // Background
 };
-float LIGHT_THEME[6][3] =
+float LIGHT_THEME[NUM_COLORS][3] =
 {
     { 0.40f, 0.40f, 0.40f }, // Single
     { 0.80f, 0.00f, 0.80f }, // Double
@@ -22,15 +24,18 @@ float LIGHT_THEME[6][3] =
 };
 
 // Set default theme
-float (*colortheme)[6][3] = &DARK_THEME;
+float (*colortheme)[NUM_COLORS][3] = &DARK_THEME;
 
-void setColorTheme(float (*theme)[6][3])
+void setColorTheme(float (*theme)[NUM_COLORS][3])
 {
     colortheme = theme;
+    setGLClearColor();
 }
 
 void setGLColor(unsigned int colorIndex, float alpha)
 {
+    assert(colorIndex < NUM_COLORS);
+
     glColor4f((*colortheme)[colorIndex][0],
               (*colortheme)[colorIndex][1],
               (*colortheme)[colorIndex][2],
