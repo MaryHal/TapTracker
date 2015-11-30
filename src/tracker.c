@@ -58,7 +58,7 @@ bool runTracker(int32_t* dataPtr, unsigned int width, unsigned int height)
 
     addToContainerRatio(layout, &drawSectionGraph, 0.75f);
     addToContainerRatio(layout, &drawSectionTable, 1.00f);
-    /* addToContainerRatio(&layout, &drawInputHistory, 1.00f); */
+    /* addToContainerRatio(layout, &drawInputHistory, 1.00f); */
 
     while (!glfwWindowShouldClose(window))
     {
