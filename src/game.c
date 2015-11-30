@@ -144,9 +144,11 @@ void pushCurrentState(struct game_t* game)
         return;
     }
 
-    const int levelBoundary = (game->currentSection + 1) * SECTION_LENGTH;
-    if (game->level >= levelBoundary)
+    // If we've passed this section's boundary, add our last point and move to
+    // the next section.
+    while (game->level >= (game->currentSection + 1) * SECTION_LENGTH)
     {
+        printf("%d\n", game->currentSection);
         section->endTime = game->time;
         addDataPointToSection(game, section);
 
@@ -218,7 +220,7 @@ bool calculateMasterConditions_(struct game_t* game)
     int sectionSum = 0;
     const int TETRIS_INDEX = 3;
 
-    for (unsigned int i = 0; i < game->currentSection; i++)
+    for (int i = 0; i < game->currentSection; i++)
     {
         struct section_t* section = &game->sections[i];
 
