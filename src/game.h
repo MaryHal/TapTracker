@@ -93,8 +93,6 @@ struct game_t
         int currentBlockX;
         int currentBlockY;
         int currentRotState;
-
-        struct history_t inputHistory;
 };
 
 // (Re)sets all game data. If passed NULL, allocate new game data.
@@ -107,7 +105,7 @@ bool isInPlayingState(tap_state game);
 
 // Load game state from MAME into our game structure. This also handles adding
 // data points to our section data.
-void updateGameState(struct game_t* game, int32_t* dataPtr);
+void updateGameState(struct game_t* game, struct history_t* inputHistory, int32_t* dataPtr);
 
 // Adds datapoint to section data if level has incremented.
 void pushCurrentState(struct game_t* game);

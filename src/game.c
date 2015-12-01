@@ -43,15 +43,11 @@ void destroyGame(struct game_t* game, bool freeMem)
 {
     if (freeMem)
         free(game);
-
-    destroyHistory(&game->inputHistory, false);
 }
 
 void resetGame(struct game_t* game)
 {
     memset(game, 0, sizeof(struct game_t));
-
-    /* resetHistory(&game->inputHistory); */
 
     // Push an initial (blank) data point from the game's initial state.
     pushCurrentState(game);
@@ -59,7 +55,7 @@ void resetGame(struct game_t* game)
 
 bool isGameComplete(struct game_t* game)
 {
-    struct section_t* section = &game->sections[game->currentSection];
+    struct section_t* section = getSection(game, game->currentSection);
     return section->data[section->size].level >= LEVEL_MAX;
 }
 
@@ -68,7 +64,7 @@ bool isInPlayingState(tap_state state)
     return state != TAP_NONE && state != TAP_IDLE && state != TAP_STARTUP;
 }
 
-void updateGameState(struct game_t* game, int32_t* dataPtr)
+void updateGameState(struct game_t* game, struct history_t* inputHistory, int32_t* dataPtr)
 {
     game->prevState = game->state;
     game->prevLevel = game->level;
@@ -106,13 +102,14 @@ void updateGameState(struct game_t* game, int32_t* dataPtr)
 
     if (game->prevState != TAP_ACTIVE && game->state == TAP_ACTIVE)
     {
-        pushHistoryElement(&game->inputHistory, game->level);
+        pushHistoryElement(inputHistory, game->level);
     }
 
     // Check if a game has ended
     if (isInPlayingState(game->prevState) && !isInPlayingState(game->state))
     {
         resetGame(game);
+        resetHistory(inputHistory);
     }
 }
 
@@ -120,7 +117,7 @@ void pushCurrentState(struct game_t* game)
 {
     assert(game->currentSection >= 0 && game->currentSection < SECTION_COUNT);
 
-    struct section_t* section = &game->sections[game->currentSection];
+    struct section_t* section = getSection(game, game->currentSection);
 
     // Special case for when we're at the end of the game (level 999). The
     // in-game timer seems to reset back to 00:00:00 on the same exact frame
@@ -148,13 +145,12 @@ void pushCurrentState(struct game_t* game)
     // the next section.
     while (game->level >= (game->currentSection + 1) * SECTION_LENGTH)
     {
-        printf("%d\n", game->currentSection);
         section->endTime = game->time;
         addDataPointToSection(game, section);
 
         // Section advance!
         game->currentSection++;
-        section = &game->sections[game->currentSection];
+        section = getSection(game, game->currentSection);
 
         assert(game->currentSection >= 0 && game->currentSection < SECTION_COUNT);
     }
@@ -179,8 +175,6 @@ void addDataPointToSection(struct game_t* game, struct section_t* section)
     {
         // Only push the data point if level has been incremented.
         int levelDifference = levelDifference = game->level - section->data[section->size - 1].level;
-
-        /* printf("%zu %d %d\n", section->size, section->data[section->size - 1].level, levelDifference); */
 
         if (levelDifference > 0)
         {

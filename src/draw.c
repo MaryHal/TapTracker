@@ -29,11 +29,12 @@ void setupOpenGL(const unsigned int width, const unsigned int height)
     glLineWidth(2.0f);
 }
 
-void drawSectionGraph(struct game_t* game, struct font_t* font,
-                      float width, float height,
-                      void* param)
+void drawSectionGraph(struct draw_data_t* data, float width, float height)
 {
-    const float scale = *(float*)param;
+    struct game_t* game = data->game;
+    struct font_t* font = data->font;
+
+    const float scale = data->scale;
 
     const float graphWidth  = width;
     const float graphHeight = height - font->pixelHeight;
@@ -172,13 +173,13 @@ void drawSectionGraph(struct game_t* game, struct font_t* font,
     }
 }
 
-void drawInputHistory(struct game_t* game, struct font_t* font,
-                      float width, float height,
-                      void* param)
+void drawInputHistory(struct draw_data_t* data, float width, float height)
 {
-    (void) width, (void) param;
+    (void) width;
 
-    struct history_t* inputHistory = &game->inputHistory;
+    struct font_t* font = data->font;
+    struct history_t* inputHistory = data->history;
+
     float x = 0.0f;
     float y = font->pixelHeight;
 
@@ -217,11 +218,12 @@ void drawInputHistory(struct game_t* game, struct font_t* font,
     }
 }
 
-void drawSectionTable(struct game_t* game, struct font_t* font,
-                      float width, float height,
-                      void* param)
+void drawSectionTable(struct draw_data_t* data, float width, float height)
 {
-    (void) width, (void) param;
+    (void) width;
+
+    struct game_t* game = data->game;
+    struct font_t* font = data->font;
 
     const float vertStride = font->pixelHeight;
     const int maxIterations = height / vertStride;
