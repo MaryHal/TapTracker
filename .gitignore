@@ -27,3 +27,4 @@ obj/
 /bin/fonttest3.png
 *.pyc
 *.i64
+/bin/tt.valgrind
