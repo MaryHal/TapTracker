@@ -5,18 +5,21 @@ struct game_t;
 struct font_t;
 struct history_t;
 
+struct draw_data_t
+{
+        struct game_t* game;
+        struct font_t* font;
+        struct history_t* history;
+
+        float scale;
+};
+
 void setupOpenGL(const unsigned int width, const unsigned int height);
 
-void drawSectionGraph(struct game_t* game, struct font_t* font,
-                      float width, float height,
-                      void* param);
+void drawSectionGraph(struct draw_data_t* data, float width, float height);
 
-void drawInputHistory(struct game_t* game, struct font_t* font,
-                      float width, float height,
-                      void* param);
+void drawInputHistory(struct draw_data_t* data, float width, float height);
 
-void drawSectionTable(struct game_t* game, struct font_t* font,
-                      float width, float height,
-                      void* param);
+void drawSectionTable(struct draw_data_t* data, float width, float height);
 
 #endif /* DRAW_H */
