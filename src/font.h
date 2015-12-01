@@ -17,6 +17,8 @@ struct chardata_t
 
 struct font_t
 {
+        struct chardata_t* cmap;
+
         unsigned int texture;
         int textureWidth;
         int textureHeight;
@@ -29,9 +31,9 @@ struct font_t
 extern struct chardata_t* dataHash;
 
 // uthash functions
-void addCharData(int codepoint, stbtt_packedchar pchar);
-struct chardata_t* getCharData(int codepoint);
-void deleteCharData();
+void _addCharData(struct chardata_t** cmap, int codepoint, stbtt_packedchar pchar);
+struct chardata_t* _getCharData(struct chardata_t** cmap, int codepoint);
+/* void deleteCharData(struct chardata_t** cmap, struct chardata_t* cdata); */
 
 // Export internal bitmap for a font. This should not be used if this font is
 // already a bitmap font.

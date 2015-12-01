@@ -41,11 +41,15 @@ bool runTracker(int32_t* dataPtr, unsigned int width, unsigned int height)
 
     setupOpenGL(width, height);
 
+    /* // Load then create bitmap font. */
     /* struct font_t* font = loadTTF(NULL, "/usr/share/fonts/TTF/PP821/PragmataPro.ttf", 13.0f); */
     /* exportBitmap("PP.png", font); */
     /* exportFontData("PP.bin", font); */
 
+    /* struct font_t* backupfont = loadTTF(NULL, "/usr/share/fonts/TTF/DroidSans.ttf", 13.0f); */
+
     struct font_t* font = loadBitmapFont(NULL, "PP.png", "PP.bin");
+
     struct joystick_t* joystick = createJoystick(NULL, GLFW_JOYSTICK_1);
     struct game_t* game = createNewGame(NULL);
     struct history_t* history = createHistory(NULL);
