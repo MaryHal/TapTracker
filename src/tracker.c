@@ -44,11 +44,11 @@ bool runTracker(int32_t* dataPtr, unsigned int width, unsigned int height)
     /* struct font_t* font = loadTTF(NULL, "/usr/share/fonts/TTF/PP821/PragmataPro.ttf", 13.0f); */
     /* exportBitmap("PP.png", font); */
     /* exportFontData("PP.bin", font); */
+
     struct font_t* font = loadBitmapFont(NULL, "PP.png", "PP.bin");
-
     struct joystick_t* joystick = createJoystick(NULL, GLFW_JOYSTICK_1);
-
     struct game_t* game = createNewGame(NULL);
+    struct history_t* history = createHistory(NULL);
 
     const int SCALE_COUNT = 2;
     float scales[] = { 45.0f, 60.0f };
@@ -57,12 +57,20 @@ bool runTracker(int32_t* dataPtr, unsigned int width, unsigned int height)
     struct layout_container_t* layout = createLayoutContainer(NULL, width, height, 14.0f, 2.0f);
 
     addToContainerRatio(layout, &drawSectionGraph, 0.75f);
-    addToContainerRatio(layout, &drawSectionTable, 1.00f);
-    /* addToContainerRatio(layout, &drawInputHistory, 1.00f); */
+    addToContainerRatio(layout, &drawSectionTable, 0.50f);
+    addToContainerRatio(layout, &drawInputHistory, 1.00f);
+
+    struct draw_data_t data =
+    {
+        .game = game,
+        .font = font,
+        .history = history,
+        .scale = scales[scaleIndex]
+    };
 
     while (!glfwWindowShouldClose(window))
     {
-        updateGameState(game, dataPtr);
+        updateGameState(game, history, dataPtr);
 
         glfwPollEvents();
 
@@ -70,19 +78,21 @@ bool runTracker(int32_t* dataPtr, unsigned int width, unsigned int height)
         if (buttonChangedToState(joystick, BUTTON_D, GLFW_PRESS))
         {
             scaleIndex++;
+            data.scale = scales[scaleIndex % SCALE_COUNT];
         }
 
         // Update input history
-        pushCharFromJoystick(&game->inputHistory, joystick);
+        pushCharFromJoystick(history, joystick);
 
         setGLClearColor();
         glClear(GL_COLOR_BUFFER_BIT);
 
-        drawLayout(layout, game, font, &scales[scaleIndex % SCALE_COUNT], false);
+        drawLayout(layout, &data, false);
 
         glfwSwapBuffers(window);
     }
 
+    destroyHistory(history, true);
     destroyContainer(layout, true);
     destroyGame(game, true);
     destroyJoystick(joystick, true);

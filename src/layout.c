@@ -61,7 +61,7 @@ void addToContainerFixed(struct layout_container_t* container, draw_function_p d
     container->size++;
 }
 
-void drawLayout(struct layout_container_t* container, struct game_t* game, struct font_t* font, void* param, bool debug)
+void drawLayout(struct layout_container_t* container, struct draw_data_t* data_container, bool debug)
 {
     glPushMatrix();
     glTranslatef(container->outerMargin, container->outerMargin, 0.0f);
@@ -78,7 +78,7 @@ void drawLayout(struct layout_container_t* container, struct game_t* game, struc
         glPushMatrix();
         glTranslatef(adjustedX, adjustedY, 0.0f);
         {
-            e->drawFunc(game, font, adjustedWidth, adjustedHeight, param);
+            e->drawFunc(data_container, adjustedWidth, adjustedHeight);
 
             if (debug)
             {
