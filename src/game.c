@@ -178,6 +178,14 @@ void addDataPointToSection(struct game_t* game, struct section_t* section)
 
         if (levelDifference > 0)
         {
+            if (levelDifference > 4)
+            {
+                fprintf(stderr,
+                        "Abnormally large level jump: %d -> %d\n",
+                        section->data[section->size - 1].level,
+                        game->level);
+            }
+
             // Push datapoint to the end of the section.
             section->data[section->size] = (struct datapoint_t) { game->level, game->time };
             section->size++;

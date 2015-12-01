@@ -50,7 +50,7 @@ void exportBitmap(const char* imgFile, struct font_t* font)
 
     if (font->bitmap == NULL)
     {
-        printf("Cannot export font bitmap. Is this font already a bitmap font?");
+        fprintf(stderr, "Cannot export font bitmap. Is this font already a bitmap font?");
     }
 
     stbi_write_png(imgFile, font->textureWidth, font->textureHeight, 1, font->bitmap, 0);
