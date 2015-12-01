@@ -16,11 +16,17 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <stb_image_write.h>
 
-struct chardata_t* dataHash = NULL;
-
-void addCharData(int codepoint, stbtt_packedchar pchar)
+struct chardata_t* _getCharData(struct chardata_t** cmap, int codepoint)
 {
-    struct chardata_t* s = getCharData(codepoint);
+    struct chardata_t* s = NULL;
+
+    HASH_FIND_INT(*cmap, &codepoint, s);  /* s: output */
+    return s;
+}
+
+void _addCharData(struct chardata_t** cmap, int codepoint, stbtt_packedchar pchar)
+{
+    struct chardata_t* s = _getCharData(cmap, codepoint);
 
     if (s == NULL)
     {
@@ -28,23 +34,15 @@ void addCharData(int codepoint, stbtt_packedchar pchar)
         s->id = codepoint;
         s->pchar = pchar;
 
-        HASH_ADD_INT(dataHash, id, s);  /* id: name of key field */
+        HASH_ADD_INT(*cmap, id, s);  /* id: name of key field */
     }
 }
 
-struct chardata_t* getCharData(int codepoint)
-{
-    struct chardata_t* s = NULL;
-
-    HASH_FIND_INT(dataHash, &codepoint, s);  /* s: output */
-    return s;
-}
-
-void deleteCharData(struct chardata_t* cdata)
-{
-    HASH_DEL(dataHash, cdata);  /* user: pointer to deletee */
-    free(cdata);
-}
+/* void deleteCharData(struct chardata_t** cmap, struct chardata_t* cdata) */
+/* { */
+/*     HASH_DEL(*cmap, cdata);  /\* user: pointer to deletee *\/ */
+/*     free(cdata); */
+/* } */
 
 void exportBitmap(const char* imgFile, struct font_t* font)
 {
@@ -70,7 +68,7 @@ void exportFontData(const char* binFile, struct font_t* font)
 
     fwrite(font, sizeof(struct font_t), 1, binOutput);
 
-    for (struct chardata_t* cdata = dataHash; cdata != NULL; cdata = cdata->hh.next)
+    for (struct chardata_t* cdata = font->cmap; cdata != NULL; cdata = cdata->hh.next)
     {
         fwrite(&cdata->id, sizeof(int), 1, binOutput);
         fwrite(&cdata->pchar, sizeof(stbtt_packedchar), 1, binOutput);
@@ -122,6 +120,7 @@ struct font_t* loadTTF(struct font_t* font, const char* filename, float pixelHei
         font = (struct font_t*)malloc(sizeof(struct font_t));
     }
 
+    font->cmap = NULL;
     font->texture = 0;
 
     font->textureWidth  = 512;
@@ -175,7 +174,7 @@ struct font_t* loadTTF(struct font_t* font, const char* filename, float pixelHei
                 int codepoint = pr[i].first_unicode_codepoint_in_range + j;
                 /* int codepoint = j; */
 
-                addCharData(codepoint, pdata[i * 256 + j]);
+                _addCharData(&font->cmap, codepoint, pdata[i * 256 + j]);
             }
         }
 
@@ -203,6 +202,7 @@ struct font_t* loadBitmapFont(struct font_t* font, const char* imgFile, const ch
 
     fread(font, sizeof(struct font_t), 1, binInput);
 
+    font->cmap = NULL;
     font->bitmap = NULL;
 
     // Load char data.
@@ -212,7 +212,7 @@ struct font_t* loadBitmapFont(struct font_t* font, const char* imgFile, const ch
     while (fread(&codepoint, sizeof(int), 1, binInput) == 1 &&
            fread(&pchar, sizeof(stbtt_packedchar), 1, binInput) == 1)
     {
-        addCharData(codepoint, pchar);
+        _addCharData(&font->cmap, codepoint, pchar);
     }
 
     fclose(binInput);
@@ -238,9 +238,9 @@ void destroyFont(struct font_t* font, bool freeFont)
     struct chardata_t* current_cdata = NULL;
     struct chardata_t* tmp = NULL;
 
-    HASH_ITER(hh, dataHash, current_cdata, tmp)
+    HASH_ITER(hh, font->cmap, current_cdata, tmp)
     {
-        HASH_DEL(dataHash, current_cdata);
+        HASH_DEL(font->cmap, current_cdata);
         free(current_cdata);
     }
 
@@ -259,9 +259,9 @@ void getPackedQuad(struct font_t* font, int codepoint,
     float ipw = 1.0f / font->textureWidth;
     float iph = 1.0f / font->textureHeight;
 
-    assert(getCharData(codepoint) != NULL);
+    assert(_getCharData(&font->cmap, codepoint) != NULL);
 
-    stbtt_packedchar* b = &getCharData(codepoint)->pchar;
+    stbtt_packedchar* b = &_getCharData(&font->cmap, codepoint)->pchar;
 
     if (align_to_integer)
     {
