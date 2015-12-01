@@ -61,8 +61,8 @@ bool runTracker(int32_t* dataPtr, unsigned int width, unsigned int height)
     struct layout_container_t* layout = createLayoutContainer(NULL, width, height, 14.0f, 2.0f);
 
     addToContainerRatio(layout, &drawSectionGraph, 0.75f);
-    addToContainerRatio(layout, &drawSectionTable, 0.50f);
-    addToContainerRatio(layout, &drawInputHistory, 1.00f);
+    addToContainerRatio(layout, &drawSectionTable, 1.00f);
+    /* addToContainerRatio(layout, &drawInputHistory, 1.00f); */
 
     struct draw_data_t data =
     {
