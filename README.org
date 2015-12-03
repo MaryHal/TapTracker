@@ -61,6 +61,7 @@ Newer versions of TapTracker include a section table that logs section timings a
 - Rework OpenGL code :: It's rigid and messy right now. Not to mention it also uses a ton of immediate mode.
 - Player 2 support :: Log stats for Player 2 too.
 - Diagram Generation :: Create a [[http://fumen.zui.jp/][Fumen]] diagram during play. A prototype (written in Python) can be found in the =autofumen= directory.
+- MAME patch for Windows
 
 ** Appendix
 *** Useful RAM Addresses
