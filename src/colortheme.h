@@ -1,11 +1,6 @@
 #ifndef COLORTHEME_H
 #define COLORTHEME_H
 
-extern float DARK_THEME[6][3];
-extern float LIGHT_THEME[6][3];
-
-extern float (*colortheme)[6][3];
-
 enum COLOR_INDEX
 {
     COLOR_SINGLE = 0,
@@ -17,7 +12,12 @@ enum COLOR_INDEX
     NUM_COLORS = 6
 };
 
-void setColorTheme(float (*theme)[6][3]);
+extern float DARK_THEME[NUM_COLORS][3];
+extern float LIGHT_THEME[NUM_COLORS][3];
+
+extern float (*colortheme)[NUM_COLORS][3];
+
+void setColorTheme(float (*theme)[NUM_COLORS][3]);
 void setGLColor(unsigned int colorIndex, float alpha);
 void setGLClearColor();
 
