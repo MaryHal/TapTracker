@@ -1,5 +1,5 @@
 diff --git a/cpuexec_old.c b/cpuexec.c
-index e2eea6d..7c66a4f 100644
+index d8d56c6..7c66a4f 100644
 --- a/cpuexec_old.c
 +++ b/cpuexec.c
 @@ -12,6 +12,7 @@
@@ -102,12 +102,3 @@ index e2eea6d..7c66a4f 100644
  	/* build the execution list if we don't have one yet */
  	if (global->executelist == NULL)
  		rebuild_execute_list(machine);
-@@ -328,7 +407,7 @@ void cpuexec_timeslice(running_machine *machine)
- 						classdata->cycles_stolen = 0;
- 						global->executingcpu = classdata->device;
- 						*classdata->icount = classdata->cycles_running;
--						/* poll_if_necessary(machine); */
-+						poll_if_necessary(machine);
- 						frame_update_callback(machine);
- 						input_frame(machine);
- 						if (!call_debugger)
