@@ -46,7 +46,7 @@ TapTracker no longer runs shmupmametgm as a child process, but TapTracker must b
 
 UI is a work-in-progress.
 
-| [[screenshot01.png]] | [[screenshot02.png]] |
+| [[screenshot01.png]] | [[screenshot02.png]] | [[screenshot03.png]]
 
 The top portion graphs the time vs level during the last three sections. Immediately below that is a counter for line clears (singles : doubles : triples : tetrises). Then below that is a input display per level.
 
