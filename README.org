@@ -11,15 +11,17 @@
 ** About
 This project aims to log various game data (and inputs) during a game of [[https://en.wikipedia.org/wiki/Tetris:_The_Grand_Master][Tetris: The Grandmaster 2 Plus]] (TGM2p/TGM2+/TAP) when run in an emulator ([[http://mamedev.org/][MAME]]). TapTracker runs alongside the emulator and performs its logging in real-time. This is linux-only for now.
 
-[[https://github.com/sanford1/BlockTracker][BlockTracker]] was my first attempt at this. It was done by interacting with [[https://github.com/scanmem/scanmem][scanmem]] as a child process. Ultimately, this meant every time I started up the game, I had to probe for the memory address holding level data (not unlike someone using [[http://www.cheatengine.org/][cheat-engine]]) then pass the proper memory addresses to BlockTracker. Along the way I wrote quite possibly the worst code I've ever written. Despite being such a small program, it wasn't too pleasant for me to look at and maintain. (There's one upside though: this method was game-agnostic; I could probe any TGM-style game for level data).
+[[https://github.com/sanford1/BlockTracker][BlockTracker]] was my first attempt at this. It was done by interacting with [[https://github.com/scanmem/scanmem][scanmem]] as a child process. Ultimately, this meant every time I started up the game, I had to probe for the memory address holding level data (not unlike someone using [[http://www.cheatengine.org/][cheat-engine]]) then pass the proper memory addresses to BlockTracker. Along the way I wrote quite possibly the worst code I've ever written. Despite being such a small program, it wasn't too pleasant for me to look at and maintain. (There was one upside though: this method was game-agnostic; I could probe any TGM-style game for level data).
 
-In contrast, TapTracker takes a more direct route by modifying a version of MAME to output relevant data. Only a single file in the MAME source code has been changed ($MAME/src/emu/cpuexec.c). Keep in mind that if you want to build this from the bottom up, the go-to version of MAME for TGM is a [[http://tetrisconcept.net/wiki/Modded_MAME][modified version of shmupmame]]. The build process on Linux has a couple quirks, so I might write a build guide in the near future, but another user on [[http://tetrisconcept.net/][TetrisConcept.net]] went through a similar [[http://tetrisconcept.net/threads/shmupmametgm-on-linux.2645/#post-58103][process to build shmupmametgm]] for themself, which was more or less what I had done. Pre-built binaries of shmupmame with the TapTracker patches can be found in the [[https://github.com/sanford1/TapTracker/releases][here]]. I've also uploaded the patched source code [[https://www.dropbox.com/s/upjlanwa4xc2o02/linux_mametgm_mod.7z?dl=0][here]].
+In contrast, TapTracker takes a more direct route by modifying a [[https://github.com/sanford1/shmupmametgm/tree/TapTracker][TGM-specific version of MAME]] to output relevant data. Pre-built binaries of shmupmame with the TapTracker patches can be found in the [[https://github.com/sanford1/TapTracker/releases][here]]. You can build TapTracker MAME like so:
+
+#+BEGIN_SRC sh
+git clone https://github.com/sanford1/shmupmametgm.git
+git checkout TapTracker
+make SUBTARGET=tgm NOWERROR=1
+#+END_SRC
 
 The patch uses debug functions in MAME, so debug functionality must be enabled with =-debug= or the =-c= switch (enables the cheat engine).
-
-Another patch (=patch/src/mame/drivers/psikyosh.c.diff=) will modify TGM2+'s framerate to the correct ~61.681 hz and correct a bug regarding 4-way stick emulation. The file to-be-patched is at $MAME/src/mame/drivers/psikyosh.c.
-
-The diffs in the =patch= directory can be applied via [[http://linux.die.net/man/1/patch][patch]].
 
 ** Building TapTracker
 
