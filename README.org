@@ -57,12 +57,12 @@ Newer versions of TapTracker include a section table that logs section timings a
 
 ** To-do list
 
-- Document TAP states :: I've reverse engineered most of the TGM2+ states (read: I've figured out what they mean), but there are edge cases that still confuse TapTracker.
+- Document TAP states :: I've reverse engineered most of the TGM2+ states (read: I've figured out what they mean), but there may be edge cases that still confuse TapTracker.
 - [Partially complete] Implement resizable layouts :: TapTracker only supports a single window size and layout right now, and it's difficult to modify.
 - Rework OpenGL code :: It's rigid and messy right now. Not to mention it also uses a ton of immediate mode.
 - Player 2 support :: Log stats for Player 2 too.
-- Diagram Generation :: Create a [[http://fumen.zui.jp/][Fumen]] diagram during play. A prototype (written in Python) can be found in the =autofumen= directory.
-- MAME patch for Windows
+- +Diagram Generation+ :: Create a [[http://fumen.zui.jp/][Fumen]] diagram during play. A prototype (written in Python) can be found in the =autofumen= directory.
+- +MAME patch for Windows+ :: ...
 
 ** Appendix
 *** Useful RAM Addresses
