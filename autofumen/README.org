@@ -1,4 +1,7 @@
 * Autofumen
+
+*Deprecated by the built in fumenizer for [[https://github.com/sanford1/shmupmametgm][shmupmametgm]]*
+
 Off the coattails of [[https://github.com/steadshot/fumenizer][fumenizer]], a python script which aims to create a [[http://fumen.zui.jp/][Fumen Tetris Diagram]] from playfield images, Autofumen is a proof-of-concept script that aims to read memory from MAME to build Tetris diagrams. This requires MAME with the TapTracker patches to function and only works with TGM2+ for now.
 
 * Usage
