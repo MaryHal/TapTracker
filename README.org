@@ -7,6 +7,7 @@
    - [[#appendix][Appendix]]
      - [[#useful-ram-addresses][Useful RAM Addresses]]
      - [[#block-indices][Block Indices]]
+     - [[#tgm2p-states][TGM2P States]]
 
 ** About
 This project aims to log various game data (and inputs) during a game of [[https://en.wikipedia.org/wiki/Tetris:_The_Grand_Master][Tetris: The Grandmaster 2 Plus]] (TGM2p/TGM2+/TAP) when run in an emulator ([[http://mamedev.org/][MAME]]). TapTracker runs alongside the emulator and performs its logging in real-time. This is linux-only for now.
@@ -105,7 +106,6 @@ All these addresses are for player 1. I still need to double check some of these
 | 0x06064C25 | int8_t  | Section Index                |       |
 
 *** Block Indices
-
 | Index | Block |
 |-------+-------|
 |     2 | I     |
@@ -115,3 +115,15 @@ All these addresses are for player 1. I still need to double check some of these
 |     6 | L     |
 |     7 | O     |
 |     8 | T     |
+*** TGM2P States
+**** M-Roll Flags
+| Value | Definition                                                                      |
+|-------+---------------------------------------------------------------------------------|
+|    17 | Failure state in the first half of the game (100-499).                          |
+|    19 | Failure state in the second half of the game (500-999).                         |
+|    31 | Failure state at the end of the game, currently in fading credit roll.          |
+|    34 | Garbage value when the game is still loading.                                   |
+|    48 | Neutral state. Value during the first section (0-100) and non-play game states. |
+|    49 | Passing state during the first half of the game (100-499).                      |
+|    51 | Passing state during the second half of the game (500-999).                     |
+|   127 | Passing state at the end of the game, currently in the invisible credit roll.   |
