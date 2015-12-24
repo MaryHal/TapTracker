@@ -127,3 +127,18 @@ All these addresses are for player 1. I still need to double check some of these
 |    49 | Passing state during the first half of the game (100-499).                      |
 |    51 | Passing state during the second half of the game (500-999).                     |
 |   127 | Passing state at the end of the game, currently in the invisible credit roll.   |
+
+**** Internal State
+| Value | Definition                                        |
+|-------+---------------------------------------------------|
+|     0 |                                                   |
+|     1 |                                                   |
+|     2 | Tetromino can be controlled by the player.        |
+|     3 | Tetromino cannot be influenced anymore.           |
+|     4 | Tetromino is being locked to the playfield.       |
+|     5 | Block entry delay (ARE).                          |
+|     7 | "Game Over" is being shown on screen.             |
+|    10 | No game has started, idle state.                  |
+|    11 | Blocks are fading away when topping out (losing). |
+|    13 | Blocks are fading away when completing a game.    |
+|    71 | Garbage value when the game is still loading.     |
