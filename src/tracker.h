@@ -4,6 +4,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-bool runTracker(int32_t* dataPtr, unsigned int width, unsigned int height);
+struct tap_state;
+
+bool runTracker(struct tap_state* dataPtr, unsigned int width, unsigned int height);
 
 #endif /* TRACKER_H */
