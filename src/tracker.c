@@ -13,7 +13,7 @@
 
 #include <GLFW/glfw3.h>
 
-bool runTracker(int32_t* dataPtr, unsigned int width, unsigned int height)
+bool runTracker(struct tap_state* dataPtr, unsigned int width, unsigned int height)
 {
     if (glfwInit() == GL_FALSE)
     {

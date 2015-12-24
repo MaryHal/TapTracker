@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <stdint.h>
 
+#include "tap_state.h"
 #include "tracker.h"
 
 int main(int argc, char *argv[])
@@ -24,9 +25,9 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    const size_t vSize = sizeof(int32_t) * 13;
+    const size_t vSize = sizeof(struct tap_state);
 
-    int32_t* addr = mmap(NULL, vSize, PROT_READ, MAP_SHARED, fd, 0);
+    struct tap_state* addr = (struct tap_state*)mmap(NULL, vSize, PROT_READ, MAP_SHARED, fd, 0);
     if (addr == MAP_FAILED)
     {
         perror("Parent: Could not map memory");
