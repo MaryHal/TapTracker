@@ -158,8 +158,8 @@ void drawSectionGraph(struct draw_data_t* data, float width, float height)
             glColor4f(1.0f, 0.3f, 0.3f, 1.0f);
 
         sprintf(levelStr, "%2d %2d",
-                game->grade,
-                game->gradePoints);
+                game->curState.grade,
+                game->curState.gradePoints);
         drawString(font, width - 28.0f, graphHeight - 2.0f, levelStr);
 
         /* // Draw some block data */
@@ -243,13 +243,13 @@ void drawSectionTable(struct draw_data_t* data, float width, float height)
 
         // Calculate how long this section took / is taking.
         float sectionTime = 0.0f;
-        if (game->level >= (i + 1) * SECTION_LENGTH || game->level >= LEVEL_MAX)
+        if (game->curState.level >= (i + 1) * SECTION_LENGTH || game->curState.level >= LEVEL_MAX)
         {
             sectionTime = frameTimeToSeconds(section->endTime - section->startTime);
         }
         else
         {
-            sectionTime = frameTimeToSeconds(game->time - section->startTime);
+            sectionTime = frameTimeToSeconds(game->curState.timer - section->startTime);
         }
 
         char sectionString[16];

@@ -8,6 +8,8 @@
 
 #include "history.h"
 
+#include "tap_state.h"
+
 #define LEVEL_MAX      999
 
 #define SECTION_LENGTH 100
@@ -25,7 +27,7 @@ extern const char* DISPLAYED_GRADE[GRADE_COUNT];
 float frameTimeToSeconds(int frames);
 int frameTime(float seconds);
 
-typedef enum
+enum
 {
     TAP_NONE         = 0,
     TAP_START        = 1,
@@ -38,9 +40,9 @@ typedef enum
     TAP_FADING       = 11, // Blocks fading away when topping out (losing).
     TAP_COMPLETION   = 13, // Blocks fading when completing the game
     TAP_STARTUP      = 71
-} tap_state;
+};
 
-typedef enum
+enum
 {
     M_FAIL_1   = 17,
     M_FAIL_2   = 19,
@@ -50,7 +52,7 @@ typedef enum
     M_PASS_1   = 49,
     M_PASS_2   = 51,
     M_SUCCESS  = 127,
-} tap_mroll_flags;
+};
 
 struct datapoint_t
 {
@@ -77,22 +79,8 @@ struct game_t
 
         // We want to detect change on each frame, so we'll keep track of how
         // things looked on the previous frame for comparison.
-        tap_state state, prevState;
-        int level, prevLevel;
-        int time, prevTime;
-
-        char grade;
-        char gradePoints;
-
-        char MrollFlags;
-        bool inCreditRoll;
-        char sectionIndex; // reported by mame
-
-        int currentBlock;
-        int nextBlock;
-        int currentBlockX;
-        int currentBlockY;
-        int currentRotState;
+        struct tap_state curState;
+        struct tap_state prevState;
 };
 
 // (Re)sets all game data. If passed NULL, allocate new game data.
@@ -101,11 +89,11 @@ void destroyGame(struct game_t* game, bool freeMem);
 void resetGame(struct game_t* game);
 
 bool isGameComplete(struct game_t* game);
-bool isInPlayingState(tap_state game);
+bool isInPlayingState(char game);
 
 // Load game state from MAME into our game structure. This also handles adding
 // data points to our section data.
-void updateGameState(struct game_t* game, struct history_t* inputHistory, int32_t* dataPtr);
+void updateGameState(struct game_t* game, struct history_t* inputHistory, struct tap_state* dataPtr);
 
 // Adds datapoint to section data if level has incremented.
 void pushCurrentState(struct game_t* game);

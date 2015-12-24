@@ -11,7 +11,6 @@ const char* DISPLAYED_GRADE[GRADE_COUNT] =
     "S5+", "S6-", "S6+", "S7-", "S7+", "S8-", "S8+", "S9"
 };
 
-
 float frameTimeToSeconds(int frames)
 {
     return frames / TIMER_FPS;
@@ -59,54 +58,37 @@ bool isGameComplete(struct game_t* game)
     return section->data[section->size].level >= LEVEL_MAX;
 }
 
-bool isInPlayingState(tap_state state)
+bool isInPlayingState(char state)
 {
     return state != TAP_NONE && state != TAP_IDLE && state != TAP_STARTUP;
 }
 
-void updateGameState(struct game_t* game, struct history_t* inputHistory, int32_t* dataPtr)
+void updateGameState(struct game_t* game, struct history_t* inputHistory, struct tap_state* dataPtr)
 {
-    game->prevState = game->state;
-    game->prevLevel = game->level;
-    game->prevTime  = game->time;
+    game->prevState = game->curState;
 
-    // Retrieve the data that we set in the MAME process.
-    game->state        = dataPtr[0];
-    game->level        = dataPtr[1];
-    game->time         = dataPtr[2];
+    // Copy the data that we set in the MAME process.
+    game->curState = *dataPtr;
 
-    game->grade        = dataPtr[3];
-    game->gradePoints  = dataPtr[4];
-    game->MrollFlags   = dataPtr[5];
-
-    game->inCreditRoll = dataPtr[6];
-    game->sectionIndex = dataPtr[7];
-
-    game->currentBlock    = dataPtr[8];
-    game->nextBlock       = dataPtr[9];
-    game->currentBlockX   = dataPtr[10];
-    game->currentBlockY   = dataPtr[11];
-    game->currentRotState = dataPtr[12];
-
-    if (isInPlayingState(game->state) && game->level < game->prevLevel)
+    if (isInPlayingState(game->curState.state) && game->curState.level < game->prevState.level)
     {
         perror("Internal State Error");
         printGameState(game);
     }
 
-    if (isInPlayingState(game->state) && game->level - game->prevLevel > 0)
+    if (isInPlayingState(game->curState.state) && game->curState.level - game->prevState.level > 0)
     {
         // Push a data point based on the newly acquired game state.
         pushCurrentState(game);
     }
 
-    if (game->prevState != TAP_ACTIVE && game->state == TAP_ACTIVE)
+    if (game->prevState.state != TAP_ACTIVE && game->curState.state == TAP_ACTIVE)
     {
-        pushHistoryElement(inputHistory, game->level);
+        pushHistoryElement(inputHistory, game->curState.level);
     }
 
     // Check if a game has ended
-    if (isInPlayingState(game->prevState) && !isInPlayingState(game->state))
+    if (isInPlayingState(game->prevState.state) && !isInPlayingState(game->curState.state))
     {
         resetGame(game);
         resetHistory(inputHistory);
@@ -123,29 +105,29 @@ void pushCurrentState(struct game_t* game)
     // in-game timer seems to reset back to 00:00:00 on the same exact frame
     // that level 999 is reached. So when we're adding our data point, we must
     // use the previous frame's timer value.
-    if (game->level >= LEVEL_MAX)
+    if (game->curState.level >= LEVEL_MAX)
     {
         if (section->endTime == 0)
         {
-            section->endTime = game->prevTime;
+            section->endTime = game->prevState.timer;
         }
 
-        int tempTime = game->time;
-        game->time = game->prevTime;
+        int tempTime = game->curState.timer;
+        game->curState.timer = game->prevState.timer;
 
         addDataPointToSection(game, section);
 
         // For consistency, restore original time value.
-        game->time = tempTime;
+        game->curState.timer = tempTime;
 
         return;
     }
 
     // If we've passed this section's boundary, add our last point and move to
     // the next section.
-    while (game->level >= (game->currentSection + 1) * SECTION_LENGTH)
+    while (game->curState.level >= (game->currentSection + 1) * SECTION_LENGTH)
     {
-        section->endTime = game->time;
+        section->endTime = game->curState.timer;
         addDataPointToSection(game, section);
 
         // Section advance!
@@ -165,16 +147,16 @@ void addDataPointToSection(struct game_t* game, struct section_t* section)
     // Section just began
     if (section->size == 0)
     {
-        section->startTime = game->time;
+        section->startTime = game->curState.timer;
 
         // Push datapoint to the end of the section.
-        section->data[section->size] = (struct datapoint_t) { game->level, game->time };
+        section->data[section->size] = (struct datapoint_t) { game->curState.level, game->curState.timer };
         section->size++;
     }
     else
     {
         // Only push the data point if level has been incremented.
-        int levelDifference = levelDifference = game->level - section->data[section->size - 1].level;
+        int levelDifference = levelDifference = game->curState.level - section->data[section->size - 1].level;
 
         if (levelDifference > 0)
         {
@@ -183,16 +165,16 @@ void addDataPointToSection(struct game_t* game, struct section_t* section)
                 fprintf(stderr,
                         "Abnormally large level jump: %d -> %d\n",
                         section->data[section->size - 1].level,
-                        game->level);
+                        game->curState.level);
             }
 
             // Push datapoint to the end of the section.
-            section->data[section->size] = (struct datapoint_t) { game->level, game->time };
+            section->data[section->size] = (struct datapoint_t) { game->curState.level, game->curState.timer };
             section->size++;
 
-            // Check if we scored some phat lines. Sometimes the state on line clear
-            // is not set at the correct time (it stays in the LOCKING state).
-            if (section->size >= 2 && (game->prevState == TAP_LOCKING || game->state == TAP_LINECLEAR))
+            // Check if we scored some phat lines.
+            if (section->size >= 2 &&
+                (game->prevState.state == TAP_LOCKING || game->curState.state == TAP_LINECLEAR))
             {
                 section->lines[levelDifference - 1]++;
             }
@@ -211,10 +193,10 @@ struct section_t* getSection(struct game_t* game, int sectionIndex)
 bool testMasterConditions(struct game_t* game)
 {
     return
-        game->MrollFlags == M_NEUTRAL ||
-        game->MrollFlags == M_PASS_1  ||
-        game->MrollFlags == M_PASS_2  ||
-        game->MrollFlags == M_SUCCESS;
+        game->curState.mrollFlags == M_NEUTRAL ||
+        game->curState.mrollFlags == M_PASS_1  ||
+        game->curState.mrollFlags == M_PASS_2  ||
+        game->curState.mrollFlags == M_SUCCESS;
 }
 
 bool calculateMasterConditions_(struct game_t* game)
@@ -278,9 +260,9 @@ bool calculateMasterConditions_(struct game_t* game)
 
     // Finally, an S9 grade is required at level 999 along with the same time
     // requirements as the eigth section.
-    if (game->level == LEVEL_MAX)
+    if (game->curState.level == LEVEL_MAX)
     {
-        if (game->grade < MASTER_S9_INTERNAL_GRADE)
+        if (game->curState.grade < MASTER_S9_INTERNAL_GRADE)
         {
             return false;
         }
@@ -307,7 +289,7 @@ bool calculateMasterConditions_(struct game_t* game)
 void printGameState(struct game_t* game)
 {
     printf("state: %d -> %d, level %d -> %d, time %d -> %d\n",
-           game->prevState, game->state,
-           game->prevLevel, game->level,
-           game->prevTime, game->time);
+           game->prevState.state, game->curState.state,
+           game->prevState.level, game->curState.level,
+           game->prevState.timer, game->curState.timer);
 }
