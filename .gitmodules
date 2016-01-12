@@ -4,3 +4,6 @@
 [submodule "ext/uthash"]
 	path = ext/uthash
 	url = https://github.com/troydhanson/uthash.git
+[submodule "ext/incbin"]
+	path = ext/incbin
+	url = https://github.com/graphitemaster/incbin.git

@@ -1,5 +1,6 @@
 #include "history.h"
 #include "joystick.h"
+#include "inputhistory.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -82,7 +83,7 @@ void pushCharFromJoystick(struct history_t* history, struct joystick_t* joystick
         {
             if (getButtonState(joystick, buttonID) == GLFW_PRESS)
             {
-                history->heldButtons[buttonID] = pushKey(history, JoystickButtonLabels[buttonID]);
+                history->heldButtons[buttonID] = pushKey(history, joystickButtonToSheetIndex(buttonID));
             }
             else if (getButtonState(joystick, buttonID) == GLFW_RELEASE)
             {
@@ -94,19 +95,19 @@ void pushCharFromJoystick(struct history_t* history, struct joystick_t* joystick
 
     if (axisChangedToState(joystick, AXIS_HORI, AXIS_NEGATIVE))
     {
-        history->lastLeft = pushKey(history, 0x2190);
+        history->lastLeft = pushKey(history, INPUT_LEFT);
     }
     if (axisChangedToState(joystick, AXIS_HORI, AXIS_POSITIVE))
     {
-        history->lastRight = pushKey(history, 0x2192);
+        history->lastRight = pushKey(history, INPUT_RIGHT);
     }
     if (axisChangedToState(joystick, AXIS_VERT, AXIS_NEGATIVE))
     {
-        history->lastUp = pushKey(history, 0x2191);
+        history->lastUp = pushKey(history, INPUT_UP);
     }
     if (axisChangedToState(joystick, AXIS_VERT, AXIS_POSITIVE))
     {
-        history->lastDown = pushKey(history, 0x2193);
+        history->lastDown = pushKey(history, INPUT_DOWN);
     }
     if (axisChangedFromState(joystick, AXIS_HORI, AXIS_NEGATIVE))
     {
@@ -128,4 +129,21 @@ void pushCharFromJoystick(struct history_t* history, struct joystick_t* joystick
         if (history->lastDown)
             history->lastDown->held = false;
     }
+}
+
+unsigned int joystickButtonToSheetIndex(unsigned int button)
+{
+    switch (button)
+    {
+    case BUTTON_D:
+        return INPUT_D;
+    case BUTTON_A:
+        return INPUT_A;
+    case BUTTON_B:
+        return INPUT_B;
+    case BUTTON_C:
+        return INPUT_C;
+    default:
+        return INPUT_BLANK;
+    };
 }
