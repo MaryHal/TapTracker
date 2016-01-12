@@ -11,7 +11,7 @@ float DARK_THEME[NUM_COLORS][3] =
     { 0.00f, 0.80f, 0.80f }, // Triple
     { 0.90f, 0.90f, 0.00f }, // Tetris
     { 0.97f, 0.97f, 0.97f }, // Foreground
-    { 0.05f, 0.05f, 0.05f }  // Background
+    { 0.02f, 0.02f, 0.02f }  // Background
 };
 float LIGHT_THEME[NUM_COLORS][3] =
 {

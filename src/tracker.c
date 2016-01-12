@@ -22,25 +22,35 @@ bool runTracker(struct tap_state* dataPtr, unsigned int width, unsigned int heig
         return false;
     }
 
-    GLFWwindow* window = NULL;
-
     glfwWindowHint(GLFW_RESIZABLE, false);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+
+    GLFWwindow* window = NULL;
+    GLFWwindow* subwindow = NULL;
 
     window = glfwCreateWindow(width, height,
                               "TapTracker",
                               NULL,
                               NULL);
-    if (window == NULL)
+
+    glfwMakeContextCurrent(window);
+    setupOpenGL(width, height);
+
+    subwindow = glfwCreateWindow(128, 100,
+                                 "TapTracker ButtonSpectrum",
+                                 NULL,
+                                 window);
+
+    glfwMakeContextCurrent(subwindow);
+    setupOpenGL(128, 100);
+
+    if (window == NULL || subwindow == NULL)
     {
         perror("Could not create GLFW window");
         return false;
     }
 
-    glfwMakeContextCurrent(window);
-
-    setupOpenGL(width, height);
 
     /* // Load then create bitmap font. */
     /* struct font_t* font = loadTTF(NULL, "/usr/share/fonts/TTF/PP821/PragmataPro.ttf", 13.0f); */
@@ -49,7 +59,7 @@ bool runTracker(struct tap_state* dataPtr, unsigned int width, unsigned int heig
 
     /* struct font_t* backupfont = loadTTF(NULL, "/usr/share/fonts/TTF/DroidSans.ttf", 13.0f); */
 
-    struct font_t* font = loadBitmapFont(NULL, "PP.png", "PP.bin");
+    struct font_t* font = loadBitmapFontFiles(NULL, "PP.png", "PP.bin");
 
     struct joystick_t* joystick = createJoystick(NULL, GLFW_JOYSTICK_1);
     struct game_t* game = createNewGame(NULL);
@@ -61,12 +71,13 @@ bool runTracker(struct tap_state* dataPtr, unsigned int width, unsigned int heig
     float scales[] = { 45.0f, 60.0f };
     int scaleIndex = 0;
 
-    struct layout_container_t* layout = createLayoutContainer(NULL, width, height, 14.0f, 2.0f);
+    struct layout_container_t* mainLayout = createLayoutContainer(NULL, width, height, 14.0f, 2.0f);
+    struct layout_container_t* subLayout  = createLayoutContainer(NULL, 128, 100, 14.0f, 2.0f);
 
-    addToContainerRatio(layout, &drawSectionGraph, 0.75f);
-    addToContainerRatio(layout, &drawSectionTable, 1.00f);
+    addToContainerRatio(mainLayout, &drawSectionGraph, 0.75f);
+    addToContainerRatio(mainLayout, &drawSectionTable, 1.00f);
 
-    /* addToContainerRatio(layout, &drawInputHistory, 1.00f); */
+    addToContainerRatio(subLayout, &drawInputHistory, 1.00f);
 
     struct draw_data_t data =
     {
@@ -93,22 +104,29 @@ bool runTracker(struct tap_state* dataPtr, unsigned int width, unsigned int heig
         // Update input history
         pushCharFromJoystick(history, joystick);
 
+        glfwMakeContextCurrent(window);
         setGLClearColor();
         glClear(GL_COLOR_BUFFER_BIT);
-
-        drawLayout(layout, &data, false);
-
+        drawLayout(mainLayout, &data, false);
         glfwSwapBuffers(window);
+
+        glfwMakeContextCurrent(subwindow);
+        setGLClearColor();
+        glClear(GL_COLOR_BUFFER_BIT);
+        drawLayout(subLayout, &data, false);
+        glfwSwapBuffers(subwindow);
     }
 
     destroyButtonSheet(bspec, true);
     destroyHistory(history, true);
-    destroyContainer(layout, true);
+    destroyContainer(mainLayout, true);
+    destroyContainer(subLayout, true);
     destroyGame(game, true);
     destroyJoystick(joystick, true);
     destroyFont(font, true);
 
     glfwDestroyWindow(window);
+    glfwDestroyWindow(subwindow);
     glfwTerminate();
 
     return true;

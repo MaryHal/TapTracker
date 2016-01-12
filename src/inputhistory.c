@@ -8,7 +8,7 @@
 
 #include <incbin.h>
 
-INCBIN(ButtonSheet, "src/key_button.png");
+INCBIN(ButtonSheet, "bin/key_button.png");
 
 struct button_spectrum_t* createButtonSheet(struct button_spectrum_t* bspec)
 {
