@@ -6,8 +6,8 @@
 
 #include "joystick.h"
 
-#define MAX_STRING_LENGTH 18
-#define HISTORY_LENGTH    8
+#define MAX_STRING_LENGTH 10
+#define HISTORY_LENGTH    10
 
 struct button_t
 {
