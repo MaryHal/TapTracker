@@ -17,6 +17,8 @@ struct button_spectrum_t* createButtonSheet(struct button_spectrum_t* bspec)
         bspec = (struct button_spectrum_t*)malloc(sizeof(struct button_spectrum_t));
     }
 
+    const int tileSize = 8;
+
     int width, height, n;
     uint8_t* bitmap = stbi_load_from_memory(gButtonSheetData, gButtonSheetSize, &width, &height, &n, 4);
 
@@ -35,14 +37,17 @@ struct button_spectrum_t* createButtonSheet(struct button_spectrum_t* bspec)
     {
         struct button_spectrum_quad_t* currentQuad = &bspec->quads[i];
 
-        currentQuad->texCoords[0] = (i * 8.0f) / width;
-        currentQuad->texCoords[1] = 0.0f;
-        currentQuad->texCoords[2] = (i * 8.0f + 8.0f) / width;
-        currentQuad->texCoords[3] = 0.0f;
-        currentQuad->texCoords[4] = (i * 8.0f + 8.0f) / width;
-        currentQuad->texCoords[5] = 1.0f;
-        currentQuad->texCoords[6] = (i * 8.0f) / width;
-        currentQuad->texCoords[7] = 1.0f;
+        // This also accounts for padding in our texture atlas (since we're
+        // using GL_LINEAR). Without the padding pixels, when we get some
+        // texture bleeding.
+        currentQuad->texCoords[0] = (float)(i * tileSize + i) / width;
+        currentQuad->texCoords[1] = (float)0.0f;
+        currentQuad->texCoords[2] = (float)(i * tileSize + i + tileSize) / width;
+        currentQuad->texCoords[3] = (float)0.0f;
+        currentQuad->texCoords[4] = (float)(i * tileSize + i + tileSize) / width;
+        currentQuad->texCoords[5] = (float)1.0f;
+        currentQuad->texCoords[6] = (float)(i * tileSize + i) / width;
+        currentQuad->texCoords[7] = (float)1.0f;
     }
 
     return bspec;
