@@ -3,6 +3,8 @@
 #include "game.h"
 
 #include "history.h"
+#include "inputhistory.h"
+
 #include "colortheme.h"
 
 #include <stdio.h>
@@ -176,14 +178,14 @@ void drawInputHistory(struct draw_data_t* data, float width, float height)
 {
     (void) width;
 
-    struct font_t* font = data->font;
     struct history_t* inputHistory = data->history;
+    struct button_spectrum_t* bspec = data->bspec;
 
     float x = 0.0f;
-    float y = font->pixelHeight;
+    float y = 0.0f;
 
     /* const float vertStride = height / HISTORY_LENGTH; */
-    const float vertStride = font->pixelHeight;
+    const float vertStride = 8.0f;
     const int maxIterations = height / vertStride;
 
     for (int i = inputHistory->end - maxIterations; i < inputHistory->end; i++)
@@ -193,23 +195,46 @@ void drawInputHistory(struct draw_data_t* data, float width, float height)
             continue;
         }
 
-        setGLColor(COLOR_FOREGROUND, 1.0f);
+        glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 
-        char levelString[32];
-        sprintf(levelString, "%d:", inputHistory->data[i % HISTORY_LENGTH].level);
-        drawString(font, x, y, levelString);
+        /* char levelString[32]; */
+        /* sprintf(levelString, "%d:", inputHistory->data[i % HISTORY_LENGTH].level); */
+        /* drawString(font, x, y, levelString); */
 
-        x = 32.0f;
+        /* x = 32.0f; */
 
         struct element_t* element = &inputHistory->data[i % HISTORY_LENGTH];
         for (size_t j = 0; j < element->size; j++)
         {
+            unsigned int index = element->spectrum[j].key;
             if (element->spectrum[j].held)
-                setGLColor(COLOR_TETRIS, 1.0f);
-            else
-                setGLColor(COLOR_FOREGROUND, 1.0f);
+                index += HELD_BUTTON_OFFSET;
 
-            drawChar(font, &x, &y, element->spectrum[j].key);
+            float vertices[8] =
+                {
+                    x + 0.0f, y + 0.0f,
+                    x + vertStride, y + 0.0f,
+                    x + vertStride, y + vertStride,
+                    x + 0.0f, y + vertStride
+                };
+
+            glEnable(GL_TEXTURE_2D);
+            glBindTexture(GL_TEXTURE_2D, bspec->textureID);
+
+            glEnableClientState(GL_VERTEX_ARRAY);
+            glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+            glVertexPointer(2, GL_FLOAT, 0, vertices);
+            glTexCoordPointer(2, GL_FLOAT, 0, bspec->quads[index].texCoords);
+
+            glDrawArrays(GL_QUADS, 0, 4);
+
+            glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+            glDisableClientState(GL_VERTEX_ARRAY);
+
+            glDisable(GL_TEXTURE_2D);
+
+            x += vertStride;
         }
 
         x = 0.0f;

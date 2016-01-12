@@ -5,6 +5,7 @@
 #include "draw.h"
 
 #include "joystick.h"
+#include "inputhistory.h"
 #include "colortheme.h"
 
 #include "layout.h"
@@ -54,6 +55,8 @@ bool runTracker(struct tap_state* dataPtr, unsigned int width, unsigned int heig
     struct game_t* game = createNewGame(NULL);
     struct history_t* history = createHistory(NULL);
 
+    struct button_spectrum_t* bspec = createButtonSheet(NULL);
+
     const int SCALE_COUNT = 2;
     float scales[] = { 45.0f, 60.0f };
     int scaleIndex = 0;
@@ -62,6 +65,7 @@ bool runTracker(struct tap_state* dataPtr, unsigned int width, unsigned int heig
 
     addToContainerRatio(layout, &drawSectionGraph, 0.75f);
     addToContainerRatio(layout, &drawSectionTable, 1.00f);
+
     /* addToContainerRatio(layout, &drawInputHistory, 1.00f); */
 
     struct draw_data_t data =
@@ -69,6 +73,7 @@ bool runTracker(struct tap_state* dataPtr, unsigned int width, unsigned int heig
         .game = game,
         .font = font,
         .history = history,
+        .bspec = bspec,
         .scale = scales[scaleIndex]
     };
 
@@ -96,6 +101,7 @@ bool runTracker(struct tap_state* dataPtr, unsigned int width, unsigned int heig
         glfwSwapBuffers(window);
     }
 
+    destroyButtonSheet(bspec, true);
     destroyHistory(history, true);
     destroyContainer(layout, true);
     destroyGame(game, true);

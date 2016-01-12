@@ -4,12 +4,14 @@
 struct game_t;
 struct font_t;
 struct history_t;
+struct button_spectrum_t;
 
 struct draw_data_t
 {
         struct game_t* game;
         struct font_t* font;
         struct history_t* history;
+        struct button_spectrum_t* bspec;
 
         float scale;
 };

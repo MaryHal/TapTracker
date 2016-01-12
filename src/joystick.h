@@ -13,7 +13,6 @@ enum MyButtons
     BUTTON_C = 3,
     BUTTON_COUNT = 4
 };
-extern char JoystickButtonLabels[BUTTON_COUNT];
 
 enum MyAxis
 {
