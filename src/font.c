@@ -290,46 +290,77 @@ void getPackedQuad(struct font_t* font, int codepoint,
 
 void drawChar(struct font_t* font, float* x, float* y, wchar_t c)
 {
+    stbtt_aligned_quad q;
+    getPackedQuad(font, c, x, y, 0, &q);
+
+    const float vertices[] =
+        {
+            q.x0, q.y0,
+            q.x1, q.y0,
+            q.x1, q.y1,
+            q.x0, q.y1,
+        };
+
+    const float texCoords[] =
+        {
+            q.s0, q.t0,
+            q.s1, q.t0,
+            q.s1, q.t1,
+            q.s0, q.t1,
+        };
+
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, font->texture);
 
-    glBegin(GL_QUADS);
-    {
-        stbtt_aligned_quad q;
-        getPackedQuad(font, c, x, y, 0, &q);
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
-        glTexCoord2f(q.s0,q.t0); glVertex2f(q.x0,q.y0);
-        glTexCoord2f(q.s1,q.t0); glVertex2f(q.x1,q.y0);
-        glTexCoord2f(q.s1,q.t1); glVertex2f(q.x1,q.y1);
-        glTexCoord2f(q.s0,q.t1); glVertex2f(q.x0,q.y1);
-    }
-    glEnd();
+    glVertexPointer(2, GL_FLOAT, 0, vertices);
+    glTexCoordPointer(2, GL_FLOAT, 0, texCoords);
+
+    glDrawArrays(GL_QUADS, 0, 4);
+
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    glDisableClientState(GL_VERTEX_ARRAY);
 
     glDisable(GL_TEXTURE_2D);
 }
 
 void drawString(struct font_t* font, float x, float y, const char* string)
 {
+    size_t len = strlen(string);
+    float vertices[len * 8];
+    float texCoords[len * 8];
+
+    for (size_t i = 0; i < len; ++i)
+    {
+        stbtt_aligned_quad q;
+        getPackedQuad(font, string[i], &x, &y, 0, &q);
+
+        vertices[i * 8 + 0] = q.x0; vertices[i * 8 + 1] = q.y0;
+        vertices[i * 8 + 2] = q.x1; vertices[i * 8 + 3] = q.y0;
+        vertices[i * 8 + 4] = q.x1; vertices[i * 8 + 5] = q.y1;
+        vertices[i * 8 + 6] = q.x0; vertices[i * 8 + 7] = q.y1;
+
+        texCoords[i * 8 + 0] = q.s0; texCoords[i * 8 + 1] = q.t0;
+        texCoords[i * 8 + 2] = q.s1; texCoords[i * 8 + 3] = q.t0;
+        texCoords[i * 8 + 4] = q.s1; texCoords[i * 8 + 5] = q.t1;
+        texCoords[i * 8 + 6] = q.s0; texCoords[i * 8 + 7] = q.t1;
+    }
+
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, font->texture);
 
-    for (;*string != '\0'; ++string)
-    {
-        drawChar(font, &x, &y, *string);
-    }
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
-    glDisable(GL_TEXTURE_2D);
-}
+    glVertexPointer(2, GL_FLOAT, 0, vertices);
+    glTexCoordPointer(2, GL_FLOAT, 0, texCoords);
 
-void drawWideString(struct font_t* font, float x, float y, const wchar_t* string)
-{
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, font->texture);
+    glDrawArrays(GL_QUADS, 0, len * 4);
 
-    for (;*string != '\0'; ++string)
-    {
-        drawChar(font, &x, &y, *string);
-    }
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    glDisableClientState(GL_VERTEX_ARRAY);
 
     glDisable(GL_TEXTURE_2D);
 }
@@ -342,7 +373,7 @@ float getStringWidth(struct font_t* font, const char* string)
     for (;*string != '\0'; ++string)
     {
         stbtt_aligned_quad q;
-        getPackedQuad(font, *string, &x, &y, 1, &q);
+        getPackedQuad(font, *string, &x, &y, 0, &q);
     }
 
     return x;
