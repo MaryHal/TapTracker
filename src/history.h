@@ -48,4 +48,6 @@ void popHistoryElement(struct history_t* history);
 struct joystick_t;
 void pushCharFromJoystick(struct history_t* history, struct joystick_t* joystick);
 
+unsigned int joystickButtonToSheetIndex(unsigned int button);
+
 #endif /* HISTORY_H */

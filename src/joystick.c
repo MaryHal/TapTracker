@@ -10,11 +10,6 @@
 
 #include <GLFW/glfw3.h>
 
-char JoystickButtonLabels[BUTTON_COUNT] =
-{
-    'D', 'A', 'B', 'C'
-};
-
 struct joystick_t* createJoystick(struct joystick_t* joystick, int joystickNum)
 {
     if (!glfwJoystickPresent(joystickNum))
@@ -45,7 +40,7 @@ void updateButtons(struct joystick_t* joystick)
 {
     if (!joystick)
         return;
-    
+
     memcpy(joystick->prevButtons, joystick->buttons, 16);
     memcpy(joystick->prevAxis, joystick->axis, 8);
 

@@ -2,7 +2,7 @@ ninja_required_version = 1.3
 ar = ar
 cxx = clang
 cxxflags = -Wall -Wextra -pedantic -pedantic-errors -std=c11 -g -O0 -DDEBUG $
-    -isystem./ext/uthash/include -isystem./ext/stb
+    -isystem./ext/uthash/include -isystem./ext/stb -isystem./ext/incbin
 ldflags = -lGL -lglfw -lm -lrt
 
 rule bootstrap
@@ -22,6 +22,7 @@ rule ar
 
 build build.ninja: bootstrap | bootstrap.py
 build obj/src/layout.o: compile src/layout.c
+build obj/src/inputhistory.o: compile src/inputhistory.c
 build obj/src/history.o: compile src/history.c
 build obj/src/tracker.o: compile src/tracker.c
 build obj/src/joystick.o: compile src/joystick.c
@@ -33,7 +34,7 @@ build obj/src/game.o: compile src/game.c
 build obj/src/draw.o: compile src/draw.c
 build obj/src/stb_truetype_impl.o: compile src/stb_truetype_impl.c
 
-build ./bin/TapTracker: link obj/src/layout.o obj/src/history.o $
-    obj/src/tracker.o obj/src/joystick.o obj/src/font.o $
+build ./bin/TapTracker: link obj/src/layout.o obj/src/inputhistory.o $
+    obj/src/history.o obj/src/tracker.o obj/src/joystick.o obj/src/font.o $
     obj/src/colortheme.o obj/src/main.o obj/src/fumen.o obj/src/game.o $
     obj/src/draw.o obj/src/stb_truetype_impl.o
