@@ -17,6 +17,12 @@ char JoystickButtonLabels[BUTTON_COUNT] =
 
 struct joystick_t* createJoystick(struct joystick_t* joystick, int joystickNum)
 {
+    if (!glfwJoystickPresent(joystickNum))
+    {
+        perror("Requested joystick ID not found");
+        return NULL;
+    }
+
     if (joystick == NULL)
     {
         joystick = (struct joystick_t*) malloc(sizeof(struct joystick_t));
@@ -25,11 +31,6 @@ struct joystick_t* createJoystick(struct joystick_t* joystick, int joystickNum)
     joystick->id = joystickNum;
     joystick->buttonCount = 0;
     joystick->axisCount = 0;
-
-    if (!glfwJoystickPresent(joystick->id))
-    {
-        perror("Requested joystick ID not found.");
-    }
 
     return joystick;
 }
@@ -42,6 +43,9 @@ void destroyJoystick(struct joystick_t* joystick, bool freeMe)
 
 void updateButtons(struct joystick_t* joystick)
 {
+    if (!joystick)
+        return;
+    
     memcpy(joystick->prevButtons, joystick->buttons, 16);
     memcpy(joystick->prevAxis, joystick->axis, 8);
 
@@ -65,56 +69,86 @@ void updateButtons(struct joystick_t* joystick)
 
 unsigned char getButtonState(struct joystick_t* joystick, int buttonID)
 {
+    if (!joystick)
+        return 0;
+
     assert(buttonID >= 0 && buttonID < joystick->buttonCount);
     return joystick->buttons[buttonID];
 }
 
 unsigned char getPrevButtonState(struct joystick_t* joystick, int buttonID)
 {
+    if (!joystick)
+        return 0;
+
     assert(buttonID >= 0 && buttonID < joystick->buttonCount);
     return joystick->prevButtons[buttonID];
 }
 
 char getAxisState(struct joystick_t* joystick, int axisID)
 {
+    if (!joystick)
+        return 0;
+
     assert(axisID >= 0 && axisID < joystick->axisCount);
     return joystick->axis[axisID];
 }
 
 char getPrevAxisState(struct joystick_t* joystick, int axisID)
 {
+    if (!joystick)
+        return 0;
+
     assert(axisID >= 0 && axisID < joystick->axisCount);
     return joystick->prevAxis[axisID];
 }
 
 bool buttonChange(struct joystick_t* joystick, int buttonID)
 {
+    if (!joystick)
+        return 0;
+
     assert(buttonID >= 0 && buttonID < joystick->buttonCount);
     return joystick->buttons[buttonID] != joystick->prevButtons[buttonID];
 }
 
 bool axisChange(struct joystick_t* joystick, int axisID)
 {
+    if (!joystick)
+        return 0;
+
     assert(axisID >= 0 && axisID < joystick->axisCount);
     return joystick->axis[axisID] != joystick->prevAxis[axisID];
 }
 
 bool buttonChangedFromState(struct joystick_t* joystick, int buttonID, int state)
 {
+    if (!joystick)
+        return 0;
+
     return buttonChange(joystick, buttonID) && getPrevButtonState(joystick, buttonID) == state;
 }
 
 bool buttonChangedToState(struct joystick_t* joystick, int buttonID, int state)
 {
+    if (!joystick)
+        return 0;
+
     return buttonChange(joystick, buttonID) && getButtonState(joystick, buttonID) == state;
 }
 
 bool axisChangedFromState(struct joystick_t* joystick, int axisID, int state)
 {
+    if (!joystick)
+        return 0;
+
     return axisChange(joystick, axisID) && getPrevAxisState(joystick, axisID) == state;
 }
 
 bool axisChangedToState(struct joystick_t* joystick, int axisID, int state)
 {
+    if (!joystick)
+        return 0;
+
     return axisChange(joystick, axisID) && getAxisState(joystick, axisID) == state;
 }
