@@ -67,10 +67,6 @@ void drawSectionGraph(struct draw_data_t* data, float width, float height)
     struct datapoint_t prevDatapoint = { 0, 0 };
     float sectionAlpha = 0.04f;
 
-    const size_t MAX_SECTION = 150;
-    float sectionLineVertices[MAX_SECTION * 2];
-    float sectionLineColors[MAX_SECTION * 4];
-
     for (int i = game->currentSection - 2; i <= (signed)game->currentSection; ++i)
     {
         if (i < 0)
