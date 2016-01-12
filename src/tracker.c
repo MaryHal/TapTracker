@@ -37,13 +37,13 @@ bool runTracker(struct tap_state* dataPtr, unsigned int width, unsigned int heig
     glfwMakeContextCurrent(window);
     setupOpenGL(width, height);
 
-    subwindow = glfwCreateWindow(128, 100,
+    subwindow = glfwCreateWindow(96, 112,
                                  "TapTracker ButtonSpectrum",
                                  NULL,
                                  window);
 
     glfwMakeContextCurrent(subwindow);
-    setupOpenGL(128, 100);
+    setupOpenGL(104, 88);
 
     if (window == NULL || subwindow == NULL)
     {
@@ -72,7 +72,7 @@ bool runTracker(struct tap_state* dataPtr, unsigned int width, unsigned int heig
     int scaleIndex = 0;
 
     struct layout_container_t* mainLayout = createLayoutContainer(NULL, width, height, 14.0f, 2.0f);
-    struct layout_container_t* subLayout  = createLayoutContainer(NULL, 128, 100, 14.0f, 2.0f);
+    struct layout_container_t* subLayout  = createLayoutContainer(NULL, 104, 104, 4.0f, 0.0f);
 
     addToContainerRatio(mainLayout, &drawSectionGraph, 0.75f);
     addToContainerRatio(mainLayout, &drawSectionTable, 1.00f);

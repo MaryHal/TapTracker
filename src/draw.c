@@ -184,9 +184,12 @@ void drawInputHistory(struct draw_data_t* data, float width, float height)
     float x = 0.0f;
     float y = 0.0f;
 
-    /* const float vertStride = height / HISTORY_LENGTH; */
-    const float vertStride = 8.0f;
+    const int tileSize = 12;
+    const int margin = 2;
+    const int vertStride = tileSize + margin;
     const int maxIterations = height / vertStride;
+
+    /* printf("%f / %d = %d\n", height, vertStride, maxIterations); */
 
     for (int i = inputHistory->end - maxIterations; i < inputHistory->end; i++)
     {
@@ -196,12 +199,6 @@ void drawInputHistory(struct draw_data_t* data, float width, float height)
         }
 
         glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-
-        /* char levelString[32]; */
-        /* sprintf(levelString, "%d:", inputHistory->data[i % HISTORY_LENGTH].level); */
-        /* drawString(font, x, y, levelString); */
-
-        /* x = 32.0f; */
 
         struct element_t* element = &inputHistory->data[i % HISTORY_LENGTH];
         for (size_t j = 0; j < element->size; j++)
@@ -215,9 +212,9 @@ void drawInputHistory(struct draw_data_t* data, float width, float height)
             float vertices[8] =
                 {
                     x + 0.0f, y + 0.0f,
-                    x + vertStride, y + 0.0f,
-                    x + vertStride, y + vertStride,
-                    x + 0.0f, y + vertStride
+                    x + tileSize, y + 0.0f,
+                    x + tileSize, y + tileSize,
+                    x + 0.0f, y + tileSize
                 };
 
             glEnable(GL_TEXTURE_2D);
@@ -236,7 +233,7 @@ void drawInputHistory(struct draw_data_t* data, float width, float height)
 
             glDisable(GL_TEXTURE_2D);
 
-            x += vertStride;
+            x += tileSize;
         }
 
         x = 0.0f;

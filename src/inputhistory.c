@@ -27,8 +27,8 @@ struct button_spectrum_t* createButtonSheet(struct button_spectrum_t* bspec)
                  width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, bitmap);
 
     // can free bitmap at this point
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     // Setup coordinates
     for (size_t i = 0; i < INPUT_COUNT; ++i)
