@@ -185,7 +185,7 @@ struct font_t* loadTTF(struct font_t* font, const char* filename, float pixelHei
     return font;
 }
 
-struct font_t* loadBitmapFont(struct font_t* font, const char* imgFile, const char* binFile)
+struct font_t* loadBitmapFontFiles(struct font_t* font, const char* imgFile, const char* binFile)
 {
     if (font == NULL)
     {

@@ -208,7 +208,9 @@ void drawInputHistory(struct draw_data_t* data, float width, float height)
         {
             unsigned int index = element->spectrum[j].key;
             if (element->spectrum[j].held)
+            {
                 index += HELD_BUTTON_OFFSET;
+            }
 
             float vertices[8] =
                 {
