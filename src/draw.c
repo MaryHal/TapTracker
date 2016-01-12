@@ -39,33 +39,38 @@ void drawSectionGraph(struct draw_data_t* data, float width, float height)
     const float graphWidth  = width;
     const float graphHeight = height - font->pixelHeight;
 
-    // Gridlines
+    // Gridlines (without axis lines)
     setGLColor(COLOR_FOREGROUND, 0.1f);
+    float gridlines[4 * 20];
     for (int i = 0; i < 10; ++i)
     {
         // Vertical lines
-        glBegin(GL_LINES);
-        {
-            glVertex2f(graphWidth * (i + 1) / 10.0f, graphHeight);
-            glVertex2f(graphWidth * (i + 1) / 10.0f, 0.0f);
-        }
-        glEnd();
+        gridlines[i * 8 + 0] = graphWidth * (i + 1) / 10.0f;
+        gridlines[i * 8 + 1] = graphHeight;
+        gridlines[i * 8 + 2] = graphWidth * (i + 1) / 10.0f;
+        gridlines[i * 8 + 3] = 0.0f;
 
         // Horizontal lines
-        glBegin(GL_LINES);
-        {
-            glVertex2f(0.0f, graphHeight * i / 10.0f);
-            glVertex2f(graphWidth, graphHeight * i / 10.0f);
-        }
-        glEnd();
+        gridlines[i * 8 + 4] = 0.0f;
+        gridlines[i * 8 + 5] = graphHeight * i / 10.0f;
+        gridlines[i * 8 + 6] = graphWidth;
+        gridlines[i * 8 + 7] = graphHeight * i / 10.0f;
     }
-
-    float x = 0.0f;
-    float y = 0.0f;
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glVertexPointer(2, GL_FLOAT, 0, gridlines);
+    glDrawArrays(GL_LINES, 0, 2 * 20);
+    glDisableClientState(GL_VERTEX_ARRAY);
 
     // Section-Level lines
+    float x = 0.0f;
+    float y = 0.0f;
     struct datapoint_t prevDatapoint = { 0, 0 };
     float sectionAlpha = 0.04f;
+
+    const size_t MAX_SECTION = 150;
+    float sectionLineVertices[MAX_SECTION * 2];
+    float sectionLineColors[MAX_SECTION * 4];
+
     for (int i = game->currentSection - 2; i <= (signed)game->currentSection; ++i)
     {
         if (i < 0)
@@ -119,7 +124,7 @@ void drawSectionGraph(struct draw_data_t* data, float width, float height)
         sectionAlpha *= 5;
     }
 
-    // Print level
+    // Print level at top of section line
     char levelStr[16];
     sprintf(levelStr, "%d", prevDatapoint.level);
 
@@ -127,50 +132,48 @@ void drawSectionGraph(struct draw_data_t* data, float width, float height)
     drawString(font, x + 4.0f, y - 4.0f, levelStr);
 
     // Draw axis
-    {
-        setGLColor(COLOR_FOREGROUND, 1.0f);
-        glBegin(GL_LINES);
+    float axisLines[8] =
         {
-            glVertex2f(0.0f, 0.0f);
-            glVertex2f(0.0f, graphHeight);
-        }
-        glEnd();
+            // Vertical
+            0.0f, 0.0f,
+            0.0f, graphHeight,
 
-        glBegin(GL_LINES);
-        {
-            glVertex2f(0.0f, graphHeight);
-            glVertex2f(graphWidth, graphHeight);
-        }
-        glEnd();
+            // Horizontal
+            0.0f, graphHeight,
+            graphWidth, graphHeight
+        };
 
-        float strWidth = getStringWidth(font, "Section Time");
-        drawString(font, (width - strWidth) / 2, graphHeight + font->pixelHeight, "Section Time");
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glVertexPointer(2, GL_FLOAT, 0, axisLines);
+    glDrawArrays(GL_LINES, 0, 4);
+    glDisableClientState(GL_VERTEX_ARRAY);
 
-        sprintf(levelStr, "%d", (int)scale);
-        drawString(font, width - 10.0f, graphHeight + font->pixelHeight, levelStr);
-    }
+    // Draw axis labels
+    float strWidth = getStringWidth(font, "Section Time");
+    drawString(font, (width - strWidth) / 2, graphHeight + font->pixelHeight, "Section Time");
+
+    sprintf(levelStr, "%d", (int)scale);
+    drawString(font, width - 10.0f, graphHeight + font->pixelHeight, levelStr);
 
     // Draw grade and grade points
-    {
-        if (testMasterConditions(game))
-            glColor4f(0.3f, 1.0f, 0.3f, 1.0f);
-        else
-            glColor4f(1.0f, 0.3f, 0.3f, 1.0f);
+    if (testMasterConditions(game))
+        glColor4f(0.3f, 1.0f, 0.3f, 1.0f);
+    else
+        glColor4f(1.0f, 0.3f, 0.3f, 1.0f);
 
-        sprintf(levelStr, "%2d %2d",
-                game->curState.grade,
-                game->curState.gradePoints);
-        drawString(font, width - 28.0f, graphHeight - 2.0f, levelStr);
+    sprintf(levelStr, "%2d %2d",
+            game->curState.grade,
+            game->curState.gradePoints);
+    drawString(font, width - 28.0f, graphHeight - 2.0f, levelStr);
 
-        /* // Draw some block data */
-        /* sprintf(levelStr, "%d %d %d %d %d", */
-        /*         game->currentBlock, */
-        /*         game->nextBlock, */
-        /*         game->currentBlockX, */
-        /*         game->currentBlockY, */
-        /*         game->currentRotState); */
-        /* drawString(font, width - 100.0f, graphHeight - 40, levelStr); */
-    }
+    /* // Draw some block data */
+    /* sprintf(levelStr, "%d %d %d %d %d", */
+    /*         game->currentBlock, */
+    /*         game->nextBlock, */
+    /*         game->currentBlockX, */
+    /*         game->currentBlockY, */
+    /*         game->currentRotState); */
+    /* drawString(font, width - 100.0f, graphHeight - 40, levelStr); */
 }
 
 void drawInputHistory(struct draw_data_t* data, float width, float height)
