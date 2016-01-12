@@ -22,12 +22,12 @@ bool runTracker(struct tap_state* dataPtr, unsigned int width, unsigned int heig
         return false;
     }
 
+    GLFWwindow* window = NULL;
+    GLFWwindow* subwindow = NULL;
+
     glfwWindowHint(GLFW_RESIZABLE, false);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-
-    GLFWwindow* window = NULL;
-    GLFWwindow* subwindow = NULL;
 
     window = glfwCreateWindow(width, height,
                               "TapTracker",
@@ -36,6 +36,10 @@ bool runTracker(struct tap_state* dataPtr, unsigned int width, unsigned int heig
 
     glfwMakeContextCurrent(window);
     setupOpenGL(width, height);
+
+    glfwWindowHint(GLFW_RESIZABLE, false);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 
     subwindow = glfwCreateWindow(96, 112,
                                  "TapTracker ButtonSpectrum",
@@ -88,7 +92,7 @@ bool runTracker(struct tap_state* dataPtr, unsigned int width, unsigned int heig
         .scale = scales[scaleIndex]
     };
 
-    while (!glfwWindowShouldClose(window))
+    while (!glfwWindowShouldClose(window) && !glfwWindowShouldClose(subwindow))
     {
         updateGameState(game, history, dataPtr);
 
