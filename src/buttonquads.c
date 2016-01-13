@@ -1,4 +1,4 @@
-#include "inputhistory.h"
+#include "buttonquads.h"
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -6,8 +6,8 @@
 #include <stb_image.h>
 #include <GLFW/glfw3.h>
 
+#define INCBIN_PREFIX g_
 #include <incbin.h>
-
 INCBIN(ButtonSheet, "bin/key_button.png");
 
 struct button_spectrum_t* createButtonSheet(struct button_spectrum_t* bspec)
@@ -20,7 +20,7 @@ struct button_spectrum_t* createButtonSheet(struct button_spectrum_t* bspec)
     const int tileSize = 8;
 
     int width, height, n;
-    uint8_t* bitmap = stbi_load_from_memory(gButtonSheetData, gButtonSheetSize, &width, &height, &n, 4);
+    uint8_t* bitmap = stbi_load_from_memory(g_ButtonSheetData, g_ButtonSheetSize, &width, &height, &n, 4);
 
     glGenTextures(1, &bspec->textureID);
     glBindTexture(GL_TEXTURE_2D, bspec->textureID);
@@ -28,12 +28,13 @@ struct button_spectrum_t* createButtonSheet(struct button_spectrum_t* bspec)
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
                  width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, bitmap);
 
-    // can free bitmap at this point
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
+    stbi_image_free(bitmap);
+
     // Setup coordinates
-    for (size_t i = 0; i < INPUT_COUNT; ++i)
+    for (size_t i = 0; i < BUTTON_INDEX_COUNT; ++i)
     {
         struct button_spectrum_quad_t* currentQuad = &bspec->quads[i];
 
@@ -60,4 +61,3 @@ void destroyButtonSheet(struct button_spectrum_t* bspec, bool freeMe)
     if (freeMe)
         free(bspec);
 }
-

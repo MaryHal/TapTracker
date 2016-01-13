@@ -17,6 +17,7 @@ extern float LIGHT_THEME[NUM_COLORS][3];
 
 extern float (*colortheme)[NUM_COLORS][3];
 
+const float* getColorFromTheme(unsigned int colorIndex);
 void setColorTheme(float (*theme)[NUM_COLORS][3]);
 void setGLColor(unsigned int colorIndex, float alpha);
 void setGLClearColor();

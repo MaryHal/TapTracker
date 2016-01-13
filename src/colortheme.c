@@ -26,6 +26,13 @@ float LIGHT_THEME[NUM_COLORS][3] =
 // Set default theme
 float (*colortheme)[NUM_COLORS][3] = &DARK_THEME;
 
+const float* getColorFromTheme(unsigned int colorIndex)
+{
+    assert(colorIndex < NUM_COLORS);
+
+    return (*colortheme)[colorIndex];
+}
+
 void setColorTheme(float (*theme)[NUM_COLORS][3])
 {
     colortheme = theme;
