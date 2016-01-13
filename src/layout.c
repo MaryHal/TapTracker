@@ -63,6 +63,8 @@ void addToContainerFixed(struct layout_container_t* container, draw_function_p d
 
 void drawLayout(struct layout_container_t* container, struct draw_data_t* data_container, bool debug)
 {
+    float vertices[8];
+
     glPushMatrix();
     glTranslatef(container->outerMargin, container->outerMargin, 0.0f);
 
@@ -82,34 +84,48 @@ void drawLayout(struct layout_container_t* container, struct draw_data_t* data_c
 
             if (debug)
             {
+                // Draw inner area
                 glColor4f(0.0f, 0.0f, 1.0f, 1.0f);
-                glBegin(GL_LINE_LOOP);
-                {
-                    glVertex2f(0.0f, 0.0f);
-                    glVertex2f(adjustedWidth, 0.0f);
-                    glVertex2f(adjustedWidth, adjustedHeight);
-                    glVertex2f(0.0f, adjustedHeight);
-                }
-                glEnd();
+
+                vertices[0] = 0.0f;
+                vertices[1] = 0.0f;
+                vertices[2] = adjustedWidth;
+                vertices[3] = 0.0f;
+                vertices[4] = adjustedWidth;
+                vertices[5] = adjustedHeight;
+                vertices[6] = 0.0f;
+                vertices[7] = adjustedHeight;
+
+                glEnableClientState(GL_VERTEX_ARRAY);
+
+                glVertexPointer(2, GL_FLOAT, 0, vertices);
+                glDrawArrays(GL_LINE_LOOP, 0, 4);
+
+                glDisableClientState(GL_VERTEX_ARRAY);
             }
         }
         glPopMatrix();
 
         if (debug)
         {
-            glPushMatrix();
-            {
-                glColor4f(1.0f, 0.0f, 0.0f, 1.0f);
-                glBegin(GL_LINE_LOOP);
-                {
-                    glVertex2f(e->x, e->y);
-                    glVertex2f(e->x + e->width, e->y);
-                    glVertex2f(e->x + e->width, e->y + e->height);
-                    glVertex2f(e->x, e->y + e->height);
-                }
-                glEnd();
-            }
-            glPopMatrix();
+            // Draw outer area
+            glColor4f(1.0f, 0.0f, 0.0f, 1.0f);
+
+            vertices[0] = e->x;
+            vertices[1] = e->y;
+            vertices[0] = e->x + e->width;
+            vertices[1] = e->y;
+            vertices[0] = e->x + e->width;
+            vertices[1] = e->y + e->height;
+            vertices[0] = e->x;
+            vertices[1] = e->y + e->height;
+
+            glEnableClientState(GL_VERTEX_ARRAY);
+
+            glVertexPointer(2, GL_FLOAT, 0, vertices);
+            glDrawArrays(GL_LINE_LOOP, 0, 4);
+
+            glDisableClientState(GL_VERTEX_ARRAY);
         }
     }
     glPopMatrix();
