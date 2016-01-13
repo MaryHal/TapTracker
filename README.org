@@ -105,7 +105,7 @@ All these addresses are for player 1. I still need to double check some of these
 | 0x06064BD0 | int8_t  | M-Roll Progress State        |                                    |
 | 0x06066845 | int8_t  | M-Roll Flag                  |                                    |
 | 0x06064C25 | int8_t  | Section Index                |                                    |
-| 0x06064BA4 | int16_t | Current Game Mode            | See Below for corresponding values |
+| 0x06064BA4 | int16_t | Current Game Mode            | See below for corresponding values |
 
 *** Block Indices
 | Index | Block |
@@ -148,7 +148,7 @@ All these addresses are for player 1. I still need to double check some of these
 **** Game Mode
 | Value          | Mode |
 |----------------+------|
-| No Game State  |    0 |
+| No Game Mode   |    0 |
 | Normal         |    1 |
 | Master         |    2 |
 | Doubles        |    4 |

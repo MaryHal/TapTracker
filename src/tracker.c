@@ -4,6 +4,8 @@
 #include "font.h"
 #include "draw.h"
 
+#include "sectiontime.h"
+
 #include "joystick.h"
 #include "buttonquads.h"
 
@@ -59,34 +61,40 @@ bool runTracker(struct tap_state* dataPtr)
     struct button_spectrum_t bspec;
     createButtonSpriteSheet(&bspec);
 
+    struct section_table_t table;
+    section_table_init(&table);
+
     struct draw_data_t data =
     {
         .game = &game,
         .font = &font,
         .history = &history,
         .bspec = &bspec,
+        .table = &table,
         .scale = 60.0f
     };
 
     while (!glfwWindowShouldClose(mainWindow.handle) &&
            !glfwWindowShouldClose(subWindow.handle))
     {
-        updateGameState(&game, &history, dataPtr);
+        updateGameState(&game, &history, &table, dataPtr);
 
-        glfwPollEvents();
-
-        updateButtons(&joystick);
         if (game.curState.gameMode == TAP_MODE_DEATH)
             data.scale = 45.0f;
         else
             data.scale = 60.0f;
 
+        glfwPollEvents();
+
         // Update input history
+        updateButtons(&joystick);
         pushCharFromJoystick(&history, &joystick);
 
         drawWindowLayout(&mainWindow, &data);
         drawWindowLayout(&subWindow, &data);
     }
+
+    section_table_terminate(&table);
 
     destroyButtonSpriteSheet(&bspec, false);
     destroyHistory(&history, false);
