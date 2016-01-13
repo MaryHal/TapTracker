@@ -22,6 +22,8 @@
 #define MASTER_S9_INTERNAL_GRADE 31
 #define GRADE_COUNT 32
 
+struct section_table_t;
+
 extern const char* DISPLAYED_GRADE[GRADE_COUNT];
 
 float frameTimeToSeconds(int frames);
@@ -110,10 +112,11 @@ bool isInPlayingState(char game);
 
 // Load game state from MAME into our game structure. This also handles adding
 // data points to our section data.
-void updateGameState(struct game_t* game, struct history_t* inputHistory, struct tap_state* dataPtr);
+void updateGameState(struct game_t* game, struct history_t* inputHistory, struct section_table_t* table,
+                     struct tap_state* dataPtr);
 
 // Adds datapoint to section data if level has incremented.
-void pushCurrentState(struct game_t* game);
+void pushCurrentState(struct game_t* game, struct section_table_t* table);
 void addDataPointToSection(struct game_t* game, struct section_t* section);
 
 // Returns section data for a single section.

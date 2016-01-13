@@ -2,6 +2,8 @@
 #include "font.h"
 #include "game.h"
 
+#include "sectiontime.h"
+
 #include "history.h"
 #include "buttonquads.h"
 
@@ -245,6 +247,7 @@ void drawSectionTable(struct draw_data_t* data, float width, float height)
 
     struct game_t* game = data->game;
     struct font_t* font = data->font;
+    struct section_table_t* table = data->table;
 
     const float vertStride = font->pixelHeight;
     const int maxIterations = height / vertStride;
@@ -264,11 +267,13 @@ void drawSectionTable(struct draw_data_t* data, float width, float height)
 
         // Calculate how long this section took / is taking.
         float sectionTime = 0.0f;
+
+        // Section is complete
         if (game->curState.level >= (i + 1) * SECTION_LENGTH || game->curState.level >= LEVEL_MAX)
         {
-            sectionTime = frameTimeToSeconds(section->endTime - section->startTime);
+            sectionTime = frameTimeToSeconds(table->times[i].current);
         }
-        else
+        else // Section is still in progress
         {
             sectionTime = frameTimeToSeconds(game->curState.timer - section->startTime);
         }
