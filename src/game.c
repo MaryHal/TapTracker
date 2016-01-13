@@ -1,4 +1,5 @@
 #include "game.h"
+#include "sectiontime.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -49,7 +50,7 @@ void resetGame(struct game_t* game)
     memset(game, 0, sizeof(struct game_t));
 
     // Push an initial (blank) data point from the game's initial state.
-    pushCurrentState(game);
+    pushCurrentState(game, NULL);
 }
 
 bool isGameComplete(struct game_t* game)
@@ -63,7 +64,8 @@ bool isInPlayingState(char state)
     return state != TAP_NONE && state != TAP_IDLE && state != TAP_STARTUP;
 }
 
-void updateGameState(struct game_t* game, struct history_t* inputHistory, struct tap_state* dataPtr)
+void updateGameState(struct game_t* game, struct history_t* inputHistory, struct section_table_t* table,
+                     struct tap_state* dataPtr)
 {
     game->prevState = game->curState;
 
@@ -79,7 +81,7 @@ void updateGameState(struct game_t* game, struct history_t* inputHistory, struct
     if (isInPlayingState(game->curState.state) && game->curState.level - game->prevState.level > 0)
     {
         // Push a data point based on the newly acquired game state.
-        pushCurrentState(game);
+        pushCurrentState(game, table);
     }
 
     if (game->prevState.state != TAP_ACTIVE && game->curState.state == TAP_ACTIVE)
@@ -90,12 +92,14 @@ void updateGameState(struct game_t* game, struct history_t* inputHistory, struct
     // Check if a game has ended
     if (isInPlayingState(game->prevState.state) && !isInPlayingState(game->curState.state))
     {
+        updateSectionTime(table, game->prevState.gameMode);
+
         resetGame(game);
         resetHistory(inputHistory);
     }
 }
 
-void pushCurrentState(struct game_t* game)
+void pushCurrentState(struct game_t* game, struct section_table_t* table)
 {
     assert(game->currentSection >= 0 && game->currentSection < SECTION_COUNT);
 
@@ -110,15 +114,18 @@ void pushCurrentState(struct game_t* game)
         if (section->endTime == 0)
         {
             section->endTime = game->prevState.timer;
+
+            int tempTime = game->curState.timer;
+            game->curState.timer = game->prevState.timer;
+
+            addDataPointToSection(game, section);
+
+            // Log section time
+            setSectionTableTime(table, game->currentSection, section->endTime - section->startTime);
+
+            // For consistency, restore original time value.
+            game->curState.timer = tempTime;
         }
-
-        int tempTime = game->curState.timer;
-        game->curState.timer = game->prevState.timer;
-
-        addDataPointToSection(game, section);
-
-        // For consistency, restore original time value.
-        game->curState.timer = tempTime;
 
         return;
     }
@@ -129,6 +136,9 @@ void pushCurrentState(struct game_t* game)
     {
         section->endTime = game->curState.timer;
         addDataPointToSection(game, section);
+
+        // Log section time
+        setSectionTableTime(table, game->currentSection, section->endTime - section->startTime);
 
         // Section advance!
         game->currentSection++;
