@@ -10,7 +10,7 @@
 #include <incbin.h>
 INCBIN(ButtonSheet, "bin/key_button.png");
 
-struct button_spectrum_t* createButtonSheet(struct button_spectrum_t* bspec)
+struct button_spectrum_t* createButtonSpriteSheet(struct button_spectrum_t* bspec)
 {
     if (!bspec)
     {
@@ -54,7 +54,7 @@ struct button_spectrum_t* createButtonSheet(struct button_spectrum_t* bspec)
     return bspec;
 }
 
-void destroyButtonSheet(struct button_spectrum_t* bspec, bool freeMe)
+void destroyButtonSpriteSheet(struct button_spectrum_t* bspec, bool freeMe)
 {
     glDeleteTextures(1, &bspec->textureID);
 

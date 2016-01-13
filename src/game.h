@@ -27,7 +27,7 @@ extern const char* DISPLAYED_GRADE[GRADE_COUNT];
 float frameTimeToSeconds(int frames);
 int frameTime(float seconds);
 
-enum
+enum tap_internal_state
 {
     TAP_NONE         = 0,
     TAP_START        = 1,
@@ -42,7 +42,7 @@ enum
     TAP_STARTUP      = 71
 };
 
-enum
+enum tap_mroll_flags
 {
     M_FAIL_1   = 17,
     M_FAIL_2   = 19,
@@ -52,6 +52,23 @@ enum
     M_PASS_1   = 49,
     M_PASS_2   = 51,
     M_SUCCESS  = 127,
+};
+
+enum tap_game_mode
+{
+    TAP_MODE_NULL           = 0,
+    TAP_MODE_NORMAL         = 1,
+    TAP_MODE_MASTER         = 2,
+    TAP_MODE_DOUBLES        = 4,
+    TAP_MODE_NORMAL_VERSUS  = 9,
+    TAP_MODE_MASTER_VERSUS  = 10,
+    TAP_MODE_MASTER_CREDITS = 18,
+    TAP_MODE_TGMPLUS_VERSUS = 136,
+    TAP_MODE_TGMPLUS        = 128,
+    TAP_MODE_MASTER_ITEM    = 514,
+    TAP_MODE_TGMPLUS_ITEM   = 640,
+    TAP_MODE_DEATH          = 4096,
+    TAP_MODE_DEATH_VERSUS   = 4104
 };
 
 struct datapoint_t

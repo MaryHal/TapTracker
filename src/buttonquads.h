@@ -38,7 +38,7 @@ struct button_spectrum_t
         struct button_spectrum_quad_t quads[BUTTON_INDEX_COUNT];
 };
 
-struct button_spectrum_t* createButtonSheet(struct button_spectrum_t* bspec);
-void destroyButtonSheet(struct button_spectrum_t* bspec, bool freeMe);
+struct button_spectrum_t* createButtonSpriteSheet(struct button_spectrum_t* bspec);
+void destroyButtonSpriteSheet(struct button_spectrum_t* bspec, bool freeMe);
 
 #endif /* BUTTONQUADS_H */
