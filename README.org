@@ -10,6 +10,7 @@
      - [[#tgm2p-states][TGM2P States]]
        - [[#m-roll-flags][M-Roll Flags]]
        - [[#internal-state][Internal State]]
+       - [[#game-mode][Game Mode]]
 
 ** About
 This project aims to log various game data (and inputs) during a game of [[https://en.wikipedia.org/wiki/Tetris:_The_Grand_Master][Tetris: The Grandmaster 2 Plus]] (TGM2p/TGM2+/TAP) when run in an emulator ([[http://mamedev.org/][MAME]]). TapTracker runs alongside the emulator and performs its logging in real-time. This is linux-only for now.
@@ -94,16 +95,17 @@ All these addresses are for player 1. I still need to double check some of these
 
 - Extra:
 
-|    Address | Type    | Description                  | Notes |
-|------------+---------+------------------------------+-------|
-| 0x06064BFA | int8_t  | Current Block Rotation State |       |
-| 0x06064BBA | int16_t | Player 1 Level               |       |
-| 0x06064BEA | int16_t | Player 1 Timer               |       |
-| 0x06079378 | int8_t  | Internal Grade               |       |
-| 0x06079379 | int8_t  | Internal Grade Points        |       |
-| 0x06064BD0 | int8_t  | M-Roll Progress State        |       |
-| 0x06066845 | int8_t  | M-Roll Flag                  |       |
-| 0x06064C25 | int8_t  | Section Index                |       |
+|    Address | Type    | Description                  | Notes                              |
+|------------+---------+------------------------------+------------------------------------|
+| 0x06064BFA | int8_t  | Current Block Rotation State |                                    |
+| 0x06064BBA | int16_t | Player 1 Level               |                                    |
+| 0x06064BEA | int16_t | Player 1 Timer               |                                    |
+| 0x06079378 | int8_t  | Internal Grade               |                                    |
+| 0x06079379 | int8_t  | Internal Grade Points        |                                    |
+| 0x06064BD0 | int8_t  | M-Roll Progress State        |                                    |
+| 0x06066845 | int8_t  | M-Roll Flag                  |                                    |
+| 0x06064C25 | int8_t  | Section Index                |                                    |
+| 0x06064BA4 | int16_t | Current Game Mode            | See Below for corresponding values |
 
 *** Block Indices
 | Index | Block |
@@ -142,3 +144,22 @@ All these addresses are for player 1. I still need to double check some of these
 |    11 | Blocks are fading away when topping out (losing). |
 |    13 | Blocks are fading away when completing a game.    |
 |    71 | Garbage value when the game is still loading.     |
+
+**** Game Mode
+| Value          | Mode |
+|----------------+------|
+| No Game State  |    0 |
+| Normal         |    1 |
+| Master         |    2 |
+| Doubles        |    4 |
+| Normal Versus  |    9 |
+| Master Versus  |   10 |
+| Master Credits |   18 |
+| Tgm+ Versus    |  136 |
+| Tgm+           |  128 |
+| Master Item    |  514 |
+| Tgm+ Item      |  640 |
+| Death          | 4096 |
+| Death Versus   | 4104 |
+
+This list may not be exhaustive just yet.
