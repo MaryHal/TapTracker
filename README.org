@@ -46,13 +46,11 @@ TapTracker no longer runs shmupmametgm as a child process, but TapTracker must b
 
 ** Screenshots
 
-UI is a work-in-progress.
+UI is still a work-in-progress.
 
-| [[screenshot01.png]] | [[screenshot02.png]] | [[screenshot03.png]]
+[[screenshot03.png]] | [[screenshot04.png]]
 
-The top portion graphs the time vs level during the last three sections. Immediately below that is a counter for line clears (singles : doubles : triples : tetrises). Then below that is a input display per level.
-
-Newer versions of TapTracker include a section table that logs section timings and line counts.
+The top portion graphs the time vs level during the last three sections. Below that is a table listing section times and lines clears (singles : doubles : triples : tetrises). A second window is opened that displays joystick inputs per level (no keyboard support yet).
 
 [[https://www.youtube.com/watch?v=6sReyaKpt70][Video of TapTracker (without input viewer)]]
 
