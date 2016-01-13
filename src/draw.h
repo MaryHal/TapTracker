@@ -16,8 +16,6 @@ struct draw_data_t
         float scale;
 };
 
-void setupOpenGL(const unsigned int width, const unsigned int height);
-
 void drawSectionGraph(struct draw_data_t* data, float width, float height);
 
 void drawInputHistory(struct draw_data_t* data, float width, float height);

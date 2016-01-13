@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
         perror("Parent: Could not map memory");
     }
 
-    runTracker(addr, 240, 540);
+    runTracker(addr);
 
     if (munmap(addr, vSize) != 0)
         perror("Error unmapping memory pointer");

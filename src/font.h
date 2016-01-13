@@ -51,8 +51,8 @@ struct font_t* _createFont(struct font_t* font);
 struct font_t* loadTTF(struct font_t* font, const char* filename, float pixelHeight);
 struct font_t* loadBitmapFontFiles(struct font_t* font, const char* imgFile, const char* binFile);
 struct font_t* loadBitmapFontData(struct font_t* font,
-                                  const char imgData[], size_t imgDataSize,
-                                  const char binData, size_t binDataSize);
+                                  const uint8_t imgData[], size_t imgDataSize,
+                                  const uint8_t binData[], size_t binDataSize);
 void destroyFont(struct font_t* font, bool freeFont);
 
 void getPackedQuad(struct font_t* font, int codepoint,

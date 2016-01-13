@@ -6,6 +6,6 @@
 
 struct tap_state;
 
-bool runTracker(struct tap_state* dataPtr, unsigned int width, unsigned int height);
+bool runTracker(struct tap_state* dataPtr);
 
 #endif /* TRACKER_H */
