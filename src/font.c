@@ -334,44 +334,6 @@ void getPackedQuad(struct font_t* font, int codepoint,
     *xpos += b->xadvance;
 }
 
-void drawChar(struct font_t* font, float* x, float* y, wchar_t c)
-{
-    stbtt_aligned_quad q;
-    getPackedQuad(font, c, x, y, 0, &q);
-
-    const float vertices[] =
-        {
-            q.x0, q.y0,
-            q.x1, q.y0,
-            q.x1, q.y1,
-            q.x0, q.y1,
-        };
-
-    const float texCoords[] =
-        {
-            q.s0, q.t0,
-            q.s1, q.t0,
-            q.s1, q.t1,
-            q.s0, q.t1,
-        };
-
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, font->texture);
-
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
-    glVertexPointer(2, GL_FLOAT, 0, vertices);
-    glTexCoordPointer(2, GL_FLOAT, 0, texCoords);
-
-    glDrawArrays(GL_QUADS, 0, 4);
-
-    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-    glDisableClientState(GL_VERTEX_ARRAY);
-
-    glDisable(GL_TEXTURE_2D);
-}
-
 void drawString(struct font_t* font, float x, float y, const char* string)
 {
     size_t len = strlen(string);

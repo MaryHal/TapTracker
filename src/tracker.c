@@ -57,11 +57,7 @@ bool runTracker(struct tap_state* dataPtr)
     createHistory(&history);
 
     struct button_spectrum_t bspec;
-    createButtonSheet(&bspec);
-
-    const int SCALE_COUNT = 2;
-    float scales[] = { 45.0f, 60.0f };
-    int scaleIndex = 0;
+    createButtonSpriteSheet(&bspec);
 
     struct draw_data_t data =
     {
@@ -69,7 +65,7 @@ bool runTracker(struct tap_state* dataPtr)
         .font = &font,
         .history = &history,
         .bspec = &bspec,
-        .scale = scales[scaleIndex]
+        .scale = 60.0f
     };
 
     while (!glfwWindowShouldClose(mainWindow.handle) &&
@@ -80,11 +76,10 @@ bool runTracker(struct tap_state* dataPtr)
         glfwPollEvents();
 
         updateButtons(&joystick);
-        if (buttonChangedToState(&joystick, BUTTON_D, GLFW_PRESS))
-        {
-            scaleIndex++;
-            data.scale = scales[scaleIndex % SCALE_COUNT];
-        }
+        if (game.curState.gameMode == TAP_MODE_DEATH)
+            data.scale = 45.0f;
+        else
+            data.scale = 60.0f;
 
         // Update input history
         pushCharFromJoystick(&history, &joystick);
@@ -93,7 +88,7 @@ bool runTracker(struct tap_state* dataPtr)
         drawWindowLayout(&subWindow, &data);
     }
 
-    destroyButtonSheet(&bspec, false);
+    destroyButtonSpriteSheet(&bspec, false);
     destroyHistory(&history, false);
     destroyGame(&game, false);
     destroyJoystick(&joystick, false);

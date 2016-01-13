@@ -60,7 +60,6 @@ void getPackedQuad(struct font_t* font, int codepoint,
                    int align_to_integer,
                    stbtt_aligned_quad* q);
 
-void drawChar(struct font_t* font, float* x, float* y, wchar_t c);
 void drawString(struct font_t* font, float x, float y, const char* string);
 
 float getStringWidth(struct font_t* font, const char* string);

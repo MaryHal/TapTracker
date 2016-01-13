@@ -18,6 +18,8 @@ struct tap_state
         int16_t rotation;
         int16_t mrollFlags;
         int16_t inCreditRoll;
+
+        int16_t gameMode;
 };
 
 #endif /* TAP_STATE_H */
