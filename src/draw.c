@@ -3,33 +3,13 @@
 #include "game.h"
 
 #include "history.h"
-#include "inputhistory.h"
+#include "buttonquads.h"
 
 #include "colortheme.h"
 
 #include <stdio.h>
 
 #include <GLFW/glfw3.h>
-
-void setupOpenGL(const unsigned int width, const unsigned int height)
-{
-    // OpenGL 2d perspective
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(0.0f, width, height, 0.0f, -1.0f, 1.0f);
-
-    // Initialize modelview matrix
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_BLEND);
-    /* glDisable(GL_LIGHTING); */
-    /* glDisable(GL_DEPTH_TEST); */
-
-    glEnable(GL_LINE_SMOOTH);
-    glLineWidth(2.0f);
-}
 
 void drawSectionGraph(struct draw_data_t* data, float width, float height)
 {
@@ -84,40 +64,58 @@ void drawSectionGraph(struct draw_data_t* data, float width, float height)
             continue;
         }
 
+        float graphVertices[2 * section->size];
+        float graphColors[4 * section->size];
+
         setGLColor(COLOR_FOREGROUND, sectionAlpha);
-        glBegin(GL_LINE_STRIP);
+        for (size_t j = 0; j < section->size; ++j)
         {
-            for (size_t j = 0; j < section->size; ++j)
+            struct datapoint_t datapoint = section->data[j];
+
+            x = graphWidth * (frameTimeToSeconds(datapoint.time - section->startTime)) / scale;
+            y = graphHeight - graphHeight * (datapoint.level - (i * 100)) / 100.0f;
+
+            graphVertices[j * 2 + 0] = x;
+            graphVertices[j * 2 + 1] = y;
+
+            int levelDifference = datapoint.level - prevDatapoint.level;
+            prevDatapoint = datapoint;
+
+            if (levelDifference > 0)
             {
-                struct datapoint_t datapoint = section->data[j];
-
-                x = graphWidth * (frameTimeToSeconds(datapoint.time - section->startTime)) / scale;
-                y = graphHeight - graphHeight * (datapoint.level - (i * 100)) / 100.0f;
-
-                int levelDifference = datapoint.level - prevDatapoint.level;
-                prevDatapoint = datapoint;
-
-                if (levelDifference > 0)
+                // Since we color our line based on how many levels we
+                // advance, if for some reason we jump a huge amount of
+                // levels, grabbing a color from our color array will result
+                // in an index out of bounds error.
+                if (levelDifference > 4)
                 {
-                    // Since we color our line based on how many levels we
-                    // advance, if for some reason we jump a huge amount of
-                    // levels, grabbing a color from our color array will result
-                    // in an index out of bounds error.
-                    if (levelDifference > 4)
-                    {
-                        levelDifference = 4;
-                    }
+                    levelDifference = 4;
+                }
 
-                    setGLColor(levelDifference - 1, sectionAlpha);
-                }
-                else
-                {
-                    setGLColor(COLOR_FOREGROUND, sectionAlpha);
-                }
-                glVertex2f(x, y);
+                const float* color = getColorFromTheme(levelDifference - 1);
+                graphColors[j * 4 + 0] = color[0];
+                graphColors[j * 4 + 1] = color[1];
+                graphColors[j * 4 + 2] = color[2];
+                graphColors[j * 4 + 3] = sectionAlpha;
+            }
+            else
+            {
+                const float* color = getColorFromTheme(COLOR_FOREGROUND);
+                graphColors[j * 4 + 0] = color[0];
+                graphColors[j * 4 + 1] = color[1];
+                graphColors[j * 4 + 2] = color[2];
+                graphColors[j * 4 + 3] = sectionAlpha;
             }
         }
-        glEnd();
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glEnableClientState(GL_COLOR_ARRAY);
+
+        glVertexPointer(2, GL_FLOAT, 0, graphVertices);
+        glColorPointer(4, GL_FLOAT, 0, graphColors);
+        glDrawArrays(GL_LINE_STRIP, 0, section->size);
+
+        glDisableClientState(GL_VERTEX_ARRAY);
+        glDisableClientState(GL_COLOR_ARRAY);
 
         sectionAlpha *= 5;
     }

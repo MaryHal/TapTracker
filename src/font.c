@@ -231,6 +231,52 @@ struct font_t* loadBitmapFontFiles(struct font_t* font, const char* imgFile, con
     return font;
 }
 
+struct font_t* loadBitmapFontData(struct font_t* font,
+                                  const uint8_t imgData[], size_t imgDataSize,
+                                  const uint8_t binData[], size_t binDataSize)
+{
+    if (font == NULL)
+    {
+        font = (struct font_t*)malloc(sizeof(struct font_t));
+    }
+
+    const uint8_t* dataPtr = binData;
+
+    // Load font struct
+    *font = *(struct font_t*)(dataPtr);
+    dataPtr += sizeof(struct font_t);
+    binDataSize -= sizeof(struct font_t);
+
+    font->cmap = NULL;
+    font->bitmap = NULL;
+
+    while (binDataSize > 0)
+    {
+        int codepoint = *(int*)(dataPtr);
+        dataPtr += sizeof(int);
+        binDataSize -= sizeof(int);
+
+        stbtt_packedchar pchar = *(stbtt_packedchar*)(dataPtr);
+        dataPtr += sizeof(stbtt_packedchar);
+        binDataSize -= sizeof(stbtt_packedchar);
+
+        _addCharData(&font->cmap, codepoint, pchar);
+    }
+
+    // Load bitmap and set it up for OpenGL to use.
+    int x, y, n;
+    uint8_t* temp_bitmap = stbi_load_from_memory(imgData, imgDataSize, &x, &y, &n, 0);
+
+    assert(x == font->textureWidth);
+    assert(y == font->textureHeight);
+
+    _bindFontTexture(font, temp_bitmap);
+
+    stbi_image_free(temp_bitmap);
+
+    return font;
+}
+
 void destroyFont(struct font_t* font, bool freeFont)
 {
     glDeleteTextures(1, &font->texture);
