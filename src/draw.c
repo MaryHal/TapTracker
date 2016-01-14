@@ -263,6 +263,11 @@ void drawSectionTable(struct draw_data_t* data, float width, float height)
             continue;
         }
 
+        char sectionString[16];
+        sprintf(sectionString, "%03d-%03d:", i * SECTION_LENGTH, (i + 1) * SECTION_LENGTH - 1);
+
+        drawString(font,   0.0f, y, sectionString);
+
         struct section_t* section = &game->sections[i];
 
         // Calculate how long this section took / is taking.
@@ -272,17 +277,31 @@ void drawSectionTable(struct draw_data_t* data, float width, float height)
         if (game->curState.level >= (i + 1) * SECTION_LENGTH || game->curState.level >= LEVEL_MAX)
         {
             sectionTime = frameTimeToSeconds(table->times[i].current);
+
+            int pb = 0;
+            if (game->curState.gameMode == TAP_MODE_MASTER)
+                pb = table->times[i].masterPB;
+            else if (game->curState.gameMode == TAP_MODE_DEATH)
+                pb = table->times[i].deathPB;
+
+            if (pb < table->times[i].current)
+            {
+                glColor4f(1.0f, 0.7f, 0.7f, 1.0f);
+            }
+            else
+            {
+                glColor4f(0.8f, 1.0f, 0.8f, 1.0f);
+            }
         }
         else // Section is still in progress
         {
             sectionTime = frameTimeToSeconds(game->curState.timer - section->startTime);
         }
 
-        char sectionString[16];
-        sprintf(sectionString, "%03d-%03d:", i * SECTION_LENGTH, (i + 1) * SECTION_LENGTH - 1);
-
         char timeString[32];
         sprintf(timeString, "%.2f", sectionTime);
+
+        drawString(font,  58.0f, y, timeString);
 
         char lineCount[20];
         sprintf(lineCount, "%2d : %2d : %2d : %2d",
@@ -291,8 +310,7 @@ void drawSectionTable(struct draw_data_t* data, float width, float height)
                 section->lines[2],
                 section->lines[3]);
 
-        drawString(font,   0.0f, y, sectionString);
-        drawString(font,  58.0f, y, timeString);
+        setGLColor(COLOR_FOREGROUND, 1.0f);
         drawString(font, 106.0f, y, lineCount);
 
         y += vertStride;

@@ -39,6 +39,8 @@ Building this project requires [[https://www.python.org/][python]], [[https://ma
   ninja
 #+END_SRC
 
+Alternatively, if you trust me, you can find a "stable" build [[https://github.com/sanford1/TapTracker/releases/latest][here]].
+
 ** Running TapTracker
 
 TapTracker no longer runs shmupmametgm as a child process, but TapTracker must be run /after/ shmupmametgm has started. For now, TapTracker only logs stats for player 1. You must also [[https://github.com/sanford1/shmupmametgm/#taptracker][enable TapTracker]] in /modded/ shmupmametgm with the =-taptracker= switch or the correct option in your mame.ini.
