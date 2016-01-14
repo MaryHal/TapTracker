@@ -265,7 +265,6 @@ void drawSectionTable(struct draw_data_t* data, float width, float height)
 
         char sectionString[16];
         sprintf(sectionString, "%03d-%03d:", i * SECTION_LENGTH, (i + 1) * SECTION_LENGTH - 1);
-
         drawString(font,   0.0f, y, sectionString);
 
         struct section_t* section = &game->sections[i];
