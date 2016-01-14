@@ -91,12 +91,14 @@ void updateSectionTime(struct section_table_t* s, unsigned int gameMode)
         struct section_time_t* sectionTime = &s->times[i];
         if (gameMode == TAP_MODE_MASTER)
         {
-            if (sectionTime->masterPB > sectionTime->current)
+            if (sectionTime->current> 0 &&
+                sectionTime->masterPB > sectionTime->current)
                 sectionTime->masterPB = sectionTime->current;
         }
         else if (gameMode == TAP_MODE_DEATH)
         {
-            if (sectionTime->deathPB > sectionTime->current)
+            if (sectionTime->current> 0 &&
+                sectionTime->deathPB > sectionTime->current)
                 sectionTime->deathPB = sectionTime->current;
         }
     }
