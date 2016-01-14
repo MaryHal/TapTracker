@@ -28,6 +28,7 @@ extern const char* DISPLAYED_GRADE[GRADE_COUNT];
 
 float frameTimeToSeconds(int frames);
 int frameTime(float seconds);
+void formatTime(char* buf, size_t bufferSize, int frames);
 
 enum tap_internal_state
 {

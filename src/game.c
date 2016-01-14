@@ -19,12 +19,21 @@ float frameTimeToSeconds(int frames)
 
 int frameTime(float seconds)
 {
-    return (int)(seconds * TIMER_FPS);
+    return (seconds * TIMER_FPS);
 }
 
 int getSectionTime(struct section_t* section)
 {
     return section->endTime - section->startTime;
+}
+
+void formatTime(char* buf, size_t bufferSize, int frames)
+{
+    int time = frames / 60;
+    int ms = time * 100 % 100;
+    int m  = time / 60;
+    int s = time - (m * 60);
+    snprintf(buf, bufferSize, "%2d:%2d:%2d", m, s, ms);
 }
 
 struct game_t* createNewGame(struct game_t* game)
