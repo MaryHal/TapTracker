@@ -24,8 +24,6 @@ git clone https://github.com/sanford1/shmupmametgm.git
 make SUBTARGET=tgm NOWERROR=1
 #+END_SRC
 
-The patch uses debug functions in MAME, so debug functionality must be enabled with =-debug= or the =-c= switch (enables the cheat engine).
-
 ** Building TapTracker
 
 After cloning this repository, retrieve all the submodules:
@@ -43,7 +41,7 @@ Building this project requires [[https://www.python.org/][python]], [[https://ma
 
 ** Running TapTracker
 
-TapTracker no longer runs shmupmametgm as a child process, but TapTracker must be run /after/ shmupmametgm has started. For now, TapTracker only logs stats for player 1.
+TapTracker no longer runs shmupmametgm as a child process, but TapTracker must be run /after/ shmupmametgm has started. For now, TapTracker only logs stats for player 1. You must also [[https://github.com/sanford1/shmupmametgm/#taptracker][enable TapTracker]] in /modded/ shmupmametgm with the =-taptracker= switch or the correct option in your mame.ini.
 
 ** Screenshots
 
