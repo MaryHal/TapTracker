@@ -14,7 +14,7 @@ struct button_spectrum_t* createButtonSpriteSheet(struct button_spectrum_t* bspe
 {
     if (!bspec)
     {
-        bspec = (struct button_spectrum_t*)malloc(sizeof(struct button_spectrum_t));
+        bspec = malloc(sizeof(struct button_spectrum_t));
     }
 
     const int tileSize = 8;
