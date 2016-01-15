@@ -1,4 +1,5 @@
 #include "draw.h"
+
 #include "font.h"
 #include "game.h"
 
@@ -314,6 +315,55 @@ void drawSectionTable(struct draw_data_t* data, float width, float height)
 
         setGLColor(COLOR_FOREGROUND, 1.0f);
         drawString(font, 106.0f, y, lineCount);
+
+        y += vertStride;
+    }
+}
+
+void drawSectionTableOverall(struct draw_data_t* data, float width, float height)
+{
+    (void) width;
+
+    struct game_t* game = data->game;
+    struct font_t* font = data->font;
+    struct section_table_t* table = data->table;
+
+    const float vertStride = font->pixelHeight;
+    const int maxIterations = height / vertStride;
+
+    float y = vertStride;
+
+    setGLColor(COLOR_FOREGROUND, 1.0f);
+
+    for (int i = game->currentSection - maxIterations; i < (signed)game->currentSection; ++i)
+    {
+        if (i < 0)
+        {
+            continue;
+        }
+
+        struct section_t* section = &table->sections[i];
+
+        int pb = 0;
+        if (game->curState.gameMode == TAP_MODE_MASTER)
+            pb = section->masterTime;
+        else if (game->curState.gameMode == TAP_MODE_DEATH)
+            pb = section->deathTime;
+
+        char sectionTime[16];
+        formatTimeToMinutes(sectionTime, 16, section->endTime);
+
+        char sectionTimeDiff[16];
+        formatTimeToSeconds(sectionTimeDiff, 16, pb - section->endTime);
+
+        char sectionString[64];
+        snprintf(sectionString, 64, "%03d-%03d: %s (%s)",
+                 i * SECTION_LENGTH,
+                 (i + 1) * SECTION_LENGTH - 1,
+                 sectionTime,
+                 sectionTimeDiff);
+
+        drawString(font, 0.0f, y, sectionString);
 
         y += vertStride;
     }
