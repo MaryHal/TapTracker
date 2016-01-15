@@ -5,7 +5,7 @@
 
 #include "sectiontable.h"
 
-#include "history.h"
+#include "inputhistory.h"
 #include "buttonquads.h"
 
 #include "colortheme.h"
@@ -20,6 +20,9 @@ void drawSectionGraph(struct draw_data_t* data, float width, float height)
     struct font_t* font = data->font;
 
     struct section_table_t* table = data->table;
+
+    if (!table)
+        return;
 
     const float scale = data->scale;
 
@@ -181,8 +184,11 @@ void drawInputHistory(struct draw_data_t* data, float width, float height)
 {
     (void) width;
 
-    struct history_t* inputHistory = data->history;
+    struct input_history_t* inputHistory = data->history;
     struct button_spectrum_t* bspec = data->bspec;
+
+    if (!inputHistory)
+        return;
 
     float x = 0.0f;
     float y = 0.0f;
@@ -203,7 +209,7 @@ void drawInputHistory(struct draw_data_t* data, float width, float height)
 
         glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 
-        struct element_t* element = &inputHistory->data[i % HISTORY_LENGTH];
+        struct element_t* element = &inputHistory->data[i % INPUT_HISTORY_LENGTH];
         for (size_t j = 0; j < element->size; j++)
         {
             unsigned int index = element->spectrum[j].key;

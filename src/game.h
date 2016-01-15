@@ -14,7 +14,7 @@
 #define MASTER_S9_INTERNAL_GRADE 31
 #define GRADE_COUNT 32
 
-struct history_t;
+struct input_history_t;
 struct section_table_t;
 
 extern const char* DISPLAYED_GRADE[GRADE_COUNT];
@@ -43,7 +43,9 @@ bool isInPlayingState(char game);
 
 // Load game state from MAME into our game structure. This also handles adding
 // data points to our section data.
-void updateGameState(struct game_t* game, struct history_t* inputHistory, struct section_table_t* table,
+void updateGameState(struct game_t* game,
+                     struct input_history_t* inputHistory,
+                     struct section_table_t* table,
                      struct tap_state* dataPtr);
 
 void printGameState(struct game_t* game);

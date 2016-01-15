@@ -1,6 +1,6 @@
 #include "game.h"
 
-#include "history.h"
+#include "inputhistory.h"
 #include "sectiontable.h"
 
 #include <stdio.h>
@@ -74,9 +74,13 @@ bool isInPlayingState(char state)
     return state != TAP_NONE && state != TAP_IDLE && state != TAP_STARTUP;
 }
 
-void updateGameState(struct game_t* game, struct history_t* inputHistory, struct section_table_t* table,
+void updateGameState(struct game_t* game,
+                     struct input_history_t* inputHistory,
+                     struct section_table_t* table,
                      struct tap_state* dataPtr)
 {
+    assert(game != NULL);
+
     game->prevState = game->curState;
 
     // Copy the data that we set in the MAME process.
@@ -88,15 +92,21 @@ void updateGameState(struct game_t* game, struct history_t* inputHistory, struct
         printGameState(game);
     }
 
-    if (isInPlayingState(game->curState.state) && game->curState.level - game->prevState.level > 0)
+    if (table)
     {
-        // Push a data point based on the newly acquired game state.
-        updateSectionTable(table, game);
+        if (isInPlayingState(game->curState.state) && game->curState.level - game->prevState.level > 0)
+        {
+            // Push a data point based on the newly acquired game state.
+            updateSectionTable(table, game);
+        }
     }
 
-    if (game->prevState.state != TAP_ACTIVE && game->curState.state == TAP_ACTIVE)
+    if (inputHistory)
     {
-        pushHistoryElement(inputHistory, game->curState.level);
+        if (game->prevState.state != TAP_ACTIVE && game->curState.state == TAP_ACTIVE)
+        {
+            pushInputHistoryElement(inputHistory, game->curState.level);
+        }
     }
 
     // Check if a game has ended
@@ -106,8 +116,11 @@ void updateGameState(struct game_t* game, struct history_t* inputHistory, struct
         updateRecords(table, game->prevState.level, game->prevState.gameMode);
 
         resetGame(game);
-        resetHistory(inputHistory);
-        resetSectionTable(table);
+
+        if (inputHistory)
+            resetInputHistory(inputHistory);
+        if (table)
+            resetSectionTable(table);
     }
 }
 
