@@ -33,7 +33,8 @@ bool runTracker(struct tap_state* dataPtr)
     struct window_t mainWindow = createWindow(240, 540, "TapTracker Graph", NULL);
     createLayoutContainer(&mainWindow.layout, mainWindow.width, mainWindow.height, 14.0f, 2.0f);
     addToContainerRatio(&mainWindow.layout, &drawSectionGraph, 0.75f);
-    addToContainerRatio(&mainWindow.layout, &drawSectionTable, 1.00f);
+    /* addToContainerRatio(&mainWindow.layout, &drawSectionTable, 1.00f); */
+    addToContainerRatio(&mainWindow.layout, &drawSectionTableOverall, 1.00f);
 
     struct window_t subWindow = createWindow(96, 112, "TapTracker ButtonSpectrum", &mainWindow);
     createLayoutContainer(&subWindow.layout, subWindow.width, subWindow.height, 4.0f, 0.0f);
