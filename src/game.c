@@ -43,7 +43,7 @@ void formatTimeToSeconds(char* buf, size_t bufferSize, int frames)
 
     int ms = (int)(time * 100) % 100;
     int s  = (int)time % 100;
-    snprintf(buf, bufferSize, "%s%02d:%02d", neg ? "-" : "+", s, ms);
+    snprintf(buf, bufferSize, "%c%02d:%02d", neg ? '-' : '+', s, ms);
 }
 
 struct game_t* createNewGame(struct game_t* game)

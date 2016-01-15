@@ -209,21 +209,15 @@ void readSectionRecords(struct section_table_t* table, const char* filename)
     // If file was found, load section times!
     if (pbfile)
     {
-        const int BUF_LENGTH = 16;
-        char str[BUF_LENGTH];
-
         for (size_t i = 0; i < SECTION_COUNT; ++i)
         {
             struct section_t* section = &table->sections[i];
 
-            if (fgets(str, BUF_LENGTH, pbfile) != NULL)
-                section->masterTime = atoi(str);
-            if (fgets(str, BUF_LENGTH, pbfile) != NULL)
-                section->masterST = atoi(str);
-            if (fgets(str, BUF_LENGTH, pbfile) != NULL)
-                section->deathTime = atoi(str);
-            if (fgets(str, BUF_LENGTH, pbfile) != NULL)
-                section->deathST = atoi(str);
+            fscanf(pbfile, "%6d %6d %6d %6d\n",
+                   &section->masterTime,
+                   &section->masterST,
+                   &section->deathTime,
+                   &section->deathST);
         }
 
         fclose(pbfile);
@@ -254,10 +248,11 @@ void writeSectionRecords(struct section_table_t* table)
     {
         for (size_t i = 0; i < SECTION_COUNT; ++i)
         {
-            fprintf(pbfile, "%d\n", table->sections[i].masterTime);
-            fprintf(pbfile, "%d\n", table->sections[i].masterST);
-            fprintf(pbfile, "%d\n", table->sections[i].deathTime);
-            fprintf(pbfile, "%d\n", table->sections[i].deathST);
+            fprintf(pbfile, "%06d %06d %06d %06d\n",
+                    table->sections[i].masterTime,
+                    table->sections[i].masterST,
+                    table->sections[i].deathTime,
+                    table->sections[i].deathST);
         }
 
         fclose(pbfile);

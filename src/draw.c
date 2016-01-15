@@ -267,7 +267,7 @@ void drawSectionTable(struct draw_data_t* data, float width, float height)
         }
 
         char sectionString[16];
-        sprintf(sectionString, "%03d-%03d:", i * SECTION_LENGTH, (i + 1) * SECTION_LENGTH - 1);
+        sprintf(sectionString, "%03d-%03d", i * SECTION_LENGTH, (i + 1) * SECTION_LENGTH - 1);
         drawString(font,   0.0f, y, sectionString);
 
         struct section_t* section = &table->sections[i];
@@ -289,11 +289,11 @@ void drawSectionTable(struct draw_data_t* data, float width, float height)
 
             if (pb < sectionTimeInFrames)
             {
-                glColor4f(1.0f, 0.7f, 0.7f, 1.0f);
+                setGLColor(COLOR_RED, 1.0f);
             }
             else
             {
-                glColor4f(0.8f, 1.0f, 0.8f, 1.0f);
+                setGLColor(COLOR_GREEN, 1.0f);
             }
         }
         else // Section is still in progress
@@ -322,48 +322,90 @@ void drawSectionTable(struct draw_data_t* data, float width, float height)
 
 void drawSectionTableOverall(struct draw_data_t* data, float width, float height)
 {
-    (void) width;
+    (void) width, (void) height;
 
     struct game_t* game = data->game;
     struct font_t* font = data->font;
     struct section_table_t* table = data->table;
 
     const float vertStride = font->pixelHeight;
-    const int maxIterations = height / vertStride;
+    /* const int maxIterations = height / vertStride; */
 
     float y = vertStride;
 
-    setGLColor(COLOR_FOREGROUND, 1.0f);
-
-    for (int i = game->currentSection - maxIterations; i < (signed)game->currentSection; ++i)
+    for (int i = 0; i < SECTION_COUNT; ++i)
     {
-        if (i < 0)
-        {
-            continue;
-        }
-
         struct section_t* section = &table->sections[i];
 
-        int pb = 0;
+        int overallPB = 0;
+        int sectionPB = 0;
         if (game->curState.gameMode == TAP_MODE_MASTER)
-            pb = section->masterTime;
+        {
+            overallPB = section->masterTime;
+            sectionPB = section->masterST;
+        }
         else if (game->curState.gameMode == TAP_MODE_DEATH)
-            pb = section->deathTime;
-
-        char sectionTime[16];
-        formatTimeToMinutes(sectionTime, 16, section->endTime);
-
-        char sectionTimeDiff[16];
-        formatTimeToSeconds(sectionTimeDiff, 16, pb - section->endTime);
+        {
+            overallPB = section->deathTime;
+            sectionPB = section->deathST;
+        }
 
         char sectionString[64];
-        snprintf(sectionString, 64, "%03d-%03d: %s (%s)",
+        snprintf(sectionString, 64, "%03d-%03d",
                  i * SECTION_LENGTH,
-                 (i + 1) * SECTION_LENGTH - 1,
-                 sectionTime,
-                 sectionTimeDiff);
+                 (i + 1) * SECTION_LENGTH - 1);
 
-        drawString(font, 0.0f, y, sectionString);
+        if (i >= game->currentSection)
+        {
+            setGLColor(COLOR_FOREGROUND, 0.3f);
+
+            drawString(font, 0.0f, y, sectionString);
+
+            char sectionTime[16];
+            formatTimeToMinutes(sectionTime, 16, overallPB);
+
+            drawString(font, 70.0f, y, sectionTime);
+
+            char sectionTimeDiff[16];
+            formatTimeToSeconds(sectionTimeDiff, 16, sectionPB);
+
+            drawString(font, 174.0f, y, sectionTimeDiff);
+        }
+        else
+        {
+            setGLColor(COLOR_FOREGROUND, 1.0f);
+
+            drawString(font, 0.0f, y, sectionString);
+
+            char sectionTime[16];
+            formatTimeToMinutes(sectionTime, 16, section->endTime);
+
+            drawString(font, 70.0f, y, sectionTime);
+
+            char overallTimeDiff[16];
+            formatTimeToSeconds(overallTimeDiff, 16, section->endTime - overallPB);
+
+            // Set color so it's like all the speedrun timers.
+            if (sectionPB > section->endTime - section->startTime)
+                setGLColor(COLOR_TETRIS, 1.0f);
+            else if (overallPB < section->endTime)
+                setGLColor(COLOR_RED, 1.0f);
+            else
+                setGLColor(COLOR_GREEN, 1.0f);
+
+            drawString(font, 124.0f, y, overallTimeDiff);
+
+            char sectionTimeDiff[16];
+            formatTimeToSeconds(sectionTimeDiff, 16, section->endTime - section->startTime - sectionPB);
+
+            // Set color so it's like all the speedrun timers.
+            if (sectionPB > section->endTime - section->startTime)
+                setGLColor(COLOR_TETRIS, 1.0f);
+            else
+                setGLColor(COLOR_RED, 1.0f);
+
+            drawString(font, 174.0f, y, sectionTimeDiff);
+        }
 
         y += vertStride;
     }
