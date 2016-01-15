@@ -4,7 +4,7 @@
 #include "font.h"
 #include "draw.h"
 
-#include "history.h"
+#include "inputhistory.h"
 #include "sectiontable.h"
 
 #include "joystick.h"
@@ -22,7 +22,7 @@
 INCBIN(PPImage, "bin/PP.png");
 INCBIN(PPData, "bin/PP.bin");
 
-bool runTracker(struct tap_state* dataPtr)
+bool runTracker(struct tap_state* dataPtr, struct tracker_settings_t settings)
 {
     if (glfwInit() == GL_FALSE)
     {
@@ -46,42 +46,40 @@ bool runTracker(struct tap_state* dataPtr)
     /* exportFontData("PP.bin", font); */
 
     /* struct font_t* backupfont = loadTTF(NULL, "/usr/share/fonts/TTF/DroidSans.ttf", 13.0f); */
-
-    struct font_t font;
     /* loadBitmapFontFiles(&font, "PP.png", "PP.bin"); */
-    loadBitmapFontData(&font, g_PPImageData, g_PPImageSize, g_PPDataData, g_PPDataSize);
 
-    struct joystick_t joystick;
-    createJoystick(&joystick, GLFW_JOYSTICK_1);
+    struct font_t* font = loadBitmapFontData(NULL, g_PPImageData, g_PPImageSize, g_PPDataData, g_PPDataSize);
 
-    struct game_t game;
-    createNewGame(&game);
+    struct game_t* game = createNewGame(NULL);
 
-    struct history_t history;
-    createHistory(&history);
+    struct joystick_t* joystick = NULL;
+    struct input_history_t* history = NULL;
 
-    struct button_spectrum_t bspec;
-    createButtonSpriteSheet(&bspec);
+    if (settings.joystick)
+    {
+        joystick = createJoystick(NULL, GLFW_JOYSTICK_1);
+        history = createInputHistory(NULL);
+    }
 
-    struct section_table_t table;
-    section_table_init(&table);
+    struct button_spectrum_t* bspec = createButtonSpriteSheet(NULL);
+    struct section_table_t* table = section_table_create();
 
     struct draw_data_t data =
     {
-        .game = &game,
-        .font = &font,
-        .history = &history,
-        .bspec = &bspec,
-        .table = &table,
+        .game = game,
+        .font = font,
+        .history = history,
+        .bspec = bspec,
+        .table = table,
         .scale = 60.0f
     };
 
     while (!glfwWindowShouldClose(mainWindow.handle) &&
            !glfwWindowShouldClose(subWindow.handle))
     {
-        updateGameState(&game, &history, &table, dataPtr);
+        updateGameState(game, history, table, dataPtr);
 
-        if (game.curState.gameMode == TAP_MODE_DEATH)
+        if (game->curState.gameMode == TAP_MODE_DEATH)
             data.scale = 45.0f;
         else
             data.scale = 60.0f;
@@ -89,20 +87,23 @@ bool runTracker(struct tap_state* dataPtr)
         glfwPollEvents();
 
         // Update input history
-        updateButtons(&joystick);
-        pushCharFromJoystick(&history, &joystick);
+        if (settings.joystick)
+        {
+            updateButtons(joystick);
+            pushInputFromJoystick(history, joystick);
+        }
 
         drawWindowLayout(&mainWindow, &data);
         drawWindowLayout(&subWindow, &data);
     }
 
-    section_table_terminate(&table);
+    section_table_destroy(table);
 
-    destroyButtonSpriteSheet(&bspec, false);
-    destroyHistory(&history, false);
-    destroyGame(&game, false);
-    destroyJoystick(&joystick, false);
-    destroyFont(&font, false);
+    destroyButtonSpriteSheet(bspec, true);
+    destroyInputHistory(history, true);
+    destroyGame(game, true);
+    destroyJoystick(joystick, true);
+    destroyFont(font, true);
 
     destroyWindow(&mainWindow);
     destroyWindow(&subWindow);

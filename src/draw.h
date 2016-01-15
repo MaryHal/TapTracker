@@ -3,7 +3,7 @@
 
 struct game_t;
 struct font_t;
-struct history_t;
+struct input_history_t;
 struct section_table_t;
 struct button_spectrum_t;
 
@@ -12,7 +12,7 @@ struct draw_data_t
         struct game_t* game;
         struct font_t* font;
 
-        struct history_t* history;
+        struct input_history_t* history;
         struct button_spectrum_t* bspec;
 
         struct section_table_t* table;

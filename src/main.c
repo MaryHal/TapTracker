@@ -33,7 +33,11 @@ int main(int argc, char *argv[])
         perror("Parent: Could not map memory");
     }
 
-    runTracker(addr);
+    struct tracker_settings_t settings =
+    {
+        .joystick = true
+    };
+    runTracker(addr, settings);
 
     if (munmap(addr, vSize) != 0)
         perror("Error unmapping memory pointer");

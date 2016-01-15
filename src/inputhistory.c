@@ -1,4 +1,4 @@
-#include "history.h"
+#include "inputhistory.h"
 #include "joystick.h"
 #include "buttonquads.h"
 
@@ -8,46 +8,46 @@
 
 #include <GLFW/glfw3.h>
 
-struct history_t* createHistory(struct history_t* history)
+struct input_history_t* createInputHistory(struct input_history_t* history)
 {
     if (history == NULL)
     {
-        history = malloc(sizeof(struct history_t));
+        history = malloc(sizeof(struct input_history_t));
     }
 
-    resetHistory(history);
+    resetInputHistory(history);
 
     return history;
 }
 
-void destroyHistory(struct history_t* history, bool freeMe)
+void destroyInputHistory(struct input_history_t* history, bool freeMe)
 {
     if (freeMe)
         free(history);
 }
 
-void resetHistory(struct history_t* history)
+void resetInputHistory(struct input_history_t* history)
 {
-    memset(history, 0, sizeof(struct history_t));
+    memset(history, 0, sizeof(struct input_history_t));
 
     /* pushHistoryElement(history, -1); */
 }
 
-void pushHistoryElement(struct history_t* history, int level)
+void pushInputHistoryElement(struct input_history_t* history, int level)
 {
-    if (history->end - history->start == HISTORY_LENGTH)
+    if (history->end - history->start == INPUT_HISTORY_LENGTH)
     {
-        popHistoryElement(history);
+        popInputHistoryElement(history);
     }
 
-    const size_t elementIndex = (history->end) % HISTORY_LENGTH;
+    const size_t elementIndex = (history->end) % INPUT_HISTORY_LENGTH;
 
     history->data[elementIndex].level = level;
     history->data[elementIndex].size = 0;
     history->end++;
 }
 
-struct button_t* pushKey(struct history_t* history, int key)
+struct button_t* pushKey(struct input_history_t* history, int key)
 {
     // Don't push if we're empty!
     if (history->start == history->end)
@@ -55,14 +55,14 @@ struct button_t* pushKey(struct history_t* history, int key)
         return NULL;
     }
 
-    struct element_t* historyElement = &history->data[(history->end - 1) % HISTORY_LENGTH];
+    struct element_t* inputhistoryElement = &history->data[(history->end - 1) % INPUT_HISTORY_LENGTH];
 
-    // Append char to history element string
-    if (historyElement->size < MAX_STRING_LENGTH - 2)
+    // Append button to input history element string
+    if (inputhistoryElement->size < MAX_INPUT_STRING_LENGTH - 2)
     {
-        historyElement->spectrum[historyElement->size] = (struct button_t){ key, true };
-        struct button_t* ret = &historyElement->spectrum[historyElement->size];
-        historyElement->size++;
+        inputhistoryElement->spectrum[inputhistoryElement->size] = (struct button_t){ key, true };
+        struct button_t* ret = &inputhistoryElement->spectrum[inputhistoryElement->size];
+        inputhistoryElement->size++;
 
         return ret;
     }
@@ -70,12 +70,12 @@ struct button_t* pushKey(struct history_t* history, int key)
     return NULL;
 }
 
-void popHistoryElement(struct history_t* history)
+void popInputHistoryElement(struct input_history_t* history)
 {
     history->start++;
 }
 
-void pushCharFromJoystick(struct history_t* history, struct joystick_t* joystick)
+void pushInputFromJoystick(struct input_history_t* history, struct joystick_t* joystick)
 {
     for (int buttonID = 0; buttonID < BUTTON_COUNT; buttonID++)
     {

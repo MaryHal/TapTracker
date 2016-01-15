@@ -6,6 +6,11 @@
 
 struct tap_state;
 
-bool runTracker(struct tap_state* dataPtr);
+struct tracker_settings_t
+{
+        bool joystick;
+};
+
+bool runTracker(struct tap_state* dataPtr, struct tracker_settings_t settings);
 
 #endif /* TRACKER_H */
