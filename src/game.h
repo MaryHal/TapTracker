@@ -21,7 +21,8 @@ extern const char* DISPLAYED_GRADE[GRADE_COUNT];
 
 float frameTimeToSeconds(int frames);
 int frameTime(float seconds);
-void formatTime(char* buf, size_t bufferSize, int frames);
+void formatTimeToMinutes(char* buf, size_t bufferSize, int frames);
+void formatTimeToSeconds(char* buf, size_t bufferSize, int frames);
 
 struct game_t
 {
