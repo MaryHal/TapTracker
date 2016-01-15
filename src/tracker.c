@@ -4,7 +4,8 @@
 #include "font.h"
 #include "draw.h"
 
-#include "sectiontime.h"
+#include "history.h"
+#include "sectiontable.h"
 
 #include "joystick.h"
 #include "buttonquads.h"

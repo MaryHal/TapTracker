@@ -2,7 +2,7 @@
 #include "font.h"
 #include "game.h"
 
-#include "sectiontime.h"
+#include "sectiontable.h"
 
 #include "history.h"
 #include "buttonquads.h"
@@ -17,6 +17,8 @@ void drawSectionGraph(struct draw_data_t* data, float width, float height)
 {
     struct game_t* game = data->game;
     struct font_t* font = data->font;
+
+    struct section_table_t* table = data->table;
 
     const float scale = data->scale;
 
@@ -59,7 +61,7 @@ void drawSectionGraph(struct draw_data_t* data, float width, float height)
             continue;
         }
 
-        struct section_t* section = &game->sections[i];
+        struct section_t* section = &table->sections[i];
 
         if (section->size == 0)
         {
@@ -267,7 +269,7 @@ void drawSectionTable(struct draw_data_t* data, float width, float height)
         sprintf(sectionString, "%03d-%03d:", i * SECTION_LENGTH, (i + 1) * SECTION_LENGTH - 1);
         drawString(font,   0.0f, y, sectionString);
 
-        struct section_t* section = &game->sections[i];
+        struct section_t* section = &table->sections[i];
 
         // Calculate how long this section took / is taking.
         float sectionTime = 0.0f;
@@ -275,15 +277,16 @@ void drawSectionTable(struct draw_data_t* data, float width, float height)
         // Section is complete
         if (game->curState.level >= (i + 1) * SECTION_LENGTH || game->curState.level >= LEVEL_MAX)
         {
-            sectionTime = frameTimeToSeconds(table->times[i].current);
+            int sectionTimeInFrames = table->sections[i].endTime - table->sections[i].startTime;
+            sectionTime = frameTimeToSeconds(sectionTimeInFrames);
 
             int pb = 0;
             if (game->curState.gameMode == TAP_MODE_MASTER)
-                pb = table->times[i].masterPB;
+                pb = table->sections[i].masterST;
             else if (game->curState.gameMode == TAP_MODE_DEATH)
-                pb = table->times[i].deathPB;
+                pb = table->sections[i].deathST;
 
-            if (pb < table->times[i].current)
+            if (pb < sectionTimeInFrames)
             {
                 glColor4f(1.0f, 0.7f, 0.7f, 1.0f);
             }
