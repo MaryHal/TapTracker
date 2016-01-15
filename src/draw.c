@@ -244,6 +244,28 @@ void drawInputHistory(struct draw_data_t* data, float width, float height)
     }
 }
 
+void drawLineCount(struct draw_data_t* data, float width, float height)
+{
+    (void) height;
+
+    struct game_t* game = data->game;
+    struct font_t* font = data->font;
+    struct section_table_t* table = data->table;
+
+    struct section_t* section = &table->sections[game->currentSection];
+
+    char lineCount[20];
+    snprintf(lineCount, 20, "%2d : %2d : %2d : %2d",
+            section->lines[0],
+            section->lines[1],
+            section->lines[2],
+            section->lines[3]);
+
+    setGLColor(COLOR_FOREGROUND, 1.0f);
+
+    drawString(font, (width - getStringWidth(font, lineCount)) / 2, font->pixelHeight, lineCount);
+}
+
 void drawSectionTable(struct draw_data_t* data, float width, float height)
 {
     (void) width;
@@ -329,11 +351,31 @@ void drawSectionTableOverall(struct draw_data_t* data, float width, float height
     struct section_table_t* table = data->table;
 
     const float vertStride = font->pixelHeight;
-    /* const int maxIterations = height / vertStride; */
+    const int maxIterations = height / vertStride + 1;
 
     float y = vertStride;
 
-    for (int i = 0; i < SECTION_COUNT; ++i)
+    // Make sure the current section is visible and, preferably, centered (if
+    // all sections cannot be seen).
+    int top = game->currentSection - maxIterations / 2;
+    int bottom = top + maxIterations;
+
+    if (top < 0)
+    {
+        bottom += -top;
+        top = 0;
+    }
+
+    if (bottom > SECTION_COUNT)
+    {
+        top -= bottom - SECTION_COUNT;
+        bottom = SECTION_COUNT;
+
+        if (top < 0)
+            top = 0;
+    }
+
+    for (int i = top; i < bottom; ++i)
     {
         struct section_t* section = &table->sections[i];
 

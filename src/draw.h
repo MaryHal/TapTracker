@@ -23,6 +23,8 @@ struct draw_data_t
 void drawSectionGraph(struct draw_data_t* data, float width, float height);
 void drawInputHistory(struct draw_data_t* data, float width, float height);
 
+void drawLineCount(struct draw_data_t* data, float width, float height);
+
 void drawSectionTable(struct draw_data_t* data, float width, float height);
 void drawSectionTableOverall(struct draw_data_t* data, float width, float height);
 
