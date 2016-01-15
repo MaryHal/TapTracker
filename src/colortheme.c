@@ -11,7 +11,10 @@ float DARK_THEME[NUM_COLORS][3] =
     { 0.00f, 0.80f, 0.80f }, // Triple
     { 0.90f, 0.90f, 0.00f }, // Tetris
     { 0.97f, 0.97f, 0.97f }, // Foreground
-    { 0.02f, 0.02f, 0.02f }  // Background
+    { 0.02f, 0.02f, 0.02f }, // Background
+    { 1.00f, 0.70f, 0.70f }, // Red
+    { 0.70f, 1.00f, 0.70f }, // Green
+    { 0.70f, 0.70f, 1.00f }  // Blue
 };
 float LIGHT_THEME[NUM_COLORS][3] =
 {
@@ -20,7 +23,10 @@ float LIGHT_THEME[NUM_COLORS][3] =
     { 0.00f, 0.80f, 0.80f }, // Triple
     { 0.90f, 0.90f, 0.00f }, // Tetris
     { 0.40f, 0.40f, 0.40f }, // Foreground
-    { 0.95f, 0.96f, 0.96f }  // Background
+    { 0.95f, 0.96f, 0.96f }, // Background
+    { 1.00f, 0.70f, 0.70f }, // Red
+    { 0.70f, 1.00f, 0.70f }, // Green
+    { 0.70f, 0.70f, 1.00f }  // Blue
 };
 
 // Set default theme
