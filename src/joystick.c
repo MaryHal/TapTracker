@@ -20,7 +20,7 @@ struct joystick_t* createJoystick(struct joystick_t* joystick, int joystickNum)
 
     if (joystick == NULL)
     {
-        joystick = (struct joystick_t*) malloc(sizeof(struct joystick_t));
+        joystick = malloc(sizeof(struct joystick_t));
     }
 
     joystick->id = joystickNum;

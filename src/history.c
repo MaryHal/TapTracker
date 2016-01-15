@@ -12,7 +12,7 @@ struct history_t* createHistory(struct history_t* history)
 {
     if (history == NULL)
     {
-        history = (struct history_t*) malloc(sizeof(struct history_t));
+        history = malloc(sizeof(struct history_t));
     }
 
     resetHistory(history);

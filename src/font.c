@@ -30,7 +30,7 @@ void _addCharData(struct chardata_t** cmap, int codepoint, stbtt_packedchar pcha
 
     if (s == NULL)
     {
-        s = (struct chardata_t*)malloc(sizeof(struct chardata_t));
+        s = malloc(sizeof(struct chardata_t));
         s->id = codepoint;
         s->pchar = pchar;
 
@@ -92,7 +92,7 @@ void _loadTTF_file(const char* filename, uint8_t** ttfData)
     size_t filesize = ftell(ttf_file);
     rewind(ttf_file);
 
-    *ttfData = (uint8_t*)malloc(sizeof(uint8_t) * filesize);
+    *ttfData = malloc(sizeof(uint8_t) * filesize);
     size_t readsize = fread(*ttfData, 1, filesize, ttf_file);
 
     assert(filesize == readsize);
@@ -117,7 +117,7 @@ struct font_t* loadTTF(struct font_t* font, const char* filename, float pixelHei
 {
     if (font == NULL)
     {
-        font = (struct font_t*)malloc(sizeof(struct font_t));
+        font = malloc(sizeof(struct font_t));
     }
 
     font->cmap = NULL;
@@ -132,7 +132,7 @@ struct font_t* loadTTF(struct font_t* font, const char* filename, float pixelHei
     uint8_t* ttf_buffer = NULL;
     _loadTTF_file(filename, &ttf_buffer);
     {
-        font->bitmap = (uint8_t*)malloc(sizeof(uint8_t) * font->textureWidth * font->textureHeight);
+        font->bitmap = malloc(sizeof(uint8_t) * font->textureWidth * font->textureHeight);
 
         // Pack our font
         stbtt_pack_context pc;
@@ -189,7 +189,7 @@ struct font_t* loadBitmapFontFiles(struct font_t* font, const char* imgFile, con
 {
     if (font == NULL)
     {
-        font = (struct font_t*)malloc(sizeof(struct font_t));
+        font = malloc(sizeof(struct font_t));
     }
 
     FILE* binInput = fopen(binFile, "rb");
@@ -237,7 +237,7 @@ struct font_t* loadBitmapFontData(struct font_t* font,
 {
     if (font == NULL)
     {
-        font = (struct font_t*)malloc(sizeof(struct font_t));
+        font = malloc(sizeof(struct font_t));
     }
 
     const uint8_t* dataPtr = binData;

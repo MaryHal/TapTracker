@@ -11,7 +11,7 @@ struct layout_container_t* createLayoutContainer(struct layout_container_t* c,
 {
     if (c == NULL)
     {
-        c = (struct layout_container_t*)malloc(sizeof(struct layout_container_t));
+        c = malloc(sizeof(struct layout_container_t));
     }
 
     c->outerMargin = outerMargin;
