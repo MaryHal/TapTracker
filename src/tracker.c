@@ -34,8 +34,9 @@ bool runTracker(struct tap_state* dataPtr, struct tracker_settings_t settings)
 
     struct window_t mainWindow = createWindow(240, 540, "TapTracker Graph", NULL);
     createLayoutContainer(&mainWindow.layout, mainWindow.width, mainWindow.height, 14.0f, 2.0f);
-    addToContainerRatio(&mainWindow.layout, &drawSectionGraph, 0.75f);
-    addToContainerRatio(&mainWindow.layout, &drawSectionTableOverall, 1.00f);
+    addToContainerRatio(&mainWindow.layout, &drawSectionGraph, 0.72f);
+    addToContainerFixed(&mainWindow.layout, &drawSectionTableOverall, 130.0f);
+    addToContainerFixed(&mainWindow.layout, &drawCurrentState, 14.0f);
     /* addToContainerRatio(&mainWindow.layout, &drawSectionTable, 1.00f); */
     /* addToContainerRatio(&mainWindow.layout, &drawSectionTableOverall, 1.00f); */
 
@@ -92,15 +93,15 @@ bool runTracker(struct tap_state* dataPtr, struct tracker_settings_t settings)
 
         glfwPollEvents();
 
+        drawWindowLayout(&mainWindow, &data);
+
         // Update input history
         if (settings.joystick)
         {
             updateButtons(joystick);
             pushInputFromJoystick(history, joystick);
+            drawWindowLayout(&subWindow, &data);
         }
-
-        drawWindowLayout(&mainWindow, &data);
-        drawWindowLayout(&subWindow, &data);
     }
 
     section_table_destroy(table);
