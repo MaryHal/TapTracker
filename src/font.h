@@ -46,8 +46,6 @@ void _loadTTF_file(const char* filename, uint8_t** ttfData);
 // Load a bitmap into a font's texture handle.
 void _bindFontTexture(struct font_t* font, uint8_t* bitmap);
 
-struct font_t* _createFont(struct font_t* font);
-
 struct font_t* loadTTF(struct font_t* font, const char* filename, float pixelHeight);
 struct font_t* loadBitmapFontFiles(struct font_t* font, const char* imgFile, const char* binFile);
 struct font_t* loadBitmapFontData(struct font_t* font,

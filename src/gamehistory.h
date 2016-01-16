@@ -3,7 +3,7 @@
 
 #include "tap_state.h"
 
-#define MAX_GAME_HISTORY_COUNT 16
+#define MAX_GAME_HISTORY_COUNT 32
 
 struct game_history_t
 {
@@ -26,6 +26,5 @@ float averageHistoryStats(struct game_history_t* gh,
 
 float averageDeathLevel(struct game_history_t* gh);
 float averageMasterGrade(struct game_history_t* gh);
-
 
 #endif /* GAMEHISTORY_H */
