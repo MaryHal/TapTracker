@@ -2,22 +2,19 @@
 #define JOYSTICK_H
 
 #include <stdbool.h>
+#include <stdint.h>
 
-// TODO: Button profiles. I hard-coded my joystick info for now.
+#define BUTTON_COUNT 4
+#define AXIS_COUNT 2
 
-enum MyButtons
+struct joystick_mapping_t
 {
-    BUTTON_D = 0,
-    BUTTON_A = 1,
-    BUTTON_B = 2,
-    BUTTON_C = 3,
-    BUTTON_COUNT = 4
-};
-
-enum MyAxis
-{
-    AXIS_HORI = 6,
-    AXIS_VERT = 7
+        uint8_t buttonA;
+        uint8_t buttonB;
+        uint8_t buttonC;
+        uint8_t buttonD;
+        int8_t axisHori;
+        int8_t axisVert;
 };
 
 enum AXIS_DIRECTION
@@ -29,22 +26,24 @@ enum AXIS_DIRECTION
 
 struct joystick_t
 {
+        struct joystick_mapping_t jmap;
         int id;
         int buttonCount;
         int axisCount;
-        unsigned char buttons[16], prevButtons[16];
-        char axis[8], prevAxis[8];
+        uint8_t buttons[16], prevButtons[16];
+        int8_t axis[8], prevAxis[8];
 };
 
-struct joystick_t* createJoystick(struct joystick_t* joystick, int joystickNum);
+struct joystick_t* createJoystick(struct joystick_t* joystick, int joystickNum,
+                                  struct joystick_mapping_t jmap);
 void destroyJoystick(struct joystick_t* joystick, bool freeMe);
 
 void updateButtons(struct joystick_t* joystick);
 
-unsigned char getButtonState(struct joystick_t* joystick, int buttonID);
-unsigned char getPrevButtonState(struct joystick_t* joystick, int buttonID);
-char getAxisState(struct joystick_t* joystick, int axisID);
-char getPrevAxisState(struct joystick_t* joystick, int axisID);
+uint8_t getButtonState(struct joystick_t* joystick, int buttonID);
+uint8_t getPrevButtonState(struct joystick_t* joystick, int buttonID);
+int8_t getAxisState(struct joystick_t* joystick, int axisID);
+int8_t getPrevAxisState(struct joystick_t* joystick, int axisID);
 
 bool buttonChange(struct joystick_t* joystick, int buttonID);
 bool axisChange(struct joystick_t* joystick, int axisID);

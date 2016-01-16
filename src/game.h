@@ -8,9 +8,6 @@
 
 #include "tap_state.h"
 
-#define TIMER_FPS      60.0f
-#define TAP_FPS        61.618f
-
 #define MASTER_S9_INTERNAL_GRADE 31
 #define GRADE_COUNT 32
 
@@ -19,11 +16,6 @@ struct section_table_t;
 struct game_history_t;
 
 extern const char* DISPLAYED_GRADE[GRADE_COUNT];
-
-float frameTimeToSeconds(int frames);
-int frameTime(float seconds);
-void formatTimeToMinutes(char* buf, size_t bufferSize, int frames);
-void formatTimeToSeconds(char* buf, size_t bufferSize, int frames);
 
 struct game_t
 {

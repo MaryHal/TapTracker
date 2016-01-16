@@ -60,7 +60,7 @@ bool runTracker(struct tap_state* dataPtr, struct tracker_settings_t settings)
 
     if (settings.joystick)
     {
-        joystick = createJoystick(NULL, GLFW_JOYSTICK_1);
+        joystick = createJoystick(NULL, GLFW_JOYSTICK_1, settings.jmap);
         history = createInputHistory(NULL);
     }
 
