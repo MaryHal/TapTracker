@@ -10,7 +10,8 @@
 
 #include <GLFW/glfw3.h>
 
-struct joystick_t* createJoystick(struct joystick_t* joystick, int joystickNum)
+struct joystick_t* createJoystick(struct joystick_t* joystick, int joystickNum,
+                                  struct joystick_mapping_t jmap)
 {
     if (!glfwJoystickPresent(joystickNum))
     {
@@ -23,6 +24,7 @@ struct joystick_t* createJoystick(struct joystick_t* joystick, int joystickNum)
         joystick = malloc(sizeof(struct joystick_t));
     }
 
+    joystick->jmap = jmap;
     joystick->id = joystickNum;
     joystick->buttonCount = 0;
     joystick->axisCount = 0;
@@ -44,7 +46,7 @@ void updateButtons(struct joystick_t* joystick)
     memcpy(joystick->prevButtons, joystick->buttons, 16);
     memcpy(joystick->prevAxis, joystick->axis, 8);
 
-    const unsigned char* buttons = glfwGetJoystickButtons(joystick->id, &joystick->buttonCount);
+    const uint8_t* buttons = glfwGetJoystickButtons(joystick->id, &joystick->buttonCount);
     for (int i = 0; i < joystick->buttonCount; i++)
     {
         joystick->buttons[i] = buttons[i];
@@ -62,7 +64,7 @@ void updateButtons(struct joystick_t* joystick)
     }
 }
 
-unsigned char getButtonState(struct joystick_t* joystick, int buttonID)
+uint8_t getButtonState(struct joystick_t* joystick, int buttonID)
 {
     if (!joystick)
         return 0;
@@ -71,7 +73,7 @@ unsigned char getButtonState(struct joystick_t* joystick, int buttonID)
     return joystick->buttons[buttonID];
 }
 
-unsigned char getPrevButtonState(struct joystick_t* joystick, int buttonID)
+uint8_t getPrevButtonState(struct joystick_t* joystick, int buttonID)
 {
     if (!joystick)
         return 0;
@@ -80,7 +82,7 @@ unsigned char getPrevButtonState(struct joystick_t* joystick, int buttonID)
     return joystick->prevButtons[buttonID];
 }
 
-char getAxisState(struct joystick_t* joystick, int axisID)
+int8_t getAxisState(struct joystick_t* joystick, int axisID)
 {
     if (!joystick)
         return 0;
@@ -89,7 +91,7 @@ char getAxisState(struct joystick_t* joystick, int axisID)
     return joystick->axis[axisID];
 }
 
-char getPrevAxisState(struct joystick_t* joystick, int axisID)
+int8_t getPrevAxisState(struct joystick_t* joystick, int axisID)
 {
     if (!joystick)
         return 0;

@@ -3,6 +3,9 @@
 
 #include <stdint.h>
 
+#define TIMER_FPS      60.0f
+#define TAP_FPS        61.618f
+
 enum tap_internal_state
 {
     TAP_NONE         = 0,
@@ -54,7 +57,7 @@ struct tap_state
         int16_t gradePoints;
 
         int16_t level;
-        int16_t timer;
+        int16_t timer; // Timer value in frames. Runs at 60 fps.
 
         int16_t tetromino;
         int16_t xcoord;

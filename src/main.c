@@ -35,6 +35,15 @@ int main(int argc, char *argv[])
 
     struct tracker_settings_t settings =
     {
+        .jmap =
+        {
+            .buttonA = 1,
+            .buttonB = 2,
+            .buttonC = 3,
+            .buttonD = 0,
+            .axisHori = 6,
+            .axisVert = 7
+        },
         .joystick = true
     };
     runTracker(addr, settings);

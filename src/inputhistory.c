@@ -85,7 +85,7 @@ void pushInputFromJoystick(struct input_history_t* history, struct joystick_t* j
         {
             if (getButtonState(joystick, buttonID) == GLFW_PRESS)
             {
-                history->heldButtons[buttonID] = pushKey(history, joystickButtonToSheetIndex(buttonID));
+                history->heldButtons[buttonID] = pushKey(history, joystickButtonToSheetIndex(joystick->jmap, buttonID));
             }
             else if (getButtonState(joystick, buttonID) == GLFW_RELEASE)
             {
@@ -95,57 +95,54 @@ void pushInputFromJoystick(struct input_history_t* history, struct joystick_t* j
         }
     }
 
-    if (axisChangedToState(joystick, AXIS_HORI, AXIS_NEGATIVE))
+    if (axisChangedToState(joystick, joystick->jmap.axisHori, AXIS_NEGATIVE))
     {
         history->lastLeft = pushKey(history, BUTTON_INDEX_LEFT);
     }
-    if (axisChangedToState(joystick, AXIS_HORI, AXIS_POSITIVE))
+    if (axisChangedToState(joystick, joystick->jmap.axisHori, AXIS_POSITIVE))
     {
         history->lastRight = pushKey(history, BUTTON_INDEX_RIGHT);
     }
-    if (axisChangedToState(joystick, AXIS_VERT, AXIS_NEGATIVE))
+    if (axisChangedToState(joystick, joystick->jmap.axisVert, AXIS_NEGATIVE))
     {
         history->lastUp = pushKey(history, BUTTON_INDEX_UP);
     }
-    if (axisChangedToState(joystick, AXIS_VERT, AXIS_POSITIVE))
+    if (axisChangedToState(joystick, joystick->jmap.axisVert, AXIS_POSITIVE))
     {
         history->lastDown = pushKey(history, BUTTON_INDEX_DOWN);
     }
-    if (axisChangedFromState(joystick, AXIS_HORI, AXIS_NEGATIVE))
+    if (axisChangedFromState(joystick, joystick->jmap.axisHori, AXIS_NEGATIVE))
     {
         if (history->lastLeft)
             history->lastLeft->held = false;
     }
-    if (axisChangedFromState(joystick, AXIS_HORI, AXIS_POSITIVE))
+    if (axisChangedFromState(joystick, joystick->jmap.axisHori, AXIS_POSITIVE))
     {
         if (history->lastRight)
             history->lastRight->held = false;
     }
-    if (axisChangedFromState(joystick, AXIS_VERT, AXIS_NEGATIVE))
+    if (axisChangedFromState(joystick, joystick->jmap.axisVert, AXIS_NEGATIVE))
     {
         if (history->lastUp)
             history->lastUp->held = false;
     }
-    if (axisChangedFromState(joystick, AXIS_VERT, AXIS_POSITIVE))
+    if (axisChangedFromState(joystick, joystick->jmap.axisVert, AXIS_POSITIVE))
     {
         if (history->lastDown)
             history->lastDown->held = false;
     }
 }
 
-unsigned int joystickButtonToSheetIndex(unsigned int button)
+uint8_t joystickButtonToSheetIndex(struct joystick_mapping_t jmap, uint8_t button)
 {
-    switch (button)
-    {
-    case BUTTON_D:
+    if (button == jmap.buttonD)
         return BUTTON_INDEX_D;
-    case BUTTON_A:
+    if (button == jmap.buttonA)
         return BUTTON_INDEX_A;
-    case BUTTON_B:
+    if (button == jmap.buttonB)
         return BUTTON_INDEX_B;
-    case BUTTON_C:
+    if (button == jmap.buttonC)
         return BUTTON_INDEX_C;
-    default:
-        return BUTTON_INDEX_BLANK;
-    };
+
+    return BUTTON_INDEX_BLANK;
 }
