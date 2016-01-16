@@ -15,6 +15,39 @@
 
 #include <GLFW/glfw3.h>
 
+static float frameTimeToSeconds(int frames)
+{
+    return frames / TIMER_FPS;
+}
+
+static int frameTime(float seconds)
+{
+    return (seconds * TIMER_FPS);
+}
+
+static void formatTimeToMinutes(char* buf, size_t bufferSize, int frames)
+{
+    float time = frames / 60.0f;
+    int ms = (int)(time * 100) % 100;
+    int m  = time / 60;
+    int s  = (int)time % 60;
+    snprintf(buf, bufferSize, "%02d:%02d:%02d", m, s, ms);
+}
+
+static void formatTimeToSeconds(char* buf, size_t bufferSize, int frames)
+{
+    float time = frames / 60.0f;
+
+    bool neg = time < 0.0f;
+    if (neg)
+        time = -time;
+
+    int ms = (int)(time * 100) % 100;
+    int s  = (int)time % 100;
+    snprintf(buf, bufferSize, "%c%02d:%02d", neg ? '-' : '+', s, ms);
+}
+
+
 void drawSectionGraph(struct draw_data_t* data, float width, float height)
 {
     struct game_t* game = data->game;
@@ -158,7 +191,7 @@ void drawSectionGraph(struct draw_data_t* data, float width, float height)
     drawString(font, (width - strWidth) / 2, graphHeight + font->pixelHeight, "Section Time");
 
     sprintf(levelStr, "%d", (int)scale);
-    drawString(font, width - 10.0f, graphHeight + font->pixelHeight, levelStr);
+    drawString(font, width - 12.0f, graphHeight + font->pixelHeight, levelStr);
 
     // Draw grade and grade points
     if (testMasterConditions(game))
@@ -169,7 +202,7 @@ void drawSectionGraph(struct draw_data_t* data, float width, float height)
     sprintf(levelStr, "%2d %2d",
             game->curState.grade,
             game->curState.gradePoints);
-    drawString(font, width - 28.0f, graphHeight - 2.0f, levelStr);
+    drawString(font, width - 30.0f, graphHeight - 2.0f, levelStr);
 
     /* // Draw some block data */
     /* sprintf(levelStr, "%d %d %d %d %d", */
@@ -213,7 +246,7 @@ void drawInputHistory(struct draw_data_t* data, float width, float height)
         struct element_t* element = &inputHistory->data[i % INPUT_HISTORY_LENGTH];
         for (size_t j = 0; j < element->size; j++)
         {
-            unsigned int index = element->spectrum[j].key;
+            unsigned int index = element->spectrum[j].jkey;
             if (element->spectrum[j].held)
             {
                 index += HELD_BUTTON_OFFSET;
@@ -271,6 +304,42 @@ void drawLineCount(struct draw_data_t* data, float width, float height)
     setGLColor(COLOR_FOREGROUND, 1.0f);
 
     drawString(font, (width - getStringWidth(font, lineCount)) / 2, font->pixelHeight, lineCount);
+}
+
+void drawCurrentState(struct draw_data_t* data, float width, float height)
+{
+    (void) width, (void) height;
+
+    struct game_t* game = data->game;
+    struct font_t* font = data->font;
+    struct section_table_t* table = data->table;
+
+    struct section_t* section = &table->sections[game->currentSection];
+
+    char timerStr[16];
+    formatTimeToMinutes(timerStr, 16, game->curState.timer);
+
+    char curSectionStr[16];
+    formatTimeToSeconds(curSectionStr, 16, game->curState.timer - section->startTime);
+
+    char gameStatsStr[64];
+    snprintf(gameStatsStr, 64,
+             "lvl %03d     %s         %s",
+             game->curState.level,
+             timerStr,
+             curSectionStr);
+
+    /* char lineCount[64]; */
+    /* snprintf(lineCount, 64, "Sec. Lines %2d : %2d : %2d : %2d", */
+    /*         section->lines[0], */
+    /*         section->lines[1], */
+    /*         section->lines[2], */
+    /*         section->lines[3]); */
+
+    setGLColor(COLOR_FOREGROUND, 1.0f);
+
+    drawString(font, 0.0f, font->pixelHeight, gameStatsStr);
+    /* drawString(font, 0.0f, font->pixelHeight * 2, lineCount); */
 }
 
 void drawSectionTable(struct draw_data_t* data, float width, float height)
@@ -413,12 +482,12 @@ void drawSectionTableOverall(struct draw_data_t* data, float width, float height
             char sectionTime[16];
             formatTimeToMinutes(sectionTime, 16, overallPB);
 
-            drawString(font, 70.0f, y, sectionTime);
+            drawString(font, 71.0f, y, sectionTime);
 
             char sectionTimeDiff[16];
             formatTimeToSeconds(sectionTimeDiff, 16, sectionPB);
 
-            drawString(font, 174.0f, y, sectionTimeDiff);
+            drawString(font, 172.0f, y, sectionTimeDiff);
         }
         else
         {
@@ -429,7 +498,7 @@ void drawSectionTableOverall(struct draw_data_t* data, float width, float height
             char sectionTime[16];
             formatTimeToMinutes(sectionTime, 16, section->endTime);
 
-            drawString(font, 70.0f, y, sectionTime);
+            drawString(font, 71.0f, y, sectionTime);
 
             char overallTimeDiff[16];
             formatTimeToSeconds(overallTimeDiff, 16, section->endTime - overallPB);
@@ -451,7 +520,7 @@ void drawSectionTableOverall(struct draw_data_t* data, float width, float height
             else
                 setGLColor(COLOR_FOREGROUND, 1.0f);
 
-            drawString(font, 174.0f, y, sectionTimeDiff);
+            drawString(font, 172.0f, y, sectionTimeDiff);
         }
 
         y += vertStride;
