@@ -1,12 +1,12 @@
 ninja_required_version = 1.3
 ar = ar
 cxx = clang
-cxxflags = -Wall -Wextra -pedantic -pedantic-errors -std=c11 -DNDEBUG -O3 $
+cxxflags = -Wall -Wextra -pedantic -pedantic-errors -std=c11 -g -O0 -DDEBUG $
     -isystem./ext/uthash/include -isystem./ext/stb -isystem./ext/incbin
 ldflags = -lGL -lglfw -lm -lrt
 
 rule bootstrap
-  command = python bootstrap.py --cxx=clang
+  command = python bootstrap.py --debug --cxx=clang
   generator = 1
 rule compile
   command = $cxx -MMD -MF $out.d -c $cxxflags $in -o $out
@@ -24,6 +24,7 @@ build build.ninja: bootstrap | bootstrap.py
 build obj/src/buttonquads.o: compile src/buttonquads.c
 build obj/src/layout.o: compile src/layout.c
 build obj/src/inputhistory.o: compile src/inputhistory.c
+build obj/src/gamehistory.o: compile src/gamehistory.c
 build obj/src/tracker.o: compile src/tracker.c
 build obj/src/joystick.o: compile src/joystick.c
 build obj/src/window.o: compile src/window.c
@@ -36,7 +37,7 @@ build obj/src/draw.o: compile src/draw.c
 build obj/src/stb_truetype_impl.o: compile src/stb_truetype_impl.c
 
 build ./bin/TapTracker: link obj/src/buttonquads.o obj/src/layout.o $
-    obj/src/inputhistory.o obj/src/tracker.o obj/src/joystick.o $
-    obj/src/window.o obj/src/font.o obj/src/colortheme.o obj/src/main.o $
-    obj/src/sectiontable.o obj/src/game.o obj/src/draw.o $
+    obj/src/inputhistory.o obj/src/gamehistory.o obj/src/tracker.o $
+    obj/src/joystick.o obj/src/window.o obj/src/font.o obj/src/colortheme.o $
+    obj/src/main.o obj/src/sectiontable.o obj/src/game.o obj/src/draw.o $
     obj/src/stb_truetype_impl.o

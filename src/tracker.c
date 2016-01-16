@@ -1,14 +1,16 @@
 #include "tracker.h"
 
-#include "game.h"
-#include "font.h"
 #include "draw.h"
 
-#include "inputhistory.h"
-#include "sectiontable.h"
+#include "game.h"
+#include "font.h"
 
 #include "joystick.h"
+#include "inputhistory.h"
 #include "buttonquads.h"
+
+#include "sectiontable.h"
+#include "gamehistory.h"
 
 #include "window.h"
 #include "layout.h"
@@ -33,8 +35,9 @@ bool runTracker(struct tap_state* dataPtr, struct tracker_settings_t settings)
     struct window_t mainWindow = createWindow(240, 540, "TapTracker Graph", NULL);
     createLayoutContainer(&mainWindow.layout, mainWindow.width, mainWindow.height, 14.0f, 2.0f);
     addToContainerRatio(&mainWindow.layout, &drawSectionGraph, 0.75f);
-    /* addToContainerRatio(&mainWindow.layout, &drawSectionTable, 1.00f); */
     addToContainerRatio(&mainWindow.layout, &drawSectionTableOverall, 1.00f);
+    /* addToContainerRatio(&mainWindow.layout, &drawSectionTable, 1.00f); */
+    /* addToContainerRatio(&mainWindow.layout, &drawSectionTableOverall, 1.00f); */
 
     struct window_t subWindow = createWindow(96, 112, "TapTracker ButtonSpectrum", &mainWindow);
     createLayoutContainer(&subWindow.layout, subWindow.width, subWindow.height, 4.0f, 0.0f);
@@ -64,6 +67,8 @@ bool runTracker(struct tap_state* dataPtr, struct tracker_settings_t settings)
     struct button_spectrum_t* bspec = createButtonSpriteSheet(NULL);
     struct section_table_t* table = section_table_create();
 
+    struct game_history_t* gh = game_history_create();
+
     struct draw_data_t data =
     {
         .game = game,
@@ -71,13 +76,14 @@ bool runTracker(struct tap_state* dataPtr, struct tracker_settings_t settings)
         .history = history,
         .bspec = bspec,
         .table = table,
+        .gh = gh,
         .scale = 60.0f
     };
 
     while (!glfwWindowShouldClose(mainWindow.handle) &&
            !glfwWindowShouldClose(subWindow.handle))
     {
-        updateGameState(game, history, table, dataPtr);
+        updateGameState(game, history, table, gh, dataPtr);
 
         if (game->curState.gameMode == TAP_MODE_DEATH)
             data.scale = 45.0f;

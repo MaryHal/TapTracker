@@ -28,7 +28,9 @@ void destroyInputHistory(struct input_history_t* history, bool freeMe)
 
 void resetInputHistory(struct input_history_t* history)
 {
-    memset(history, 0, sizeof(struct input_history_t));
+    /* memset(history, 0, sizeof(struct input_history_t)); */
+    history->start = 0;
+    history->end = 0;
 
     /* pushHistoryElement(history, -1); */
 }

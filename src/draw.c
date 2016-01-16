@@ -1,12 +1,13 @@
 #include "draw.h"
 
-#include "font.h"
 #include "game.h"
-
-#include "sectiontable.h"
+#include "font.h"
 
 #include "inputhistory.h"
 #include "buttonquads.h"
+
+#include "sectiontable.h"
+#include "gamehistory.h"
 
 #include "colortheme.h"
 
@@ -287,7 +288,7 @@ void drawSectionTable(struct draw_data_t* data, float width, float height)
 
     setGLColor(COLOR_FOREGROUND, 1.0f);
 
-    for (int i = game->currentSection - maxIterations; i <= (signed)game->currentSection; ++i)
+    for (int i = game->currentSection - maxIterations; i <= game->currentSection; ++i)
     {
         if (i < 0)
         {
@@ -455,4 +456,47 @@ void drawSectionTableOverall(struct draw_data_t* data, float width, float height
 
         y += vertStride;
     }
+}
+
+void drawGameHistory(struct draw_data_t* data, float width, float height)
+{
+    (void) width;
+
+    /* struct game_t* game = data->game; */
+    struct font_t* font = data->font;
+    struct game_history_t* gh = data->gh;
+
+    const float vertStride = font->pixelHeight;
+    const int maxIterations = height / vertStride - 1;
+
+    float x = 0.0f;
+    float y = vertStride;
+
+    setGLColor(COLOR_FOREGROUND, 1.0f);
+
+    for (int i = gh->end - maxIterations - 1; i < gh->end; i++)
+    {
+        if (i < gh->start)
+        {
+            continue;
+        }
+
+        char gameTimeStr[16];
+        formatTimeToMinutes(gameTimeStr, 16, gh->data[i].timer);
+
+        char buf[32];
+        snprintf(buf, 32, "%d @ %s", gh->data[i].level, gameTimeStr);
+
+        drawString(font, x, y, buf);
+
+        x = 0.0f;
+        y += vertStride;
+    }
+
+    float avgDeathLevel = averageDeathLevel(gh);
+
+    char buf[32];
+    snprintf(buf, 32, "Average Death Level: %.2f", avgDeathLevel);
+
+    drawString(font, x, y, buf);
 }

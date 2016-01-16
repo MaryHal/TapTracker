@@ -2,6 +2,7 @@
 
 #include "inputhistory.h"
 #include "sectiontable.h"
+#include "gamehistory.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -77,6 +78,7 @@ bool isInPlayingState(char state)
 void updateGameState(struct game_t* game,
                      struct input_history_t* inputHistory,
                      struct section_table_t* table,
+                     struct game_history_t* gh,
                      struct tap_state* dataPtr)
 {
     assert(game != NULL);
@@ -114,6 +116,8 @@ void updateGameState(struct game_t* game,
     {
         // Update PB times
         updateRecords(table, game->prevState.level, game->prevState.gameMode);
+
+        pushStateToGameHistory(gh, game->prevState);
 
         resetGame(game);
 
