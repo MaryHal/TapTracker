@@ -434,9 +434,7 @@ void drawSectionTableOverall(struct draw_data_t* data, float width, float height
             formatTimeToSeconds(overallTimeDiff, 16, section->endTime - overallPB);
 
             // Set color so it's like all the speedrun timers.
-            if (sectionPB > section->endTime - section->startTime)
-                setGLColor(COLOR_TETRIS, 1.0f);
-            else if (overallPB < section->endTime)
+            if (overallPB < section->endTime)
                 setGLColor(COLOR_RED, 1.0f);
             else
                 setGLColor(COLOR_GREEN, 1.0f);
@@ -450,7 +448,7 @@ void drawSectionTableOverall(struct draw_data_t* data, float width, float height
             if (sectionPB > section->endTime - section->startTime)
                 setGLColor(COLOR_TETRIS, 1.0f);
             else
-                setGLColor(COLOR_RED, 1.0f);
+                setGLColor(COLOR_FOREGROUND, 1.0f);
 
             drawString(font, 174.0f, y, sectionTimeDiff);
         }
