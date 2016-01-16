@@ -16,6 +16,7 @@
 
 struct input_history_t;
 struct section_table_t;
+struct game_history_t;
 
 extern const char* DISPLAYED_GRADE[GRADE_COUNT];
 
@@ -46,6 +47,7 @@ bool isInPlayingState(char game);
 void updateGameState(struct game_t* game,
                      struct input_history_t* inputHistory,
                      struct section_table_t* table,
+                     struct game_history_t* gh,
                      struct tap_state* dataPtr);
 
 void printGameState(struct game_t* game);
