@@ -79,13 +79,14 @@ void popInputHistoryElement(struct input_history_t* history)
 
 void pushInputFromJoystick(struct input_history_t* history, struct joystick_t* joystick)
 {
-    for (int buttonID = 0; buttonID < BUTTON_COUNT; buttonID++)
+    for (int i = 0; i < BUTTON_COUNT; i++)
     {
+        int buttonID = joystick->jmap.buttons[i];
         if (buttonChange(joystick, buttonID))
         {
             if (getButtonState(joystick, buttonID) == GLFW_PRESS)
             {
-                history->heldButtons[buttonID] = pushKey(history, joystickButtonToSheetIndex(joystick->jmap, buttonID));
+                history->heldButtons[buttonID] = pushKey(history, joystickButtonToQuadIndex(joystick->jmap, buttonID));
             }
             else if (getButtonState(joystick, buttonID) == GLFW_RELEASE)
             {
@@ -97,19 +98,19 @@ void pushInputFromJoystick(struct input_history_t* history, struct joystick_t* j
 
     if (axisChangedToState(joystick, joystick->jmap.axisHori, AXIS_NEGATIVE))
     {
-        history->lastLeft = pushKey(history, BUTTON_INDEX_LEFT);
+        history->lastLeft = pushKey(history, BUTTON_QUAD_LEFT);
     }
     if (axisChangedToState(joystick, joystick->jmap.axisHori, AXIS_POSITIVE))
     {
-        history->lastRight = pushKey(history, BUTTON_INDEX_RIGHT);
+        history->lastRight = pushKey(history, BUTTON_QUAD_RIGHT);
     }
     if (axisChangedToState(joystick, joystick->jmap.axisVert, AXIS_NEGATIVE))
     {
-        history->lastUp = pushKey(history, BUTTON_INDEX_UP);
+        history->lastUp = pushKey(history, BUTTON_QUAD_UP);
     }
     if (axisChangedToState(joystick, joystick->jmap.axisVert, AXIS_POSITIVE))
     {
-        history->lastDown = pushKey(history, BUTTON_INDEX_DOWN);
+        history->lastDown = pushKey(history, BUTTON_QUAD_DOWN);
     }
     if (axisChangedFromState(joystick, joystick->jmap.axisHori, AXIS_NEGATIVE))
     {
@@ -131,18 +132,4 @@ void pushInputFromJoystick(struct input_history_t* history, struct joystick_t* j
         if (history->lastDown)
             history->lastDown->held = false;
     }
-}
-
-uint8_t joystickButtonToSheetIndex(struct joystick_mapping_t jmap, uint8_t button)
-{
-    if (button == jmap.buttonD)
-        return BUTTON_INDEX_D;
-    if (button == jmap.buttonA)
-        return BUTTON_INDEX_A;
-    if (button == jmap.buttonB)
-        return BUTTON_INDEX_B;
-    if (button == jmap.buttonC)
-        return BUTTON_INDEX_C;
-
-    return BUTTON_INDEX_BLANK;
 }

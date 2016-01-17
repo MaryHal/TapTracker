@@ -34,7 +34,7 @@ struct button_spectrum_t* createButtonSpriteSheet(struct button_spectrum_t* bspe
     stbi_image_free(bitmap);
 
     // Setup coordinates
-    for (size_t i = 0; i < BUTTON_INDEX_COUNT; ++i)
+    for (size_t i = 0; i < BUTTON_QUAD_COUNT; ++i)
     {
         struct button_spectrum_quad_t* currentQuad = &bspec->quads[i];
 
@@ -60,4 +60,18 @@ void destroyButtonSpriteSheet(struct button_spectrum_t* bspec, bool freeMe)
 
     if (freeMe)
         free(bspec);
+}
+
+uint8_t joystickButtonToQuadIndex(struct joystick_mapping_t jmap, uint8_t button)
+{
+    if (button == jmap.buttons[BUTTON_A])
+        return BUTTON_QUAD_A;
+
+    if (button == jmap.buttons[BUTTON_B])
+        return BUTTON_QUAD_B;
+
+    if (button == jmap.buttons[BUTTON_C])
+        return BUTTON_QUAD_C;
+
+    return BUTTON_QUAD_BLANK;
 }

@@ -11,7 +11,7 @@
 
 struct button_t
 {
-        int8_t jkey;
+        uint8_t jkey;
         bool held;
 };
 
@@ -46,7 +46,5 @@ struct button_t* pushKey(struct input_history_t* inputhistory, int key);
 void popInputHistoryElement(struct input_history_t* inputhistory);
 
 void pushInputFromJoystick(struct input_history_t* inputhistory, struct joystick_t* joystick);
-
-uint8_t joystickButtonToSheetIndex(struct joystick_mapping_t jmap, uint8_t button);
 
 #endif /* INPUTHISTORY_H */
