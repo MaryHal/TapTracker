@@ -44,21 +44,23 @@ void _addCharData(struct chardata_t** cmap, int codepoint, stbtt_packedchar pcha
 /*     free(cdata); */
 /* } */
 
-void exportBitmap(const char* imgFile, struct font_t* font)
+void exportBitmap(const char* imgOutFilename, struct font_t* font)
 {
-    assert(font != NULL);
+    assert(imgOutFilename != NULL && font != NULL);
 
     if (font->bitmap == NULL)
     {
         fprintf(stderr, "Cannot export font bitmap. Is this font already a bitmap font?");
     }
 
-    stbi_write_png(imgFile, font->textureWidth, font->textureHeight, 1, font->bitmap, 0);
+    stbi_write_png(imgOutFilename, font->textureWidth, font->textureHeight, 1, font->bitmap, 0);
 }
 
-void exportFontData(const char* binFile, struct font_t* font)
+void exportFontData(const char* binOutFilename, struct font_t* font)
 {
-    FILE* binOutput = fopen(binFile, "wb");
+    assert(binOutFilename != NULL && font != NULL);
+
+    FILE* binOutput = fopen(binOutFilename, "wb");
 
     if (!binOutput)
     {
@@ -77,8 +79,21 @@ void exportFontData(const char* binFile, struct font_t* font)
     fclose(binOutput);
 }
 
+void flushFontBitmap(struct font_t* font)
+{
+    assert(font != NULL);
+
+    if (font->bitmap)
+    {
+        free(font->bitmap);
+        font->bitmap = NULL;
+    }
+}
+
 void _loadTTF_file(const char* filename, uint8_t** ttfData)
 {
+    assert(filename != NULL && ttfData != NULL);
+
     FILE* ttf_file = fopen(filename, "rb");
 
     if (!ttf_file)
@@ -102,6 +117,8 @@ void _loadTTF_file(const char* filename, uint8_t** ttfData)
 
 void _bindFontTexture(struct font_t* font, uint8_t* bitmap)
 {
+    assert(font != NULL);
+
     glGenTextures(1, &font->texture);
     glBindTexture(GL_TEXTURE_2D, font->texture);
 
