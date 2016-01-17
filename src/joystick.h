@@ -4,17 +4,26 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#define BUTTON_COUNT 4
-#define AXIS_COUNT 2
+enum
+{
+    BUTTON_A = 0,
+    BUTTON_B,
+    BUTTON_C,
+    BUTTON_COUNT
+};
+
+enum
+{
+    AXIS_HORI = 0,
+    AXIS_VERT,
+    AXIS_COUNT
+};
 
 struct joystick_mapping_t
 {
-        uint8_t buttonA;
-        uint8_t buttonB;
-        uint8_t buttonC;
-        uint8_t buttonD;
-        int8_t axisHori;
-        int8_t axisVert;
+        uint8_t buttons[BUTTON_COUNT];
+        uint8_t axisHori;
+        uint8_t axisVert;
 };
 
 enum AXIS_DIRECTION

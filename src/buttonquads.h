@@ -2,29 +2,32 @@
 #define BUTTONQUADS_H
 
 #include <stdbool.h>
+#include <stdint.h>
+
+#include "joystick.h"
 
 #define HELD_BUTTON_OFFSET 8
 
 enum
 {
-    BUTTON_INDEX_BLANK = 0,
-    BUTTON_INDEX_UP = 1,
-    BUTTON_INDEX_DOWN,
-    BUTTON_INDEX_LEFT,
-    BUTTON_INDEX_RIGHT,
-    BUTTON_INDEX_A,
-    BUTTON_INDEX_B,
-    BUTTON_INDEX_C,
-    BUTTON_INDEX_D,
-    BUTTON_INDEX_UP_HELD,
-    BUTTON_INDEX_DOWN_HELD,
-    BUTTON_INDEX_LEFT_HELD,
-    BUTTON_INDEX_RIGHT_HELD,
-    BUTTON_INDEX_A_HELD,
-    BUTTON_INDEX_B_HELD,
-    BUTTON_INDEX_C_HELD,
-    BUTTON_INDEX_D_HELD,
-    BUTTON_INDEX_COUNT
+    BUTTON_QUAD_BLANK = 0,
+    BUTTON_QUAD_UP = 1,
+    BUTTON_QUAD_DOWN,
+    BUTTON_QUAD_LEFT,
+    BUTTON_QUAD_RIGHT,
+    BUTTON_QUAD_A,
+    BUTTON_QUAD_B,
+    BUTTON_QUAD_C,
+    BUTTON_QUAD_D,
+    BUTTON_QUAD_UP_HELD,
+    BUTTON_QUAD_DOWN_HELD,
+    BUTTON_QUAD_LEFT_HELD,
+    BUTTON_QUAD_RIGHT_HELD,
+    BUTTON_QUAD_A_HELD,
+    BUTTON_QUAD_B_HELD,
+    BUTTON_QUAD_C_HELD,
+    BUTTON_QUAD_D_HELD,
+    BUTTON_QUAD_COUNT
 };
 
 struct button_spectrum_quad_t
@@ -35,10 +38,12 @@ struct button_spectrum_quad_t
 struct button_spectrum_t
 {
         unsigned int textureID;
-        struct button_spectrum_quad_t quads[BUTTON_INDEX_COUNT];
+        struct button_spectrum_quad_t quads[BUTTON_QUAD_COUNT];
 };
 
 struct button_spectrum_t* createButtonSpriteSheet(struct button_spectrum_t* bspec);
 void destroyButtonSpriteSheet(struct button_spectrum_t* bspec, bool freeMe);
+
+uint8_t joystickButtonToQuadIndex(struct joystick_mapping_t jmap, uint8_t button);
 
 #endif /* BUTTONQUADS_H */

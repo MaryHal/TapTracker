@@ -40,8 +40,7 @@ void destroyJoystick(struct joystick_t* joystick, bool freeMe)
 
 void updateButtons(struct joystick_t* joystick)
 {
-    if (!joystick)
-        return;
+    assert(joystick != NULL);
 
     memcpy(joystick->prevButtons, joystick->buttons, 16);
     memcpy(joystick->prevAxis, joystick->axis, 8);
@@ -66,8 +65,7 @@ void updateButtons(struct joystick_t* joystick)
 
 uint8_t getButtonState(struct joystick_t* joystick, int buttonID)
 {
-    if (!joystick)
-        return 0;
+    assert(joystick != NULL);
 
     assert(buttonID >= 0 && buttonID < joystick->buttonCount);
     return joystick->buttons[buttonID];
@@ -75,8 +73,7 @@ uint8_t getButtonState(struct joystick_t* joystick, int buttonID)
 
 uint8_t getPrevButtonState(struct joystick_t* joystick, int buttonID)
 {
-    if (!joystick)
-        return 0;
+    assert(joystick != NULL);
 
     assert(buttonID >= 0 && buttonID < joystick->buttonCount);
     return joystick->prevButtons[buttonID];
@@ -84,8 +81,7 @@ uint8_t getPrevButtonState(struct joystick_t* joystick, int buttonID)
 
 int8_t getAxisState(struct joystick_t* joystick, int axisID)
 {
-    if (!joystick)
-        return 0;
+    assert(joystick != NULL);
 
     assert(axisID >= 0 && axisID < joystick->axisCount);
     return joystick->axis[axisID];
@@ -93,8 +89,7 @@ int8_t getAxisState(struct joystick_t* joystick, int axisID)
 
 int8_t getPrevAxisState(struct joystick_t* joystick, int axisID)
 {
-    if (!joystick)
-        return 0;
+    assert(joystick != NULL);
 
     assert(axisID >= 0 && axisID < joystick->axisCount);
     return joystick->prevAxis[axisID];
@@ -102,8 +97,7 @@ int8_t getPrevAxisState(struct joystick_t* joystick, int axisID)
 
 bool buttonChange(struct joystick_t* joystick, int buttonID)
 {
-    if (!joystick)
-        return 0;
+    assert(joystick != NULL);
 
     assert(buttonID >= 0 && buttonID < joystick->buttonCount);
     return joystick->buttons[buttonID] != joystick->prevButtons[buttonID];
@@ -111,8 +105,7 @@ bool buttonChange(struct joystick_t* joystick, int buttonID)
 
 bool axisChange(struct joystick_t* joystick, int axisID)
 {
-    if (!joystick)
-        return 0;
+    assert(joystick != NULL);
 
     assert(axisID >= 0 && axisID < joystick->axisCount);
     return joystick->axis[axisID] != joystick->prevAxis[axisID];
@@ -120,32 +113,28 @@ bool axisChange(struct joystick_t* joystick, int axisID)
 
 bool buttonChangedFromState(struct joystick_t* joystick, int buttonID, int state)
 {
-    if (!joystick)
-        return 0;
+    assert(joystick != NULL);
 
     return buttonChange(joystick, buttonID) && getPrevButtonState(joystick, buttonID) == state;
 }
 
 bool buttonChangedToState(struct joystick_t* joystick, int buttonID, int state)
 {
-    if (!joystick)
-        return 0;
+    assert(joystick != NULL);
 
     return buttonChange(joystick, buttonID) && getButtonState(joystick, buttonID) == state;
 }
 
 bool axisChangedFromState(struct joystick_t* joystick, int axisID, int state)
 {
-    if (!joystick)
-        return 0;
+    assert(joystick != NULL);
 
     return axisChange(joystick, axisID) && getPrevAxisState(joystick, axisID) == state;
 }
 
 bool axisChangedToState(struct joystick_t* joystick, int axisID, int state)
 {
-    if (!joystick)
-        return 0;
+    assert(joystick != NULL);
 
     return axisChange(joystick, axisID) && getAxisState(joystick, axisID) == state;
 }
