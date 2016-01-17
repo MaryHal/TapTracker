@@ -37,10 +37,8 @@ int main(int argc, char *argv[])
     {
         .jmap =
         {
-            .buttonA = 1,
-            .buttonB = 2,
-            .buttonC = 3,
-            .buttonD = 0,
+            // Joystick  A  B  C
+            .buttons = { 1, 2, 3 },
             .axisHori = 6,
             .axisVert = 7
         },
