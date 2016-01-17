@@ -37,8 +37,12 @@ struct chardata_t* _getCharData(struct chardata_t** cmap, int codepoint);
 
 // Export internal bitmap for a font. This should not be used if this font is
 // already a bitmap font.
-void exportBitmap(const char* imgFile, struct font_t* font);
-void exportFontData(const char* binFile, struct font_t* font);
+void exportBitmap(const char* imgOutFilename, struct font_t* font);
+void exportFontData(const char* binOutFilename, struct font_t* font);
+
+// Throwaway bitmap font data. If you loaded a TTF, we keep the generated bitmap
+// just in case we want to export it, but it isn't necessary to keep around.
+void flushFontBitmap(struct font_t* font);
 
 // Loads a TTF file on the heap into *ttfData. Remember to free it!
 void _loadTTF_file(const char* filename, uint8_t** ttfData);
