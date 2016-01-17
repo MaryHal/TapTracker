@@ -56,7 +56,10 @@ void drawSectionGraph(struct draw_data_t* data, float width, float height)
     struct section_table_t* table = data->table;
 
     if (!table)
+    {
+        fprintf(stderr, "drawSectionGraph: section_table_t is NULL");
         return;
+    }
 
     const float scale = data->scale;
 
@@ -222,7 +225,10 @@ void drawInputHistory(struct draw_data_t* data, float width, float height)
     struct button_spectrum_t* bspec = data->bspec;
 
     if (!inputHistory)
+    {
+        fprintf(stderr, "drawInputHistory: input_history_t is NULL");
         return;
+    }
 
     float x = 0.0f;
     float y = 0.0f;
