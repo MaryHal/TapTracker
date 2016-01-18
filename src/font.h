@@ -65,5 +65,6 @@ void getPackedQuad(struct font_t* font, int codepoint,
 void drawString(struct font_t* font, float x, float y, const char* string);
 
 float getStringWidth(struct font_t* font, const char* string);
+float getMonospaceWidth(struct font_t* font);
 
 #endif /* FONT_H */

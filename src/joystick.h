@@ -4,6 +4,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#define JOYSTICK_AXIS_TOLERANCE 0.5f
+
 enum
 {
     BUTTON_A = 0,
@@ -39,6 +41,7 @@ struct joystick_t
         int id;
         int buttonCount;
         int axisCount;
+
         uint8_t buttons[16], prevButtons[16];
         int8_t axis[8], prevAxis[8];
 };
@@ -57,8 +60,9 @@ int8_t getPrevAxisState(struct joystick_t* joystick, int axisID);
 bool buttonChange(struct joystick_t* joystick, int buttonID);
 bool axisChange(struct joystick_t* joystick, int axisID);
 
-bool buttonChangedFromState(struct joystick_t* joystick, int buttonID, int state); // state should be GLFW_PRESS or GLFW_RELEASE
-bool buttonChangedToState(struct joystick_t* joystick, int buttonID, int state); // state should be GLFW_PRESS or GLFW_RELEASE
+// state should be GLFW_PRESS or GLFW_RELEASE
+bool buttonChangedFromState(struct joystick_t* joystick, int buttonID, int state);
+bool buttonChangedToState(struct joystick_t* joystick, int buttonID, int state);
 bool axisChangedFromState(struct joystick_t* joystick, int axisID, int state);
 bool axisChangedToState(struct joystick_t* joystick, int axisID, int state);
 

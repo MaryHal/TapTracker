@@ -1,6 +1,5 @@
 #include <unistd.h>
 
-#include <sys/wait.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
@@ -8,7 +7,6 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <stdint.h>
 
 #include "tap_state.h"
 #include "tracker.h"
@@ -21,7 +19,7 @@ int main(int argc, char *argv[])
     int fd = shm_open(sharedMemKey, O_RDONLY, S_IRWXO | S_IRWXG | S_IRWXU);
     if (fd < 0)
     {
-        perror("Could not create shared memory object");
+        perror("Could not open shared memory object");
         return 1;
     }
 
@@ -30,7 +28,8 @@ int main(int argc, char *argv[])
     struct tap_state* addr = (struct tap_state*)mmap(NULL, vSize, PROT_READ, MAP_SHARED, fd, 0);
     if (addr == MAP_FAILED)
     {
-        perror("Parent: Could not map memory");
+        perror("Could not map memory");
+        return 1;
     }
 
     struct tracker_settings_t settings =
@@ -42,7 +41,7 @@ int main(int argc, char *argv[])
             .axisHori = 6,
             .axisVert = 7
         },
-        .joystick = true
+        .enableJoystick = true
     };
     runTracker(addr, settings);
 
