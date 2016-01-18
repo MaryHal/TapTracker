@@ -54,9 +54,9 @@ void updateButtons(struct joystick_t* joystick)
     const float* axes = glfwGetJoystickAxes(joystick->id, &joystick->axisCount);
     for (int i = 0; i < joystick->axisCount; i++)
     {
-        if (axes[i] < -0.5f)
+        if (axes[i] < -JOYSTICK_AXIS_TOLERANCE)
             joystick->axis[i] = -1;
-        else if (axes[i] > 0.5f)
+        else if (axes[i] > JOYSTICK_AXIS_TOLERANCE)
             joystick->axis[i] = 1;
         else
             joystick->axis[i] = 0;

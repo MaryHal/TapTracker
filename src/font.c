@@ -403,3 +403,9 @@ float getStringWidth(struct font_t* font, const char* string)
 
     return x;
 }
+
+float getMonospaceWidth(struct font_t* font)
+{
+    stbtt_packedchar* b = &_getCharData(&font->cmap, 'A')->pchar;
+    return b->x1 - b->x0;
+}

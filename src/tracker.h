@@ -10,7 +10,7 @@ struct tap_state;
 
 struct tracker_settings_t
 {
-        bool joystick;
+        bool enableJoystick;
         struct joystick_mapping_t jmap;
 };
 

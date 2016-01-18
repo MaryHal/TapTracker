@@ -22,6 +22,8 @@ struct draw_data_t
         float scale;
 };
 
+void prepareDrawData(struct draw_data_t* data);
+
 void drawSectionGraph(struct draw_data_t* data, float width, float height);
 void drawInputHistory(struct draw_data_t* data, float width, float height);
 
