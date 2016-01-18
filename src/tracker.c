@@ -59,7 +59,7 @@ bool runTracker(struct tap_state* dataPtr, struct tracker_settings_t settings)
     struct joystick_t* joystick = NULL;
     struct input_history_t* history = NULL;
 
-    if (settings.joystick)
+    if (settings.enableJoystick)
     {
         joystick = createJoystick(NULL, GLFW_JOYSTICK_1, settings.jmap);
         history = createInputHistory(NULL);
@@ -96,7 +96,7 @@ bool runTracker(struct tap_state* dataPtr, struct tracker_settings_t settings)
         drawWindowLayout(&mainWindow, &data);
 
         // Update input history
-        if (settings.joystick)
+        if (settings.enableJoystick)
         {
             updateButtons(joystick);
             pushInputFromJoystick(history, joystick);

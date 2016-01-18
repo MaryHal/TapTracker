@@ -4,6 +4,8 @@
 #include <GLFW/glfw3.h>
 #include <stdio.h>
 
+#include <assert.h>
+
 void setupOpenGL(struct window_t* window, const unsigned int width, const unsigned int height)
 {
     glfwMakeContextCurrent(window->handle);
