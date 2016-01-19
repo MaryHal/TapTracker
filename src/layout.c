@@ -31,15 +31,15 @@ void destroyContainer(struct layout_container_t* c, bool freeMe)
         free(c);
 }
 
-void addToContainerRatio(struct layout_container_t* container, draw_function_p drawFunc,
+void addToContainerRatio(struct layout_container_t* container, struct draw_container_t drawContainer,
                          float ratio)
 {
     assert(container != NULL);
 
-    addToContainerFixed(container, drawFunc, container->leftoverHeight * ratio);
+    addToContainerFixed(container, drawContainer, container->leftoverHeight * ratio);
 }
 
-void addToContainerFixed(struct layout_container_t* container, draw_function_p drawFunc,
+void addToContainerFixed(struct layout_container_t* container, struct draw_container_t drawContainer,
                          float pixelHeight)
 {
     assert(container != NULL && container->size < MAX_LAYOUT_ELEMENTS);
@@ -53,12 +53,24 @@ void addToContainerFixed(struct layout_container_t* container, draw_function_p d
             .y = prevElement == NULL ? 0.0f : prevElement->y + prevElement->height,
             .width  = container->leftoverWidth,
             .height = pixelHeight,
-            .drawFunc = drawFunc
+            .drawContainer = drawContainer
         };
 
     container->leftoverHeight -= pixelHeight;
 
     container->size++;
+}
+
+void initContainer(struct layout_container_t* container, struct draw_data_t* data_container)
+{
+    for (size_t i = 0; i < container->size; i++)
+    {
+        struct layout_element_t* e = &container->elements[i];
+        if (e->drawContainer.initFunc != NULL)
+        {
+            e->drawContainer.initFunc(data_container, e->width, e->height);
+        }
+    }
 }
 
 void drawLayout(struct layout_container_t* container, struct draw_data_t* data_container, bool debug)
@@ -80,7 +92,7 @@ void drawLayout(struct layout_container_t* container, struct draw_data_t* data_c
         glPushMatrix();
         glTranslatef(adjustedX, adjustedY, 0.0f);
         {
-            e->drawFunc(data_container, adjustedWidth, adjustedHeight);
+            e->drawContainer.drawFunc(data_container, adjustedWidth, adjustedHeight);
 
             if (debug)
             {

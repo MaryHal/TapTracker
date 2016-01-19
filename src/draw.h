@@ -20,11 +20,27 @@ struct draw_data_t
         struct game_history_t* gh;
 
         float scale;
+
+        unsigned int gridVBO;
 };
 
-void prepareDrawData(struct draw_data_t* data);
+struct draw_container_t
+{
+        void (*initFunc)(struct draw_data_t* data, float width, float height);
+        void (*drawFunc)(struct draw_data_t* data, float width, float height);
+        void (*deinitFunc)(struct draw_data_t* data);
+};
 
+extern struct draw_container_t sectionGraphContainer;
+extern struct draw_container_t inputHistoryContainer;
+extern struct draw_container_t currentStateContainer;
+extern struct draw_container_t sectionTableContainer;
+extern struct draw_container_t gameHistoryContainer;
+
+void prepareSectionGraph(struct draw_data_t* data, float width, float height);
 void drawSectionGraph(struct draw_data_t* data, float width, float height);
+void disposeSectionGraph(struct draw_data_t* data);
+
 void drawInputHistory(struct draw_data_t* data, float width, float height);
 
 void drawLineCount(struct draw_data_t* data, float width, float height);

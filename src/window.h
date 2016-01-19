@@ -23,4 +23,6 @@ void destroyWindow(struct window_t* window);
 
 void drawWindowLayout(struct window_t* window, struct draw_data_t* data);
 
+bool initializeGlad();
+
 #endif /* WINDOW_H */

@@ -35,15 +35,20 @@ bool runTracker(struct tap_state* dataPtr, struct tracker_settings_t settings)
 
     struct window_t mainWindow = createWindow(240, 540, "TapTracker Graph", NULL);
     createLayoutContainer(&mainWindow.layout, mainWindow.width, mainWindow.height, 14.0f, 2.0f);
-    addToContainerRatio(&mainWindow.layout, &drawSectionGraph, 0.72f);
-    addToContainerFixed(&mainWindow.layout, &drawSectionTableOverall, 130.0f);
-    addToContainerFixed(&mainWindow.layout, &drawCurrentState, 14.0f);
+    addToContainerRatio(&mainWindow.layout, sectionGraphContainer, 0.72f);
+    addToContainerFixed(&mainWindow.layout, sectionTableContainer, 130.0f);
+    addToContainerFixed(&mainWindow.layout, currentStateContainer, 14.0f);
     /* addToContainerRatio(&mainWindow.layout, &drawSectionTable, 1.00f); */
     /* addToContainerRatio(&mainWindow.layout, &drawSectionTableOverall, 1.00f); */
 
     struct window_t subWindow = createWindow(96, 112, "TapTracker ButtonSpectrum", &mainWindow);
     createLayoutContainer(&subWindow.layout, subWindow.width, subWindow.height, 4.0f, 0.0f);
-    addToContainerRatio(&subWindow.layout, &drawInputHistory, 1.00f);
+    addToContainerRatio(&subWindow.layout, inputHistoryContainer, 1.00f);
+
+    if (!initializeGlad())
+    {
+        return false;
+    }
 
     /* // Load then create bitmap font. */
     /* struct font_t* font = loadTTF(NULL, "/usr/share/fonts/TTF/PP821/PragmataPro.ttf", 13.0f); */
@@ -81,6 +86,9 @@ bool runTracker(struct tap_state* dataPtr, struct tracker_settings_t settings)
         .gh = gh,
         .scale = 60.0f
     };
+
+    initContainer(&mainWindow.layout, &data);
+    initContainer(&subWindow.layout, &data);
 
     while (!glfwWindowShouldClose(mainWindow.handle) &&
            !glfwWindowShouldClose(subWindow.handle))
