@@ -96,7 +96,7 @@ bool runTracker(struct tap_state* dataPtr, struct tracker_settings_t settings)
         drawWindowLayout(&mainWindow, &data);
 
         // Update input history
-        if (settings.enableJoystick)
+        if (settings.enableJoystick && joystick)
         {
             updateButtons(joystick);
             pushInputFromJoystick(history, joystick);
