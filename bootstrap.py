@@ -37,11 +37,11 @@ args = parser.parse_args()
 BUILD_FILENAME = 'build.ninja'
 
 compiler = args.cxx
-include = ['-isystem./ext/uthash/include', '-isystem./ext/stb', '-isystem./ext/incbin']
+include = ['-isystem./ext/uthash/include', '-isystem./ext/stb', '-isystem./ext/incbin', '-isystem./ext/glad_gen/include']
 depends = []
 libdirs = []
-ldflags = ['-lGL', '-lglfw', '-lm', '-lrt']
-cxxflags = ['-Wall', '-Wextra', '-pedantic', '-pedantic-errors', '-std=c11']
+ldflags = ['-lGL', '-lglfw', '-ldl', '-lm', '-lrt']
+cxxflags = ['-Wall', '-Wextra', '-std=c11']
 
 if sys.platform == 'win32':
     project.libraries = ['mingw32']
@@ -86,7 +86,8 @@ ninja.newline()
 ninja.build('build.ninja', 'bootstrap', implicit = 'bootstrap.py')
 
 testobjs = []
-for f in files_from('src/', '**.c'):
+srcfiles = files_from('src/', '**.c') + ['ext/glad_gen/src/glad.c']
+for f in srcfiles:
     obj = object_file(f)
     testobjs.append(obj)
     ninja.build(obj, 'compile', inputs = f)

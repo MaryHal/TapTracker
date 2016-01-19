@@ -1,6 +1,7 @@
 #include "window.h"
 #include "colortheme.h"
 
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <stdio.h>
 
@@ -9,6 +10,12 @@
 void setupOpenGL(struct window_t* window, const unsigned int width, const unsigned int height)
 {
     glfwMakeContextCurrent(window->handle);
+
+    if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
+    {
+        printf("Failed to initialize opengl context\n");
+        return;
+    }
 
     // OpenGL 2d perspective
     glMatrixMode(GL_PROJECTION); glLoadIdentity();
@@ -36,14 +43,14 @@ struct window_t createWindow(unsigned int width, unsigned int height,
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 
     struct window_t window =
-    {
-        .handle = glfwCreateWindow(width, height,
-                                   title,
-                                   NULL,
-                                   (parent == NULL || parent->handle == NULL) ? NULL : parent->handle),
+        {
+            .handle = glfwCreateWindow(width, height,
+                                       title,
+                                       NULL,
+                                       (parent == NULL || parent->handle == NULL) ? NULL : parent->handle),
             .width = width,
             .height = height
-    };
+        };
 
     if (window.handle == NULL)
     {

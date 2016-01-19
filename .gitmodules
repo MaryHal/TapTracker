@@ -7,3 +7,6 @@
 [submodule "ext/incbin"]
 	path = ext/incbin
 	url = https://github.com/graphitemaster/incbin.git
+[submodule "ext/glad"]
+	path = ext/glad
+	url = https://github.com/Dav1dde/glad.git
