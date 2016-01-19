@@ -13,7 +13,44 @@
 
 #include <stdio.h>
 
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
+
+struct draw_container_t sectionGraphContainer =
+{
+    .initFunc = &prepareSectionGraph,
+    .drawFunc = &drawSectionGraph,
+    .deinitFunc = &disposeSectionGraph
+};
+
+struct draw_container_t inputHistoryContainer =
+{
+    .initFunc = NULL,
+    .drawFunc = &drawInputHistory,
+    .deinitFunc = NULL
+};
+
+struct draw_container_t currentStateContainer =
+{
+    .initFunc = NULL,
+    .drawFunc = &drawCurrentState,
+    .deinitFunc = NULL
+};
+
+struct draw_container_t sectionTableContainer =
+{
+    .initFunc = NULL,
+    .drawFunc = &drawSectionTableOverall,
+    .deinitFunc = NULL
+};
+
+struct draw_container_t gameHistoryContainer =
+{
+    .initFunc = NULL,
+    .drawFunc = &drawGameHistory,
+    .deinitFunc = NULL
+};
+
 
 static float frameTimeToSeconds(int frames)
 {
@@ -47,6 +84,34 @@ static void formatTimeToSeconds(char* buf, size_t bufferSize, int frames)
     snprintf(buf, bufferSize, "%c%02d:%02d", neg ? '-' : '+', s, ms);
 }
 
+void prepareSectionGraph(struct draw_data_t* data, float width, float height)
+{
+    struct font_t* font = data->font;
+
+    const float graphWidth  = width;
+    const float graphHeight = height - font->pixelHeight;
+
+    float gridlines[4 * 20];
+    for (int i = 0; i < 10; ++i)
+    {
+        // Vertical lines
+        gridlines[i * 8 + 0] = graphWidth * (i + 1) / 10.0f;
+        gridlines[i * 8 + 1] = graphHeight;
+        gridlines[i * 8 + 2] = graphWidth * (i + 1) / 10.0f;
+        gridlines[i * 8 + 3] = 0.0f;
+
+        // Horizontal lines
+        gridlines[i * 8 + 4] = 0.0f;
+        gridlines[i * 8 + 5] = graphHeight * i / 10.0f;
+        gridlines[i * 8 + 6] = graphWidth;
+        gridlines[i * 8 + 7] = graphHeight * i / 10.0f;
+    }
+
+    glGenBuffers(1, &data->gridVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, data->gridVBO);
+
+    glBufferData(GL_ARRAY_BUFFER, sizeof(gridlines), gridlines, GL_STATIC_DRAW);
+}
 
 void drawSectionGraph(struct draw_data_t* data, float width, float height)
 {
@@ -68,25 +133,13 @@ void drawSectionGraph(struct draw_data_t* data, float width, float height)
 
     // Gridlines (without axis lines)
     setGLColor(COLOR_FOREGROUND, 0.1f);
-    float gridlines[4 * 20];
-    for (int i = 0; i < 10; ++i)
-    {
-        // Vertical lines
-        gridlines[i * 8 + 0] = graphWidth * (i + 1) / 10.0f;
-        gridlines[i * 8 + 1] = graphHeight;
-        gridlines[i * 8 + 2] = graphWidth * (i + 1) / 10.0f;
-        gridlines[i * 8 + 3] = 0.0f;
 
-        // Horizontal lines
-        gridlines[i * 8 + 4] = 0.0f;
-        gridlines[i * 8 + 5] = graphHeight * i / 10.0f;
-        gridlines[i * 8 + 6] = graphWidth;
-        gridlines[i * 8 + 7] = graphHeight * i / 10.0f;
-    }
+    glBindBuffer(GL_ARRAY_BUFFER, data->gridVBO);
+    glVertexPointer(2, GL_FLOAT, 0, NULL);
     glEnableClientState(GL_VERTEX_ARRAY);
-    glVertexPointer(2, GL_FLOAT, 0, gridlines);
     glDrawArrays(GL_LINES, 0, 2 * 20);
     glDisableClientState(GL_VERTEX_ARRAY);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     // Section-Level lines
     float x = 0.0f;
@@ -215,6 +268,11 @@ void drawSectionGraph(struct draw_data_t* data, float width, float height)
     /*         game->currentBlockY, */
     /*         game->currentRotState); */
     /* drawString(font, width - 100.0f, graphHeight - 40, levelStr); */
+}
+
+void disposeSectionGraph(struct draw_data_t* data)
+{
+    glDeleteBuffers(1, &data->gridVBO);
 }
 
 void drawInputHistory(struct draw_data_t* data, float width, float height)

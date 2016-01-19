@@ -11,11 +11,7 @@ void setupOpenGL(struct window_t* window, const unsigned int width, const unsign
 {
     glfwMakeContextCurrent(window->handle);
 
-    if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
-    {
-        printf("Failed to initialize opengl context\n");
-        return;
-    }
+    initializeGlad();
 
     // OpenGL 2d perspective
     glMatrixMode(GL_PROJECTION); glLoadIdentity();
@@ -78,4 +74,15 @@ void drawWindowLayout(struct window_t* window, struct draw_data_t* data)
     drawLayout(&window->layout, data, false);
 
     glfwSwapBuffers(window->handle);
+}
+
+bool initializeGlad()
+{
+    if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
+    {
+        fprintf(stderr, "Failed to initialize (glad) OpenGL context.\n");
+
+        return false;
+    }
+    return true;
 }
