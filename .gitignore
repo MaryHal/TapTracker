@@ -28,3 +28,4 @@ obj/
 *.pyc
 *.i64
 /bin/tt.valgrind
+/bin/GoldST.txt

@@ -46,13 +46,29 @@ Alternatively, if you trust me, you can find a "stable" build [[https://github.c
 
 TapTracker no longer runs shmupmametgm as a child process, but TapTracker must be run /after/ shmupmametgm has started. For now, TapTracker only logs stats for player 1. You must also [[https://github.com/sanford1/shmupmametgm/#taptracker][enable TapTracker]] in /modded/ shmupmametgm with the =-taptracker= switch or the correct option in your mame.ini.
 
+There is some shoehorned command line arguments to enable joystick support/set joystick buttons:
+
+#+BEGIN_SRC sh
+  Usage: ./TapTracker [options] [arguments]
+
+  Options:
+    --j       Set joystick index for input display. If negative, disable joystick support. (-1)
+    --a       Set index for button A. (1)
+    --b       Set index for button B. (2)
+    --c       Set index for button C. (3)
+    --h       Set index for horizontal axis. (6)
+    --v       Set index for vertical axis. (7)
+    --version Output version
+    --help    Output help
+#+END_SRC
+
 ** Screenshots
 
 UI is still a work-in-progress.
 
 | [[screenshot05.png ]]| [[screenshot03.png]] | [[screenshot04.png]] |
 
-The top portion graphs the time vs level during the last three sections. Below that is a table listing section times (newer, more speedrun-timer-like layout on the left). A second window is opened that displays joystick inputs per level (no keyboard support yet).
+The top portion graphs the time vs level during the last three sections. Below that is a table listing section times (newer, more speedrun-timer-like layout on the left). If joystick support is enabled, a second window is opened that displays joystick inputs per level (no keyboard support yet).
 
 [[https://www.youtube.com/watch?v=6sReyaKpt70][Video of TapTracker (without input viewer)]]
 

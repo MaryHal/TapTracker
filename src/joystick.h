@@ -23,9 +23,9 @@ enum
 
 struct joystick_mapping_t
 {
-        uint8_t buttons[BUTTON_COUNT];
-        uint8_t axisHori;
-        uint8_t axisVert;
+        int buttons[BUTTON_COUNT];
+        int axisHori;
+        int axisVert;
 };
 
 enum AXIS_DIRECTION

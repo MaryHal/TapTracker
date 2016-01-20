@@ -1,8 +1,9 @@
 ninja_required_version = 1.3
 ar = ar
 cxx = clang
-cxxflags = -Wall -Wextra -pedantic -pedantic-errors -std=c11 -g -O0 -DDEBUG $
-    -isystem./ext/uthash/include -isystem./ext/stb -isystem./ext/incbin
+cxxflags = -Wall -Wextra -pedantic -std=c11 -g -O0 -DDEBUG $
+    -isystem./ext/uthash/include -isystem./ext/stb -isystem./ext/incbin $
+    -isystem./ext/flag
 ldflags = -lGL -lglfw -lm -lrt
 
 rule bootstrap
@@ -35,9 +36,10 @@ build obj/src/sectiontable.o: compile src/sectiontable.c
 build obj/src/game.o: compile src/game.c
 build obj/src/draw.o: compile src/draw.c
 build obj/src/stb_truetype_impl.o: compile src/stb_truetype_impl.c
+build obj/ext/flag/flag.o: compile ext/flag/flag.c
 
 build ./bin/TapTracker: link obj/src/buttonquads.o obj/src/layout.o $
     obj/src/inputhistory.o obj/src/gamehistory.o obj/src/tracker.o $
     obj/src/joystick.o obj/src/window.o obj/src/font.o obj/src/colortheme.o $
     obj/src/main.o obj/src/sectiontable.o obj/src/game.o obj/src/draw.o $
-    obj/src/stb_truetype_impl.o
+    obj/src/stb_truetype_impl.o obj/ext/flag/flag.o
