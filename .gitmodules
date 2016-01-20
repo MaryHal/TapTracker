@@ -7,3 +7,6 @@
 [submodule "ext/incbin"]
 	path = ext/incbin
 	url = https://github.com/graphitemaster/incbin.git
+[submodule "ext/flag"]
+	path = ext/flag
+	url = https://github.com/clibs/flag.git

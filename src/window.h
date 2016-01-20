@@ -15,7 +15,7 @@ struct window_t
 
 void setupOpenGL(struct window_t* window, const unsigned int width, const unsigned int height);
 
-struct window_t createWindow(unsigned int width, unsigned int height,
+struct window_t* createWindow(unsigned int width, unsigned int height,
                              const char* title,
                              struct window_t* parent);
 

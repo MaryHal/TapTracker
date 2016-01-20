@@ -32,17 +32,24 @@ bool runTracker(struct tap_state* dataPtr, struct tracker_settings_t settings)
         return false;
     }
 
-    struct window_t mainWindow = createWindow(240, 540, "TapTracker Graph", NULL);
-    createLayoutContainer(&mainWindow.layout, mainWindow.width, mainWindow.height, 14.0f, 2.0f);
-    addToContainerRatio(&mainWindow.layout, &drawSectionGraph, 0.72f);
-    addToContainerFixed(&mainWindow.layout, &drawSectionTableOverall, 130.0f);
-    addToContainerFixed(&mainWindow.layout, &drawCurrentState, 14.0f);
-    /* addToContainerRatio(&mainWindow.layout, &drawSectionTable, 1.00f); */
-    /* addToContainerRatio(&mainWindow.layout, &drawSectionTableOverall, 1.00f); */
+    struct window_t* mainWindow = createWindow(240, 540, "TapTracker Graph", NULL);
 
-    struct window_t subWindow = createWindow(96, 112, "TapTracker ButtonSpectrum", &mainWindow);
-    createLayoutContainer(&subWindow.layout, subWindow.width, subWindow.height, 4.0f, 0.0f);
-    addToContainerRatio(&subWindow.layout, &drawInputHistory, 1.00f);
+    createLayoutContainer(&mainWindow->layout, mainWindow->width, mainWindow->height, 14.0f, 2.0f);
+
+    addToContainerRatio(&mainWindow->layout, &drawSectionGraph, 0.72f);
+    addToContainerFixed(&mainWindow->layout, &drawSectionTableOverall, 130.0f);
+    addToContainerFixed(&mainWindow->layout, &drawCurrentState, 14.0f);
+    /* addToContainerRatio(mainWindow->layout, &drawSectionTable, 1.00f); */
+    /* addToContainerRatio(mainWindow->layout, &drawSectionTableOverall, 1.00f); */
+
+    struct window_t* subWindow = NULL;
+
+    if (settings.enableJoystick)
+    {
+        subWindow = createWindow(96, 112, "TapTracker ButtonSpectrum", mainWindow);
+        createLayoutContainer(&subWindow->layout, subWindow->width, subWindow->height, 4.0f, 0.0f);
+        addToContainerRatio(&subWindow->layout, &drawInputHistory, 1.00f);
+    }
 
     /* // Load then create bitmap font. */
     /* struct font_t* font = loadTTF(NULL, "/usr/share/fonts/TTF/PP821/PragmataPro.ttf", 13.0f); */
@@ -81,8 +88,7 @@ bool runTracker(struct tap_state* dataPtr, struct tracker_settings_t settings)
         .scale = 60.0f
     };
 
-    while (!glfwWindowShouldClose(mainWindow.handle) &&
-           !glfwWindowShouldClose(subWindow.handle))
+    while (!glfwWindowShouldClose(mainWindow->handle))
     {
         updateGameState(game, history, table, gh, dataPtr);
 
@@ -93,14 +99,16 @@ bool runTracker(struct tap_state* dataPtr, struct tracker_settings_t settings)
 
         glfwPollEvents();
 
-        drawWindowLayout(&mainWindow, &data);
+        drawWindowLayout(mainWindow, &data);
 
         // Update input history
         if (settings.enableJoystick && joystick)
         {
             updateButtons(joystick);
             pushInputFromJoystick(history, joystick);
-            drawWindowLayout(&subWindow, &data);
+
+            if (subWindow)
+                drawWindowLayout(subWindow, &data);
         }
     }
 
@@ -112,8 +120,11 @@ bool runTracker(struct tap_state* dataPtr, struct tracker_settings_t settings)
     destroyJoystick(joystick, true);
     destroyFont(font, true);
 
-    destroyWindow(&mainWindow);
-    destroyWindow(&subWindow);
+    if (mainWindow)
+        destroyWindow(mainWindow);
+
+    if (subWindow)
+        destroyWindow(subWindow);
 
     glfwTerminate();
 
