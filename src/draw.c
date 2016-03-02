@@ -479,7 +479,7 @@ void drawSectionTableOverall(struct draw_data_t* data, float width, float height
                  i * SECTION_LENGTH,
                  (i + 1) * SECTION_LENGTH - 1);
 
-        if (i >= game->currentSection)
+        if (i >= game->currentSection && game->curState.level < LEVEL_MAX)
         {
             setGLColor(COLOR_FOREGROUND, 0.3f);
 
@@ -518,7 +518,8 @@ void drawSectionTableOverall(struct draw_data_t* data, float width, float height
             drawString(font, 124.0f, y, overallTimeDiff);
 
             char sectionTimeDiff[16];
-            formatTimeToSeconds(sectionTimeDiff, 16, section->endTime - section->startTime - sectionPB);
+            /* formatTimeToSeconds(sectionTimeDiff, 16, section->endTime - section->startTime - sectionPB); */
+            formatTimeToSeconds(sectionTimeDiff, 16, section->endTime - section->startTime);
 
             // Set color so it's like all the speedrun timers.
             if (sectionPB > section->endTime - section->startTime)
