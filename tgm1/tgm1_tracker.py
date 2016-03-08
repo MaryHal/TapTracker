@@ -16,8 +16,6 @@ both python 2 and python 3"""
 
 def main():
     with open("/dev/shm/tgmj_data", "r+b") as f:
-        # The tap_state struct has 11 2-byte integers, so that's how many bytes
-        # we're mapping.
         mm = mmap.mmap(f.fileno(), DATA_BLOCK_SIZE * 2)
 
         urgentObj = simpleaudio.WaveObject.from_wave_file('urgent.wav')
@@ -26,12 +24,11 @@ def main():
         prevLevel = level = 0
         while True:
             # # Let's read the current game level and current timer value:
-            # level = unpack_mmap_block(mm, 0)
             # timer = unpack_mmap_block(mm, 1)
 
             # In Python 3, we can do something as simple as:
             prevLevel = level;
-            level = int(mm[0 * DATA_BLOCK_SIZE])
+            level = unpack_mmap_block(mm, 0)
 
             if prevLevel != level:
                 sectionLevel = level % 100
