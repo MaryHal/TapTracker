@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 
+import simpleaudio
+
 import mmap
 
 import struct
 import time
-
-from os import popen
 
 DATA_BLOCK_SIZE = 2
 
@@ -20,6 +20,9 @@ def main():
         # we're mapping.
         mm = mmap.mmap(f.fileno(), DATA_BLOCK_SIZE * 2)
 
+        urgentObj = simpleaudio.WaveObject.from_wave_file('urgent.wav')
+        panicObj  = simpleaudio.WaveObject.from_wave_file('panic.wav')
+
         prevLevel = level = 0
         while True:
             # # Let's read the current game level and current timer value:
@@ -33,9 +36,9 @@ def main():
             if prevLevel != level:
                 sectionLevel = level % 100
                 if sectionLevel >= 90 and sectionLevel < 96:
-                    popen("mpv urgent.wav")
-                elif sectionLevel > 96:
-                    popen("mpv panic.wav")
+                    urgentObj.play()
+                elif sectionLevel >= 96:
+                    panicObj.play()
 
             # Sleepy-time may be a good idea.
             time.sleep(0.01)
