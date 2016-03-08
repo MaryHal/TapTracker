@@ -1,16 +1,19 @@
-* TapTracker  [[https://travis-ci.org/sanford1/TapTracker][https://travis-ci.org/sanford1/TapTracker.svg?branch=master]] :TOC_4_gh:
+* TapTracker  [[https://travis-ci.org/sanford1/TapTracker][https://travis-ci.org/sanford1/TapTracker.svg?branch=master]] :TOC_5_gh:
    - [[#about][About]]
    - [[#building-taptracker][Building TapTracker]]
    - [[#running-taptracker][Running TapTracker]]
    - [[#screenshots][Screenshots]]
    - [[#to-do-list][To-do list]]
    - [[#appendix][Appendix]]
-     - [[#useful-ram-addresses][Useful RAM Addresses]]
-     - [[#block-indices][Block Indices]]
-     - [[#tgm2p-states][TGM2P States]]
-       - [[#m-roll-flags][M-Roll Flags]]
-       - [[#internal-state][Internal State]]
-       - [[#game-mode][Game Mode]]
+     - [[#tap-tgm2p][TAP (tgm2p)]]
+       - [[#useful-ram-addresses][Useful RAM Addresses]]
+       - [[#block-indices][Block Indices]]
+       - [[#tgm2p-states][TGM2P States]]
+         - [[#m-roll-flags][M-Roll Flags]]
+         - [[#internal-state][Internal State]]
+         - [[#game-mode][Game Mode]]
+     - [[#tgm1-tgmj][TGM1 (tgmj)]]
+       - [[#useful-ram-addresses][Useful RAM Addresses]]
 
 ** About
 
@@ -84,7 +87,8 @@ The top portion graphs the time vs level during the last three sections. Below t
 - +MAME patch for Windows+ :: ...
 
 ** Appendix
-*** Useful RAM Addresses
+*** TAP (tgm2p)
+**** Useful RAM Addresses
 
 All these addresses are for player 1. I still need to double check some of these.
 
@@ -124,7 +128,7 @@ All these addresses are for player 1. I still need to double check some of these
 | 0x06064C25 | int8_t  | Section Index                |                                    |
 | 0x06064BA4 | int16_t | Current Game Mode            | See below for corresponding values |
 
-*** Block Indices
+**** Block Indices
 | Index | Block |
 |-------+-------|
 |     2 | I     |
@@ -134,8 +138,8 @@ All these addresses are for player 1. I still need to double check some of these
 |     6 | L     |
 |     7 | O     |
 |     8 | T     |
-*** TGM2P States
-**** M-Roll Flags
+**** TGM2P States
+***** M-Roll Flags
 | Value | Definition                                                                      |
 |-------+---------------------------------------------------------------------------------|
 |    17 | Failure state in the first half of the game (100-499).                          |
@@ -147,7 +151,7 @@ All these addresses are for player 1. I still need to double check some of these
 |    51 | Passing state during the second half of the game (500-999).                     |
 |   127 | Passing state at the end of the game, currently in the invisible credit roll.   |
 
-**** Internal State
+***** Internal State
 | Value | Definition                                        |
 |-------+---------------------------------------------------|
 |     0 |                                                   |
@@ -162,7 +166,7 @@ All these addresses are for player 1. I still need to double check some of these
 |    13 | Blocks are fading away when completing a game.    |
 |    71 | Garbage value when the game is still loading.     |
 
-**** Game Mode
+***** Game Mode
 | Value          | Mode |
 |----------------+------|
 | No Game Mode   |    0 |
@@ -179,4 +183,11 @@ All these addresses are for player 1. I still need to double check some of these
 | Death          | 4096 |
 | Death Versus   | 4104 |
 
-This list may not be exhaustive just yet.
+This list may not be exhaustive just yet
+*** TGM1 (tgmj)
+**** Useful RAM Addresses
+|    Address | Type    | Description    | Notes |
+|------------+---------+----------------+-------|
+| 0x0017699A | int16_t | Player 1 Level |       |
+| 0x0017698C | int16_t | Player 1 Timer |       |
+  
