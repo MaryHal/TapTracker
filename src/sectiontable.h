@@ -4,11 +4,13 @@
 #include <uthash.h>
 
 #define LEVEL_MAX_SHORT 300
-#define LEVEL_MAX_FULL  999
+#define LEVEL_MAX_LONG  999
+
+#define SECTION_COUNT_SHORT 3
+#define SECTION_COUNT_LONG  10
 
 #define SECTION_LENGTH 100
 #define SECTION_MAX    128
-#define SECTION_COUNT  10
 
 struct datapoint_t
 {
@@ -33,8 +35,8 @@ struct pb_table_t
 {
     int gameMode; // Key
 
-    int gameTime[SECTION_COUNT];
-    int goldST[SECTION_COUNT];
+    int gameTime[SECTION_COUNT_LONG];
+    int goldST[SECTION_COUNT_LONG];
 
     UT_hash_handle hh;
 };
@@ -47,7 +49,7 @@ struct pb_table_t* _getPBTable(struct pb_table_t** map, int gameMode);
 
 struct section_table_t
 {
-    struct section_t sections[SECTION_COUNT];
+    struct section_t sections[SECTION_COUNT_LONG];
     struct pb_table_t* pbHash;
 };
 
@@ -67,6 +69,7 @@ void addDataPointToSection(struct section_t* section, struct game_t* game);
 void readSectionRecords(struct section_table_t* table, const char* filename);
 void writeSectionRecords(struct section_table_t* table);
 
-int getGameEndLevel(int gameMode);
+int getModeEndLevel(int gameMode);
+int getModeSectionCount(int gameMode);
 
 #endif /* SECTIONTIME_H */

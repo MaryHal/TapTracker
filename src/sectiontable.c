@@ -11,7 +11,7 @@
 
 void setDefaultPBTimes(struct pb_table_t* pb)
 {
-    for (int i = 0; i < SECTION_COUNT; ++i)
+    for (int i = 0; i < SECTION_COUNT_LONG; ++i)
     {
         pb->gameTime[i] = 3900 * (i + 1); // 01:05:00 for every section
         pb->goldST[i] = 3900;             // 01:05:00
@@ -103,7 +103,7 @@ void section_table_destroy(struct section_table_t* table)
 
 void resetSectionTable(struct section_table_t* table)
 {
-    for (size_t i = 0; i < SECTION_COUNT; ++i)
+    for (size_t i = 0; i < SECTION_COUNT_LONG; ++i)
     {
         struct section_t* section = &table->sections[i];
 
@@ -122,7 +122,7 @@ void resetSectionTable(struct section_table_t* table)
 
 void updateSectionTable(struct section_table_t* table, struct game_t* game)
 {
-    assert(game->currentSection >= 0 && game->currentSection < SECTION_COUNT);
+    assert(game->currentSection >= 0 && game->currentSection < SECTION_COUNT_LONG);
 
     int gameMode = game->curState.gameMode;
     /* bool endOfGame = (gameMode == TAP_MODE_NORMAL || gameMode == TAP_MODE_NORMAL_VERSUS || */
@@ -135,7 +135,7 @@ void updateSectionTable(struct section_table_t* table, struct game_t* game)
     // in-game timer seems to reset back to 00:00:00 on the same exact frame
     // that level 999 is reached. So when we're adding our data point, we must
     // use the previous frame's timer value.
-    if (game->curState.level >= getGameEndLevel(gameMode))
+    if (game->curState.level >= getModeEndLevel(gameMode))
     {
         // On the first frame reaching the end of the game
         if (section->endTime == 0)
@@ -184,7 +184,7 @@ void updateSectionTable(struct section_table_t* table, struct game_t* game)
         game->currentSection++;
         section = &table->sections[game->currentSection];
 
-        assert(game->currentSection >= 0 && game->currentSection < SECTION_COUNT);
+        assert(game->currentSection >= 0 && game->currentSection < SECTION_COUNT_LONG);
     }
 
     addDataPointToSection(section, game);
@@ -248,7 +248,7 @@ void readSectionRecords(struct section_table_t* table, const char* filename)
         {
             struct pb_table_t* pb = _addPBTable(&table->pbHash, mode);
 
-            for (size_t i = 0; i < SECTION_COUNT; ++i)
+            for (size_t i = 0; i < SECTION_COUNT_LONG; ++i)
             {
                 fscanf(pbfile, "%6d %6d\n",
                        &pb->gameTime[i],
@@ -273,7 +273,7 @@ void writeSectionRecords(struct section_table_t* table)
         {
             fprintf(pbfile, "%d\n", pb->gameMode);
 
-            for (size_t i = 0; i < SECTION_COUNT; ++i)
+            for (size_t i = 0; i < SECTION_COUNT_LONG; ++i)
             {
                 fprintf(pbfile, "%06d %06d\n",
                         pb->gameTime[i],
@@ -285,7 +285,7 @@ void writeSectionRecords(struct section_table_t* table)
     }
 }
 
-int getGameEndLevel(int gameMode)
+int getModeEndLevel(int gameMode)
 {
     if (gameMode == TAP_MODE_NORMAL ||
         gameMode == TAP_MODE_NORMAL_VERSUS ||
@@ -294,5 +294,17 @@ int getGameEndLevel(int gameMode)
         return LEVEL_MAX_SHORT;
     }
 
-    return LEVEL_MAX_FULL;
+    return LEVEL_MAX_LONG;
+}
+
+int getModeSectionCount(int gameMode)
+{
+    if (gameMode == TAP_MODE_NORMAL ||
+        gameMode == TAP_MODE_NORMAL_VERSUS ||
+        gameMode == TAP_MODE_DOUBLES)
+    {
+        return SECTION_COUNT_SHORT;
+    }
+
+    return SECTION_COUNT_LONG;
 }
