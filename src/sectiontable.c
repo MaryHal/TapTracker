@@ -88,6 +88,8 @@ struct section_table_t* section_table_create()
 
 void section_table_destroy(struct section_table_t* table)
 {
+    section_table_terminate(table);
+
     struct pb_table_t* current = NULL;
     struct pb_table_t* tmp = NULL;
     HASH_ITER(hh, table->pbHash, current, tmp)
@@ -96,7 +98,6 @@ void section_table_destroy(struct section_table_t* table)
         free(current);
     }
 
-    section_table_terminate(table);
     free(table);
 }
 
@@ -134,7 +135,7 @@ void updateSectionTable(struct section_table_t* table, struct game_t* game)
     // in-game timer seems to reset back to 00:00:00 on the same exact frame
     // that level 999 is reached. So when we're adding our data point, we must
     // use the previous frame's timer value.
-    if (game->curState.level >= LEVEL_MAX_FULL)
+    if (game->curState.level >= getGameEndLevel(gameMode))
     {
         // On the first frame reaching the end of the game
         if (section->endTime == 0)
@@ -282,4 +283,16 @@ void writeSectionRecords(struct section_table_t* table)
 
         fclose(pbfile);
     }
+}
+
+int getGameEndLevel(int gameMode)
+{
+    if (gameMode == TAP_MODE_NORMAL ||
+        gameMode == TAP_MODE_NORMAL_VERSUS ||
+        gameMode == TAP_MODE_DOUBLES)
+    {
+        return LEVEL_MAX_SHORT;
+    }
+
+    return LEVEL_MAX_FULL;
 }

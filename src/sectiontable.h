@@ -40,7 +40,6 @@ struct pb_table_t
 };
 
 void setDefaultPBTimes(struct pb_table_t* pb);
-/* void updateGoldST(struct pb_table_t* pb,  */
 
 struct pb_table_t* _addPBTable(struct pb_table_t** map, int gameMode);
 void _deletePBTable(struct pb_table_t** map, int gameMode);
@@ -67,5 +66,7 @@ void addDataPointToSection(struct section_t* section, struct game_t* game);
 
 void readSectionRecords(struct section_table_t* table, const char* filename);
 void writeSectionRecords(struct section_table_t* table);
+
+int getGameEndLevel(int gameMode);
 
 #endif /* SECTIONTIME_H */
