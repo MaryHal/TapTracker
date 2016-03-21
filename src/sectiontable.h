@@ -40,6 +40,7 @@ struct pb_table_t
 };
 
 void setDefaultPBTimes(struct pb_table_t* pb);
+/* void updateGoldST(struct pb_table_t* pb,  */
 
 struct pb_table_t* _addPBTable(struct pb_table_t** map, int gameMode);
 void _deletePBTable(struct pb_table_t** map, int gameMode);
@@ -63,9 +64,6 @@ void resetSectionTable(struct section_table_t* table);
 
 void updateSectionTable(struct section_table_t* table, struct game_t* game);
 void addDataPointToSection(struct section_t* section, struct game_t* game);
-
-// Once the game is over, call this to update the PB table.
-void updateAllPBRecords(struct section_table_t* table, unsigned int currentLevel, unsigned int gameMode);
 
 void readSectionRecords(struct section_table_t* table, const char* filename);
 void writeSectionRecords(struct section_table_t* table);

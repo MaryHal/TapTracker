@@ -40,8 +40,12 @@ struct pb_table_t* _addPBTable(struct pb_table_t** map, int gameMode)
 void _deletePBTable(struct pb_table_t** map, int gameMode)
 {
     struct pb_table_t* pb = _getPBTable(map, gameMode);
-    HASH_DEL(*map, pb);
-    free(pb);
+
+    if (pb != NULL)
+    {
+        HASH_DEL(*map, pb);
+        free(pb);
+    }
 }
 
 struct pb_table_t* _getPBTable(struct pb_table_t** map, int gameMode)
@@ -84,6 +88,14 @@ struct section_table_t* section_table_create()
 
 void section_table_destroy(struct section_table_t* table)
 {
+    struct pb_table_t* current = NULL;
+    struct pb_table_t* tmp = NULL;
+    HASH_ITER(hh, table->pbHash, current, tmp)
+    {
+        HASH_DEL(table->pbHash, current);
+        free(current);
+    }
+
     section_table_terminate(table);
     free(table);
 }
@@ -102,7 +114,7 @@ void resetSectionTable(struct section_table_t* table)
             section->lines[j] = 0;
     }
 
-    // Add an initial data point to the first section section
+    // Add an initial data point to the first section
     table->sections[0].data[0] = (struct datapoint_t){ 0, 0 };
     table->sections[0].size++;
 }
@@ -219,36 +231,6 @@ void addDataPointToSection(struct section_t* section, struct game_t* game)
     }
 
     assert(section->size <= SECTION_MAX);
-}
-
-void updateAllPBRecords(struct section_table_t* table, unsigned int currentLevel, unsigned int gameMode)
-{
-    for (size_t i = 0; i < SECTION_COUNT; ++i)
-    {
-        // For PBs, we have to check if the player actually completed the section.
-        bool gameComplete = (currentLevel == LEVEL_MAX_FULL);
-        bool sectionComplete = gameComplete || (currentLevel > (i + 1) * SECTION_LENGTH);
-
-        struct section_t* section = &table->sections[i];
-        int sectionTime = section->endTime - section->startTime;
-
-        struct pb_table_t* pb = _getPBTable(&table->pbHash, gameMode);
-
-        // Update section PB
-        if (sectionComplete &&
-            sectionTime > 0 &&
-            pb->goldST[i] > sectionTime)
-        {
-            pb->goldST[i] = sectionTime;
-        }
-
-        // Update overall time PBs
-        if (gameComplete &&
-            pb->gameTime[SECTION_COUNT - 1] > table->sections[SECTION_COUNT - 1].endTime)
-        {
-            pb->gameTime[i] = section->endTime;
-        }
-    }
 }
 
 void readSectionRecords(struct section_table_t* table, const char* filename)

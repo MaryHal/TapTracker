@@ -33,8 +33,12 @@ void _addCharData(struct chardata_t** cmap, int codepoint, stbtt_packedchar pcha
 void _deleteCharData(struct chardata_t** cmap, int codepoint)
 {
     struct chardata_t* cdata = _getCharData(cmap, codepoint);
-    HASH_DEL(*cmap, cdata);
-    free(cdata);
+
+    if (cdata != NULL)
+    {
+        HASH_DEL(*cmap, cdata);
+        free(cdata);
+    }
 }
 
 struct chardata_t* _getCharData(struct chardata_t** cmap, int codepoint)
@@ -299,13 +303,13 @@ void destroyFont(struct font_t* font, bool freeFont)
 {
     glDeleteTextures(1, &font->texture);
 
-    struct chardata_t* current_cdata = NULL;
+    struct chardata_t* current = NULL;
     struct chardata_t* tmp = NULL;
 
-    HASH_ITER(hh, font->cmap, current_cdata, tmp)
+    HASH_ITER(hh, font->cmap, current, tmp)
     {
-        HASH_DEL(font->cmap, current_cdata);
-        free(current_cdata);
+        HASH_DEL(font->cmap, current);
+        free(current);
     }
 
     if (font->bitmap)
