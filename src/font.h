@@ -9,31 +9,31 @@
 
 struct chardata_t
 {
-        int id;
-        UT_hash_handle hh;
+    int id;
+    UT_hash_handle hh;
 
-        stbtt_packedchar pchar;
+    stbtt_packedchar pchar;
 };
 
 struct font_t
 {
-        struct chardata_t* cmap;
+    struct chardata_t* cmap;
 
-        unsigned int texture;
-        int textureWidth;
-        int textureHeight;
+    unsigned int texture;
+    int textureWidth;
+    int textureHeight;
 
-        float pixelHeight;
+    float pixelHeight;
 
-        uint8_t* bitmap;
+    uint8_t* bitmap;
 };
 
 extern struct chardata_t* dataHash;
 
 // uthash functions
 void _addCharData(struct chardata_t** cmap, int codepoint, stbtt_packedchar pchar);
+void _deleteCharData(struct chardata_t** cmap, int codepoint);
 struct chardata_t* _getCharData(struct chardata_t** cmap, int codepoint);
-/* void deleteCharData(struct chardata_t** cmap, struct chardata_t* cdata); */
 
 // Export internal bitmap for a font. This should not be used if this font is
 // already a bitmap font.

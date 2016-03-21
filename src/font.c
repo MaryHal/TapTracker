@@ -16,14 +16,6 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <stb_image_write.h>
 
-struct chardata_t* _getCharData(struct chardata_t** cmap, int codepoint)
-{
-    struct chardata_t* s = NULL;
-
-    HASH_FIND_INT(*cmap, &codepoint, s);  /* s: output */
-    return s;
-}
-
 void _addCharData(struct chardata_t** cmap, int codepoint, stbtt_packedchar pchar)
 {
     struct chardata_t* s = _getCharData(cmap, codepoint);
@@ -34,15 +26,24 @@ void _addCharData(struct chardata_t** cmap, int codepoint, stbtt_packedchar pcha
         s->id = codepoint;
         s->pchar = pchar;
 
-        HASH_ADD_INT(*cmap, id, s);  /* id: name of key field */
+        HASH_ADD_INT(*cmap, id, s);
     }
 }
 
-/* void deleteCharData(struct chardata_t** cmap, struct chardata_t* cdata) */
-/* { */
-/*     HASH_DEL(*cmap, cdata);  /\* user: pointer to deletee *\/ */
-/*     free(cdata); */
-/* } */
+void _deleteCharData(struct chardata_t** cmap, int codepoint)
+{
+    struct chardata_t* cdata = _getCharData(cmap, codepoint);
+    HASH_DEL(*cmap, cdata);
+    free(cdata);
+}
+
+struct chardata_t* _getCharData(struct chardata_t** cmap, int codepoint)
+{
+    struct chardata_t* s = NULL;
+
+    HASH_FIND_INT(*cmap, &codepoint, s);  /* s: output */
+    return s;
+}
 
 void exportBitmap(const char* imgOutFilename, struct font_t* font)
 {

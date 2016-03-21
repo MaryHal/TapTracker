@@ -15,7 +15,7 @@ both python 2 and python 3"""
     return struct.unpack("@h", mm[n*DATA_BLOCK_SIZE:(n+1)*DATA_BLOCK_SIZE])[0]
 
 def main():
-    with open("/dev/shm/tgmj_data", "r+b") as f:
+    with open("/dev/shm/taptracker_data", "r+b") as f:
         mm = mmap.mmap(f.fileno(), DATA_BLOCK_SIZE * 2)
 
         urgentObj = simpleaudio.WaveObject.from_wave_file('urgent.wav')

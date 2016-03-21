@@ -380,18 +380,14 @@ void drawSectionTable(struct draw_data_t* data, float width, float height)
         float sectionTime = 0.0f;
 
         // Section is complete
-        if (game->curState.level >= (i + 1) * SECTION_LENGTH || game->curState.level >= LEVEL_MAX)
+        if (game->curState.level >= (i + 1) * SECTION_LENGTH || game->curState.level >= LEVEL_MAX_FULL)
         {
             int sectionTimeInFrames = table->sections[i].endTime - table->sections[i].startTime;
             sectionTime = frameTimeToSeconds(sectionTimeInFrames);
 
-            int pb = 0;
-            if (game->curState.gameMode == TAP_MODE_MASTER)
-                pb = table->sections[i].masterST;
-            else if (game->curState.gameMode == TAP_MODE_DEATH)
-                pb = table->sections[i].deathST;
+            struct pb_table_t* pb = _addPBTable(&table->pbHash, game->curState.gameMode);
 
-            if (pb < sectionTimeInFrames)
+            if (pb->goldST[i] < sectionTimeInFrames)
             {
                 setGLColor(COLOR_RED, 1.0f);
             }
@@ -460,26 +456,17 @@ void drawSectionTableOverall(struct draw_data_t* data, float width, float height
     for (int i = top; i < bottom; ++i)
     {
         struct section_t* section = &table->sections[i];
+        struct pb_table_t* pb = _addPBTable(&table->pbHash, game->curState.gameMode);
 
-        int overallPB = 0;
-        int sectionPB = 0;
-        if (game->curState.gameMode == TAP_MODE_MASTER)
-        {
-            overallPB = section->masterTime;
-            sectionPB = section->masterST;
-        }
-        else if (game->curState.gameMode == TAP_MODE_DEATH)
-        {
-            overallPB = section->deathTime;
-            sectionPB = section->deathST;
-        }
+        int overallPB = pb->gameTime[i];
+        int sectionPB = pb->goldST[i];
 
         char sectionString[64];
         snprintf(sectionString, 64, "%03d-%03d",
                  i * SECTION_LENGTH,
                  (i + 1) * SECTION_LENGTH - 1);
 
-        if (i >= game->currentSection && game->curState.level < LEVEL_MAX)
+        if (i >= game->currentSection && game->curState.level < LEVEL_MAX_FULL)
         {
             setGLColor(COLOR_FOREGROUND, 0.3f);
 

@@ -1,11 +1,56 @@
 #include "sectiontable.h"
 
+#include "game.h"
+
 #include <stdlib.h>
 #include <stdio.h>
 
 #include <string.h>
 
 #include <assert.h>
+
+void setDefaultPBTimes(struct pb_table_t* pb)
+{
+    for (int i = 0; i < SECTION_COUNT; ++i)
+    {
+        pb->gameTime[i] = 3900 * (i + 1); // 01:05:00 for every section
+        pb->goldST[i] = 3900;             // 01:05:00
+    }
+}
+
+struct pb_table_t* _addPBTable(struct pb_table_t** map, int gameMode)
+{
+    struct pb_table_t* pb = _getPBTable(map, gameMode);
+
+    if (pb == NULL)
+    {
+        pb = malloc(sizeof(struct pb_table_t));
+        pb->gameMode = gameMode;
+
+        setDefaultPBTimes(pb);
+
+        printf("Adding pb table: %d\n", gameMode);
+
+        HASH_ADD_INT(*map, gameMode, pb);
+    }
+
+    return pb;
+}
+
+void _deletePBTable(struct pb_table_t** map, int gameMode)
+{
+    struct pb_table_t* pb = _getPBTable(map, gameMode);
+    HASH_DEL(*map, pb);
+    free(pb);
+}
+
+struct pb_table_t* _getPBTable(struct pb_table_t** map, int gameMode)
+{
+    struct pb_table_t* pb = NULL;
+
+    HASH_FIND_INT(*map, &gameMode, pb); /* pb: output */
+    return pb;
+}
 
 void section_table_init(struct section_table_t* table)
 {
@@ -17,8 +62,9 @@ void section_table_init(struct section_table_t* table)
                  (i + 1) * SECTION_LENGTH - 1);
     }
 
-    readSectionRecords(table, "GoldST.txt");
+    table->pbHash = NULL;
 
+    readSectionRecords(table, "GoldST.txt");
     resetSectionTable(table);
 }
 
@@ -65,14 +111,20 @@ void updateSectionTable(struct section_table_t* table, struct game_t* game)
 {
     assert(game->currentSection >= 0 && game->currentSection < SECTION_COUNT);
 
+    int gameMode = game->curState.gameMode;
+    /* bool endOfGame = (gameMode == TAP_MODE_NORMAL || gameMode == TAP_MODE_NORMAL_VERSUS || */
+    /*                   gameMode == TAP_MODE_ */
+
     struct section_t* section = &table->sections[game->currentSection];
+    struct pb_table_t* pb     = _getPBTable(&table->pbHash, gameMode);
 
     // Special case for when we're at the end of the game (level 999). The
     // in-game timer seems to reset back to 00:00:00 on the same exact frame
     // that level 999 is reached. So when we're adding our data point, we must
     // use the previous frame's timer value.
-    if (game->curState.level >= LEVEL_MAX)
+    if (game->curState.level >= LEVEL_MAX_FULL)
     {
+        // On the first frame reaching the end of the game
         if (section->endTime == 0)
         {
             section->endTime = game->prevState.timer;
@@ -84,6 +136,19 @@ void updateSectionTable(struct section_table_t* table, struct game_t* game)
 
             // For consistency, restore original time value.
             game->curState.timer = tempTime;
+
+            // Update final section gold ST
+            if (pb->goldST[game->currentSection] > section->endTime - section->startTime)
+            {
+                pb->goldST[game->currentSection] = section->endTime - section->startTime;
+            }
+
+            // Update all game time PBs if necessary
+            if (pb->gameTime[game->currentSection] > table->sections[game->currentSection].endTime)
+            {
+                for (int i = 0; i <= game->currentSection; ++i)
+                    pb->gameTime[i] = table->sections[i].endTime;
+            }
         }
 
         return;
@@ -95,6 +160,12 @@ void updateSectionTable(struct section_table_t* table, struct game_t* game)
     {
         section->endTime = game->curState.timer;
         addDataPointToSection(section, game);
+
+        // Update this section's gold ST
+        if (pb->goldST[game->currentSection] > section->endTime - section->startTime)
+        {
+            pb->goldST[game->currentSection] = section->endTime - section->startTime;
+        }
 
         // Section advance!
         game->currentSection++;
@@ -150,52 +221,32 @@ void addDataPointToSection(struct section_t* section, struct game_t* game)
     assert(section->size <= SECTION_MAX);
 }
 
-void updateRecords(struct section_table_t* table, unsigned int currentLevel, unsigned int gameMode)
+void updateAllPBRecords(struct section_table_t* table, unsigned int currentLevel, unsigned int gameMode)
 {
     for (size_t i = 0; i < SECTION_COUNT; ++i)
     {
         // For PBs, we have to check if the player actually completed the section.
-        bool gameComplete = (currentLevel == LEVEL_MAX);
+        bool gameComplete = (currentLevel == LEVEL_MAX_FULL);
         bool sectionComplete = gameComplete || (currentLevel > (i + 1) * SECTION_LENGTH);
 
         struct section_t* section = &table->sections[i];
         int sectionTime = section->endTime - section->startTime;
 
-        if (gameMode == TAP_MODE_MASTER)
-        {
-            // Update section PB
-            if (sectionComplete &&
-                sectionTime > 0 &&
-                section->masterST > sectionTime)
-            {
-                section->masterST = sectionTime;
-            }
+        struct pb_table_t* pb = _getPBTable(&table->pbHash, gameMode);
 
-            // Update overall time PB
-            if (gameComplete &&
-                section->endTime > 0 &&
-                section->masterTime > section->endTime)
-            {
-                section->masterTime = section->endTime;
-            }
+        // Update section PB
+        if (sectionComplete &&
+            sectionTime > 0 &&
+            pb->goldST[i] > sectionTime)
+        {
+            pb->goldST[i] = sectionTime;
         }
-        else if (gameMode == TAP_MODE_DEATH)
-        {
-            // Update section PB
-            if (sectionComplete &&
-                sectionTime > 0 &&
-                section->deathST > sectionTime)
-            {
-                section->deathST = sectionTime;
-            }
 
-            // Update overall time PB
-            if (gameComplete &&
-                section->endTime > 0 &&
-                section->deathTime > section->endTime)
-            {
-                section->deathTime = section->endTime;
-            }
+        // Update overall time PBs
+        if (gameComplete &&
+            pb->gameTime[SECTION_COUNT - 1] > table->sections[SECTION_COUNT - 1].endTime)
+        {
+            pb->gameTime[i] = section->endTime;
         }
     }
 }
@@ -209,31 +260,20 @@ void readSectionRecords(struct section_table_t* table, const char* filename)
     // If file was found, load section times!
     if (pbfile)
     {
-        for (size_t i = 0; i < SECTION_COUNT; ++i)
+        int mode = 0;
+        while (fscanf(pbfile, "%d", &mode) == 1)
         {
-            struct section_t* section = &table->sections[i];
+            struct pb_table_t* pb = _addPBTable(&table->pbHash, mode);
 
-            fscanf(pbfile, "%6d %6d %6d %6d\n",
-                   &section->masterTime,
-                   &section->masterST,
-                   &section->deathTime,
-                   &section->deathST);
+            for (size_t i = 0; i < SECTION_COUNT; ++i)
+            {
+                fscanf(pbfile, "%6d %6d\n",
+                       &pb->gameTime[i],
+                       &pb->goldST[i]);
+            }
         }
 
         fclose(pbfile);
-    }
-    else // Otherwise set the defaults
-    {
-        for (size_t i = 0; i < SECTION_COUNT; ++i)
-        {
-            struct section_t* section = &table->sections[i];
-
-            section->masterST = 3900; // 01:05:00
-            section->deathST = 2520;  // 00:42:00
-
-            section->masterTime = 3900 * (i + 1); // 01:05:00
-            section->deathTime = 2520 * (i + 1);  // 00:42:00
-        }
     }
 }
 
@@ -246,13 +286,16 @@ void writeSectionRecords(struct section_table_t* table)
 
     if (pbfile)
     {
-        for (size_t i = 0; i < SECTION_COUNT; ++i)
+        for (struct pb_table_t* pb = table->pbHash; pb != NULL; pb = pb->hh.next)
         {
-            fprintf(pbfile, "%06d %06d %06d %06d\n",
-                    table->sections[i].masterTime,
-                    table->sections[i].masterST,
-                    table->sections[i].deathTime,
-                    table->sections[i].deathST);
+            fprintf(pbfile, "%d\n", pb->gameMode);
+
+            for (size_t i = 0; i < SECTION_COUNT; ++i)
+            {
+                fprintf(pbfile, "%06d %06d\n",
+                        pb->gameTime[i],
+                        pb->goldST[i]);
+            }
         }
 
         fclose(pbfile);
