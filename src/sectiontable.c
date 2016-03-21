@@ -58,12 +58,16 @@ struct pb_table_t* _getPBTable(struct pb_table_t** map, int gameMode)
 
 void section_table_init(struct section_table_t* table)
 {
-    for (int i = 0; i < SECTION_COUNT; ++i)
+    for (int i = 0; i < SECTION_COUNT_LONG; ++i)
     {
+        int begin = i * SECTION_LENGTH;
+        int end   = (i + 1) * SECTION_LENGTH;
+
+        if (end > LEVEL_MAX_LONG)
+            end = LEVEL_MAX_LONG;
+
         snprintf(table->sections[i].label, 8,
-                 "%03d-%03d",
-                 i * SECTION_LENGTH,
-                 (i + 1) * SECTION_LENGTH - 1);
+                 "%03d-%03d", begin, end);
     }
 
     table->pbHash = NULL;
