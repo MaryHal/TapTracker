@@ -19,12 +19,12 @@ extern const char* DISPLAYED_GRADE[GRADE_COUNT];
 
 struct game_t
 {
-        int currentSection;
+    int currentSection;
 
-        // We want to detect change on each frame, so we'll keep track of how
-        // things looked on the previous frame for comparison.
-        struct tap_state curState;
-        struct tap_state prevState;
+    // We want to detect change on each frame, so we'll keep track of how
+    // things looked on the previous frame for comparison.
+    struct tap_state curState;
+    struct tap_state prevState;
 };
 
 // (Re)sets all game data. If passed NULL, allocate new game data.

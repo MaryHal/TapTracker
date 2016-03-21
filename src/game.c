@@ -82,9 +82,6 @@ void updateGameState(struct game_t* game,
     // Check if a game has ended
     if (isInPlayingState(game->prevState.state) && !isInPlayingState(game->curState.state))
     {
-        // Update PB times
-        updateRecords(table, game->prevState.level, game->prevState.gameMode);
-
         pushStateToGameHistory(gh, game->prevState);
 
         resetGame(game);
@@ -106,6 +103,7 @@ void printGameState(struct game_t* game)
 
 bool testMasterConditions(struct game_t* game)
 {
+    // Of course we can also check the bit mask, but this works too.
     return
         game->curState.mrollFlags == M_NEUTRAL ||
         game->curState.mrollFlags == M_PASS_1  ||
@@ -175,7 +173,7 @@ bool calculateMasterConditions_(struct game_t* game)
 
     // Finally, an S9 grade is required at level 999 along with the same time
     // requirements as the eigth section.
-    if (game->curState.level == LEVEL_MAX)
+    if (game->curState.level == LEVEL_MAX_FULL)
     {
         if (game->curState.grade < MASTER_S9_INTERNAL_GRADE)
         {

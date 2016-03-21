@@ -63,6 +63,9 @@ There is some shoehorned command line arguments to enable joystick support/set j
     --v       Set index for vertical axis. (7)
     --version Output version
     --help    Output help
+
+  Example:
+    ./TapTracker --j 0 --a 0 --b 1 --c 2
 #+END_SRC
 
 ** Screenshots

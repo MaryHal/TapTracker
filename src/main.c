@@ -37,7 +37,7 @@ int main(int argc, const char *argv[])
     flag_int(&settings.jmap.axisVert, "v", "Set index for vertical axis.");
     flag_parse(argc, argv, VERSION);
 
-    const char* sharedMemKey = "tgm2p_data";
+    const char* sharedMemKey = "taptracker_data";
     int fd = shm_open(sharedMemKey, O_RDONLY, S_IRWXO | S_IRWXG | S_IRWXU);
     if (fd < 0)
     {
