@@ -339,17 +339,16 @@ void drawSectionTable(struct draw_data_t* data, float width, float height)
             continue;
         }
 
-        char sectionString[16];
-        sprintf(sectionString, "%03d-%03d", i * SECTION_LENGTH, (i + 1) * SECTION_LENGTH - 1);
-        drawString(font,   0.0f, y, sectionString);
-
         struct section_t* section = &table->sections[i];
+
+        drawString(font, 0.0f, y, section->label);
 
         // Calculate how long this section took / is taking.
         float sectionTime = 0.0f;
 
         // Section is complete
-        if (game->curState.level >= (i + 1) * SECTION_LENGTH || game->curState.level >= LEVEL_MAX_FULL)
+        if (game->curState.level >= (i + 1) * SECTION_LENGTH ||
+            game->curState.level >= getModeEndLevel(game->curState.gameMode))
         {
             int sectionTimeInFrames = table->sections[i].endTime - table->sections[i].startTime;
             sectionTime = frameTimeToSeconds(sectionTimeInFrames);
@@ -413,10 +412,11 @@ void drawSectionTableOverall(struct draw_data_t* data, float width, float height
         top = 0;
     }
 
-    if (bottom > SECTION_COUNT)
+    const int NUM_SECTIONS = getModeSectionCount(game->curState.gameMode);
+    if (bottom > NUM_SECTIONS)
     {
-        top -= bottom - SECTION_COUNT;
-        bottom = SECTION_COUNT;
+        top -= bottom - NUM_SECTIONS;
+        bottom = NUM_SECTIONS;
 
         if (top < 0)
             top = 0;
@@ -430,16 +430,12 @@ void drawSectionTableOverall(struct draw_data_t* data, float width, float height
         int overallPB = pb->gameTime[i];
         int sectionPB = pb->goldST[i];
 
-        char sectionString[64];
-        snprintf(sectionString, 64, "%03d-%03d",
-                 i * SECTION_LENGTH,
-                 (i + 1) * SECTION_LENGTH - 1);
-
-        if (i >= game->currentSection && game->curState.level < LEVEL_MAX_FULL)
+        if (i >= game->currentSection &&
+            game->curState.level < getModeEndLevel(game->curState.gameMode))
         {
             setGLColor(COLOR_FOREGROUND, 0.3f);
 
-            drawString(font, 0.0f, y, sectionString);
+            drawString(font, 0.0f, y, section->label);
 
             char sectionTime[16];
             formatTimeToMinutes(sectionTime, 16, overallPB);
@@ -455,7 +451,7 @@ void drawSectionTableOverall(struct draw_data_t* data, float width, float height
         {
             setGLColor(COLOR_FOREGROUND, 1.0f);
 
-            drawString(font, 0.0f, y, sectionString);
+            drawString(font, 0.0f, y, section->label);
 
             char sectionTime[16];
             formatTimeToMinutes(sectionTime, 16, section->endTime);

@@ -173,7 +173,7 @@ bool calculateMasterConditions_(struct game_t* game)
 
     // Finally, an S9 grade is required at level 999 along with the same time
     // requirements as the eigth section.
-    if (game->curState.level == LEVEL_MAX_FULL)
+    if (game->curState.level == LEVEL_MAX_LONG)
     {
         if (game->curState.grade < MASTER_S9_INTERNAL_GRADE)
         {
