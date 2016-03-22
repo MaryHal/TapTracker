@@ -32,7 +32,7 @@ struct game_t* createNewGame(struct game_t* game);
 void destroyGame(struct game_t* game, bool freeMem);
 void resetGame(struct game_t* game);
 
-bool isInPlayingState(char game);
+bool isInPlayingState(char state);
 
 // Load game state from MAME into our game structure. This also handles adding
 // data points to our section data.

@@ -79,9 +79,15 @@ void updateGameState(struct game_t* game,
         }
     }
 
-    // Check if a game has ended
+    // Check if a game has completely ended
     if (isInPlayingState(game->prevState.state) && !isInPlayingState(game->curState.state))
     {
+        // Update gold STs now that the game is over. There is technically a
+        // "Credit Roll" game mode but it doesn't seem to interfere with normal
+        // pb updates.
+        struct pb_table_t* pb = _getPBTable(&table->pbHash, game->prevState.gameMode);
+        updateGoldSTRecords(pb, table);
+
         pushStateToGameHistory(gh, game->prevState);
 
         resetGame(game);
@@ -199,4 +205,3 @@ bool calculateMasterConditions_(struct game_t* game)
     return true;
 }
 #endif
-

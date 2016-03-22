@@ -128,11 +128,9 @@ void updateSectionTable(struct section_table_t* table, struct game_t* game)
 {
     assert(game->currentSection >= 0 && game->currentSection < SECTION_COUNT_LONG);
 
-    int gameMode = game->curState.gameMode;
-    /* bool endOfGame = (gameMode == TAP_MODE_NORMAL || gameMode == TAP_MODE_NORMAL_VERSUS || */
-    /*                   gameMode == TAP_MODE_ */
-
     struct section_t* section = &table->sections[game->currentSection];
+
+    int gameMode = game->curState.gameMode;
     struct pb_table_t* pb     = _getPBTable(&table->pbHash, gameMode);
 
     // Special case for when we're at the end of the game (level 999). The
@@ -154,18 +152,12 @@ void updateSectionTable(struct section_table_t* table, struct game_t* game)
             // For consistency, restore original time value.
             game->curState.timer = tempTime;
 
-            // Update final section gold ST
-            if (pb->goldST[game->currentSection] > section->endTime - section->startTime)
-            {
-                pb->goldST[game->currentSection] = section->endTime - section->startTime;
-            }
+            // Update Records
+            updateGameTimeRecords(pb, table);
 
-            // Update all game time PBs if necessary
-            if (pb->gameTime[game->currentSection] > table->sections[game->currentSection].endTime)
-            {
-                for (int i = 0; i <= game->currentSection; ++i)
-                    pb->gameTime[i] = table->sections[i].endTime;
-            }
+            // We update Gold STs when the game ends in any way, not just when
+            // we complete the game.
+            /* updateGoldSTRecords(pb, table); */
         }
 
         return;
@@ -177,12 +169,6 @@ void updateSectionTable(struct section_table_t* table, struct game_t* game)
     {
         section->endTime = game->curState.timer;
         addDataPointToSection(section, game);
-
-        // Update this section's gold ST
-        if (pb->goldST[game->currentSection] > section->endTime - section->startTime)
-        {
-            pb->goldST[game->currentSection] = section->endTime - section->startTime;
-        }
 
         // Section advance!
         game->currentSection++;
@@ -286,6 +272,74 @@ void writeSectionRecords(struct section_table_t* table)
         }
 
         fclose(pbfile);
+    }
+}
+
+bool shouldBlockRecordUpdate(struct pb_table_t* pb, struct section_table_t* table)
+{
+    const int NUM_SECTIONS = getModeSectionCount(pb->gameMode);
+    for (int i = 0; i <= NUM_SECTIONS; ++i)
+    {
+        int sectionTime = table->sections[i].endTime - table->sections[i].startTime;
+
+        if (sectionTime < 1200)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+void updateGoldSTRecords(struct pb_table_t* pb, struct section_table_t* table)
+{
+    if (pb == NULL || table == NULL)
+    {
+        return;
+    }
+
+    printf("Updating Gold STs for mode %d.\n", pb->gameMode);
+
+    if (shouldBlockRecordUpdate(pb, table))
+    {
+        printf("\tUnrealistic section times detected, Gold ST Update Blocked.\n");
+    }
+
+    // Update all new Gold STs.
+    const int NUM_SECTIONS = getModeSectionCount(pb->gameMode);
+    for (int i = 0; i <= NUM_SECTIONS; ++i)
+    {
+        int sectionTime = table->sections[i].endTime - table->sections[i].startTime;
+        if (sectionTime > 0 && pb->goldST[i] > sectionTime)
+        {
+            pb->goldST[i] = sectionTime;
+        }
+    }
+}
+
+void updateGameTimeRecords(struct pb_table_t* pb, struct section_table_t* table)
+{
+    if (pb == NULL || table == NULL)
+    {
+        return;
+    }
+
+    printf("Updating Game Time PBs for mode %d.\n", pb->gameMode);
+
+    if (shouldBlockRecordUpdate(pb, table))
+    {
+        printf("\tUnrealistic section times detected, Game Time PB Update Blocked.\n");
+    }
+
+    // Update all PBs if necessary
+    const int NUM_SECTIONS = getModeSectionCount(pb->gameMode);
+    if (pb->gameTime[NUM_SECTIONS - 1] > table->sections[NUM_SECTIONS - 1].endTime)
+    {
+        for (int i = 0; i <= NUM_SECTIONS; ++i)
+        {
+            if (table->sections[i].endTime > 0)
+                pb->gameTime[i] = table->sections[i].endTime;
+        }
     }
 }
 

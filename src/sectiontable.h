@@ -1,6 +1,7 @@
 #ifndef SECTIONTIME_H
 #define SECTIONTIME_H
 
+#include <stdbool.h>
 #include <uthash.h>
 
 #define LEVEL_MAX_SHORT 300
@@ -63,11 +64,17 @@ void section_table_destroy(struct section_table_t* table);
 
 void resetSectionTable(struct section_table_t* table);
 
+// Should be called after a block a placed.
 void updateSectionTable(struct section_table_t* table, struct game_t* game);
 void addDataPointToSection(struct section_t* section, struct game_t* game);
 
 void readSectionRecords(struct section_table_t* table, const char* filename);
 void writeSectionRecords(struct section_table_t* table);
+
+bool shouldBlockRecordUpdate(struct pb_table_t* pb, struct section_table_t* table);
+
+void updateGoldSTRecords(struct pb_table_t* pb, struct section_table_t* table);
+void updateGameTimeRecords(struct pb_table_t* pb, struct section_table_t* table);
 
 int getModeEndLevel(int gameMode);
 int getModeSectionCount(int gameMode);
