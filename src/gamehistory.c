@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 // First Demo: Two simultaneous single player games.
-static const size_t demo01_length = 17;
+static const size_t demo01_length = 16;
 static struct tap_state demo01[] =
 {
     { 0, 9, 0,  0,   27, 6, 1, 2, 2, 1, 0, 0 },
@@ -23,7 +23,6 @@ static struct tap_state demo01[] =
     { 0, 9, 0, 15,  884, 1, 8, 4, 1, 1, 0, 0 },
     { 0, 9, 0, 18,  970, 5, 4, 4, 1, 1, 0, 0 },
     { 0, 9, 0, 19, 1036, 6, 2, 3, 1, 1, 0, 0 },
-    { 0, 9, 0, 19, 1061, 6, 2, 3, 1, 1, 0, 0 },
 };
 
 // Second Demo: Vs Mode.
@@ -48,7 +47,7 @@ static struct tap_state demo02[] =
 };
 
 // Third Demo: Doubles Mode.
-static const size_t demo03_length = 15;
+static const size_t demo03_length = 14;
 static struct tap_state demo03[] =
 {
     { 0, 9, 0,  0,   33, 6, 1, 2, 2, 1, 0, 0 },
@@ -65,7 +64,6 @@ static struct tap_state demo03[] =
     { 0, 9, 0, 13,  904, 1, 5, 6, 1, 1, 0, 0 },
     { 0, 9, 0, 14,  990, 3, 2, 7, 0, 1, 0, 0 },
     { 0, 9, 0, 15, 1051, 5, 0, 7, 1, 1, 0, 0 },
-    { 0, 9, 0, 15, 1061, 5, 0, 7, 1, 1, 0, 0 },
 };
 
 void game_history_init(struct game_history_t* gh)
@@ -127,11 +125,25 @@ bool testDemoState(UT_ringbuffer* blockHistory, struct tap_state* demo, size_t d
     return true;
 }
 
+void printGameHistory(struct game_history_t* gh)
+{
+    for (int i = gh->start; i < gh->end; ++i)
+    {
+        printf("%d %d %d\n", gh->data[i].gameMode, gh->data[i].level, gh->data[i].timer);
+    }
+}
+
 void pushStateToGameHistory(struct game_history_t* gh, UT_ringbuffer* blockHistory)
 {
+    if (utringbuffer_empty(blockHistory))
+    {
+        printf("Empty block history, skipping addition to game history.\n");
+        return;
+    }
+
     if (isDemoState(blockHistory))
     {
-        printf("Demo state detected, skipping addition to game history.");
+        printf("Demo state detected, skipping addition to game history.\n");
         return;
     }
 

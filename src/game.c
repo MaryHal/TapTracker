@@ -29,7 +29,7 @@ struct game_t* createNewGame(struct game_t* game)
         NULL, // Copier
         NULL  // Destructor
     };
-    utringbuffer_init(game->blockHistory, GAME_STATE_HISTORY_LENGTH, &tap_state_icd);
+    utringbuffer_new(game->blockHistory, GAME_STATE_HISTORY_LENGTH, &tap_state_icd);
 
     resetGame(game);
 
@@ -38,7 +38,7 @@ struct game_t* createNewGame(struct game_t* game)
 
 void destroyGame(struct game_t* game, bool freeMem)
 {
-    utringbuffer_done(game->blockHistory);
+    utringbuffer_free(game->blockHistory);
 
     if (freeMem)
         free(game);
@@ -72,7 +72,7 @@ void updateGameState(struct game_t* game,
 
     if (isInPlayingState(game->curState.state) && game->curState.level < game->prevState.level)
     {
-        perror("Internal State Error");
+        printf("Internal State Error: ");
         printGameState(game);
     }
 
@@ -90,7 +90,7 @@ void updateGameState(struct game_t* game,
         game->prevState.state == TAP_ACTIVE &&
         game->curState.state == TAP_LOCKING)
     {
-        utringbuffer_push_back(game->blockHistory, &game->curState);
+        utringbuffer_push_back(game->blockHistory, &game->prevState);
     }
 
     if (inputHistory)
@@ -111,6 +111,7 @@ void updateGameState(struct game_t* game,
         updateGoldSTRecords(pb, table);
 
         pushStateToGameHistory(gh, game->blockHistory);
+        printGameHistory(gh);
 
         resetGame(game);
 
