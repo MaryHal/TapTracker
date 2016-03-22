@@ -22,6 +22,15 @@ struct game_t* createNewGame(struct game_t* game)
         game = malloc(sizeof(struct game_t));
     }
 
+    UT_icd tap_state_icd =
+    {
+        sizeof(struct tap_state),
+        NULL, // Initializer
+        NULL, // Copier
+        NULL  // Destructor
+    };
+    utringbuffer_init(game->blockHistory, GAME_STATE_HISTORY_LENGTH, &tap_state_icd);
+
     resetGame(game);
 
     return game;
@@ -29,13 +38,18 @@ struct game_t* createNewGame(struct game_t* game)
 
 void destroyGame(struct game_t* game, bool freeMem)
 {
+    utringbuffer_done(game->blockHistory);
+
     if (freeMem)
         free(game);
 }
 
 void resetGame(struct game_t* game)
 {
-    memset(game, 0, sizeof(struct game_t));
+    /* memset(game, 0, sizeof(struct game_t)); */
+
+    game->currentSection = 0;
+    utringbuffer_clear(game->blockHistory);
 }
 
 bool isInPlayingState(char state)
@@ -71,6 +85,14 @@ void updateGameState(struct game_t* game,
         }
     }
 
+    // Piece is locked in
+    if (isInPlayingState(game->curState.state) &&
+        game->prevState.state == TAP_ACTIVE &&
+        game->curState.state == TAP_LOCKING)
+    {
+        utringbuffer_push_back(game->blockHistory, &game->curState);
+    }
+
     if (inputHistory)
     {
         if (game->prevState.state != TAP_ACTIVE && game->curState.state == TAP_ACTIVE)
@@ -88,7 +110,7 @@ void updateGameState(struct game_t* game,
         struct pb_table_t* pb = _getPBTable(&table->pbHash, game->prevState.gameMode);
         updateGoldSTRecords(pb, table);
 
-        pushStateToGameHistory(gh, game->prevState);
+        pushStateToGameHistory(gh, game->blockHistory);
 
         resetGame(game);
 

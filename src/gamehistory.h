@@ -2,9 +2,12 @@
 #define GAMEHISTORY_H
 
 #include "tap_state.h"
+#include <utringbuffer.h>
+#include <stdbool.h>
 
 #define MAX_GAME_HISTORY_COUNT 32
 
+// Keep a history of ending game states.
 struct game_history_t
 {
         struct tap_state data[MAX_GAME_HISTORY_COUNT];
@@ -18,7 +21,10 @@ void game_history_terminate(struct game_history_t* gh);
 struct game_history_t* game_history_create();
 void game_history_destroy(struct game_history_t* gh);
 
-void pushStateToGameHistory(struct game_history_t* gh, struct tap_state state);
+bool isDemoState(UT_ringbuffer* blockHistory);
+bool testDemoState(UT_ringbuffer* blockHistory, struct tap_state* demo, size_t demoLength);
+
+void pushStateToGameHistory(struct game_history_t* gh, UT_ringbuffer* blockHistory);
 void popGameHistoryElement(struct game_history_t* gh);
 
 float averageHistoryStats(struct game_history_t* gh,

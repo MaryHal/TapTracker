@@ -89,6 +89,7 @@ The top portion graphs the time vs level during the last three sections. Below t
 - +Diagram Generation+ :: Create a [[http://fumen.zui.jp/][Fumen]] diagram during play. A prototype (written in Python) can be found in the =autofumen= directory.
 - +MAME patch for Windows+ :: ...
 - More error logging :: Since in addition to the original TapTracker code, we have to reproduce some of tgm2p's game logic, there may be unforeseen edge cases. We probably should catch those.
+- Config files (json?) :: For configurable layouts and to possibly replace the command line arguments.
 
 ** Appendix
 *** TAP (tgm2p)

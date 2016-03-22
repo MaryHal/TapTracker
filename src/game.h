@@ -8,6 +8,10 @@
 
 #include "tap_state.h"
 
+#include <utringbuffer.h>
+
+#define GAME_STATE_HISTORY_LENGTH 32
+
 #define MASTER_S9_INTERNAL_GRADE 31
 #define GRADE_COUNT 32
 
@@ -25,6 +29,9 @@ struct game_t
     // things looked on the previous frame for comparison.
     struct tap_state curState;
     struct tap_state prevState;
+
+    // Let's also keep a history of locked pieces
+    UT_ringbuffer* blockHistory;
 };
 
 // (Re)sets all game data. If passed NULL, allocate new game data.
