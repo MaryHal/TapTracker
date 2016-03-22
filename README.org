@@ -43,7 +43,7 @@ Building this project requires [[https://www.python.org/][python]], [[https://ma
   ninja
 #+END_SRC
 
-Alternatively, if you trust me, you can find a "stable" build [[https://github.com/sanford1/TapTracker/releases/latest][here]].
+Alternatively, if you trust me enough, you can find a "stable" build [[https://github.com/sanford1/TapTracker/releases/latest][here]].
 
 ** Running TapTracker
 
@@ -82,12 +82,13 @@ The top portion graphs the time vs level during the last three sections. Below t
 
 ** To-do list
 
-- Document TAP states :: I've reverse engineered most of the TGM2+ states (read: I've figured out what they mean), but there may be edge cases that still confuse TapTracker.
+- [Partially complete] Document TAP states :: I've reverse engineered most of the TGM2+ states (read: I've figured out what they mean), but there may be edge cases that still confuse TapTracker.
 - [Partially complete] Implement resizable layouts :: TapTracker only supports a single window size and layout right now, and it's difficult to modify.
-- Rework OpenGL code :: It's rigid and messy right now. Not to mention it also uses a ton of immediate mode.
+- [Partially complete] Rework OpenGL code :: It's rigid and messy right now. Not to mention it also uses a ton of immediate mode. There's an old git branch (gltest) that updates the 15-year-old rendering code to 14-year-old rendering code.
 - Player 2 support :: Log stats for Player 2 too.
 - +Diagram Generation+ :: Create a [[http://fumen.zui.jp/][Fumen]] diagram during play. A prototype (written in Python) can be found in the =autofumen= directory.
 - +MAME patch for Windows+ :: ...
+- More error logging :: Since in addition to the original TapTracker code, we have to reproduce some of tgm2p's game logic, there may be unforeseen edge cases. We probably should catch those.
 
 ** Appendix
 *** TAP (tgm2p)
