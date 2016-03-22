@@ -430,6 +430,7 @@ void drawSectionTableOverall(struct draw_data_t* data, float width, float height
         int overallPB = pb->gameTime[i];
         int sectionPB = pb->goldST[i];
 
+        // For sections we haven't entered yet
         if (i >= game->currentSection &&
             game->curState.level < getModeEndLevel(game->curState.gameMode))
         {
@@ -447,7 +448,7 @@ void drawSectionTableOverall(struct draw_data_t* data, float width, float height
 
             drawString(font, 172.0f, y, sectionTimeDiff);
         }
-        else
+        else // For sections we've completed.
         {
             setGLColor(COLOR_FOREGROUND, 1.0f);
 
