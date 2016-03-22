@@ -25,6 +25,8 @@ void game_history_destroy(struct game_history_t* gh);
 bool isDemoState(UT_ringbuffer* blockHistory);
 bool testDemoState(UT_ringbuffer* blockHistory, struct tap_state* demo, size_t demoLength);
 
+void printGameHistory(struct game_history_t* gh);
+
 void pushStateToGameHistory(struct game_history_t* gh, UT_ringbuffer* blockHistory);
 void popGameHistoryElement(struct game_history_t* gh);
 
