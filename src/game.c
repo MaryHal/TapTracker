@@ -49,6 +49,10 @@ void resetGame(struct game_t* game)
     /* memset(game, 0, sizeof(struct game_t)); */
 
     game->currentSection = 0;
+
+    memset(&game->curState,  0, sizeof(struct tap_state));
+    memset(&game->prevState, 0, sizeof(struct tap_state));
+
     utringbuffer_clear(game->blockHistory);
 }
 
@@ -111,7 +115,6 @@ void updateGameState(struct game_t* game,
         updateGoldSTRecords(pb, table);
 
         pushStateToGameHistory(gh, game->blockHistory);
-        printGameHistory(gh);
 
         resetGame(game);
 
