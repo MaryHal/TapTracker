@@ -189,3 +189,24 @@ float averageMasterGrade(struct game_history_t* gh)
 {
     return averageHistoryStats(gh, &getMasterGradeFromState_);
 }
+
+float carnivalLevel(struct game_history_t* gh)
+{
+    int sum = 0;
+    int count = 0;
+    for (int i = gh->start; i < gh->end; ++i)
+    {
+        struct tap_state* state = &gh->data[i];
+
+        if (state->gameMode == TAP_MODE_DEATH)
+        {
+            sum += state->level;
+            count++;
+
+            if (count == 5)
+                return sum;
+        }
+    }
+
+    return sum;
+}
