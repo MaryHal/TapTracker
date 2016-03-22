@@ -129,7 +129,14 @@ void printGameHistory(struct game_history_t* gh)
 {
     for (int i = gh->start; i < gh->end; ++i)
     {
-        printf("%d %d %d\n", gh->data[i].gameMode, gh->data[i].level, gh->data[i].timer);
+        printf("%d %d %d %d %d %d\n",
+               gh->data[i].gameMode,
+               gh->data[i].level,
+               gh->data[i].timer,
+               gh->data[i].tetromino,
+               gh->data[i].xcoord,
+               gh->data[i].ycoord
+            );
     }
 }
 
@@ -138,6 +145,12 @@ void pushStateToGameHistory(struct game_history_t* gh, UT_ringbuffer* blockHisto
     if (utringbuffer_empty(blockHistory))
     {
         printf("Empty block history, skipping addition to game history.\n");
+        return;
+    }
+
+    if (((struct tap_state*)utringbuffer_back(blockHistory))->gameMode == 0)
+    {
+        printf("Null game mode, skipping addition to game history.\n");
         return;
     }
 
