@@ -73,7 +73,7 @@ void writeSectionRecords(struct section_table_t* table);
 
 bool shouldBlockRecordUpdate(struct pb_table_t* pb, struct section_table_t* table);
 
-void updateGoldSTRecords(struct pb_table_t* pb, struct section_table_t* table);
+void updateGoldSTRecords(struct pb_table_t* pb, struct section_table_t* table, int levelOfDeath);
 void updateGameTimeRecords(struct pb_table_t* pb, struct section_table_t* table);
 
 int getModeEndLevel(int gameMode);

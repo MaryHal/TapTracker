@@ -291,7 +291,7 @@ bool shouldBlockRecordUpdate(struct pb_table_t* pb, struct section_table_t* tabl
     return false;
 }
 
-void updateGoldSTRecords(struct pb_table_t* pb, struct section_table_t* table)
+void updateGoldSTRecords(struct pb_table_t* pb, struct section_table_t* table, int levelOfDeath)
 {
     if (pb == NULL || table == NULL)
     {
@@ -307,9 +307,11 @@ void updateGoldSTRecords(struct pb_table_t* pb, struct section_table_t* table)
 
     // Update all new Gold STs.
     const int NUM_SECTIONS = getModeSectionCount(pb->gameMode);
-    for (int i = 0; i <= NUM_SECTIONS; ++i)
+    for (int i = 0; i < NUM_SECTIONS && i < levelOfDeath / 100; ++i)
     {
-        int sectionTime = table->sections[i].endTime - table->sections[i].startTime;
+        const struct section_t* section = &table->sections[i];
+
+        int sectionTime = section->endTime - section->startTime;
         if (sectionTime > 0 && pb->goldST[i] > sectionTime)
         {
             pb->goldST[i] = sectionTime;
