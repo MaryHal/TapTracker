@@ -10,32 +10,42 @@
 
 #include <GLFW/glfw3.h>
 
-struct joystick_t* createJoystick(struct joystick_t* joystick, int joystickNum,
-                                  struct joystick_mapping_t jmap)
+void joystick_init(struct joystick_t* js, int joystickNum, struct joystick_mapping_t jmap)
 {
     if (!glfwJoystickPresent(joystickNum))
     {
-        perror("Requested joystick ID not found");
-        return NULL;
+        printf("Requested joystick ID not found");
+        return;
     }
 
-    if (joystick == NULL)
-    {
-        joystick = malloc(sizeof(struct joystick_t));
-    }
-
-    joystick->jmap = jmap;
-    joystick->id = joystickNum;
-    joystick->buttonCount = 0;
-    joystick->axisCount = 0;
-
-    return joystick;
+    js->jmap = jmap;
+    js->id = joystickNum;
+    js->buttonCount = 0;
+    js->axisCount = 0;
 }
 
-void destroyJoystick(struct joystick_t* joystick, bool freeMe)
+void joystick_terminate(struct joystick_t* js)
 {
-    if (freeMe)
-        free(joystick);
+    (void) js;
+}
+
+struct joystick_t* joystick_create(int joystickNum, struct joystick_mapping_t jmap)
+{
+    struct joystick_t* js = malloc(sizeof(struct joystick_t));
+    if (js)
+    {
+        joystick_init(js, joystickNum, jmap);
+    }
+
+    return js;
+}
+
+void joystick_destroy(struct joystick_t* js)
+{
+    assert(js != NULL);
+
+    joystick_terminate(js);
+    free(js);
 }
 
 void updateButtons(struct joystick_t* joystick)

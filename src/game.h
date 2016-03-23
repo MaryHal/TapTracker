@@ -36,9 +36,13 @@ struct game_t
     UT_ringbuffer* blockHistory;
 };
 
+void game_init(struct game_t* g);
+void game_terminate(struct game_t* g);
+
+struct game_t* game_create();
+void game_destroy(struct game_t* g);
+
 // (Re)sets all game data. If passed NULL, allocate new game data.
-struct game_t* createNewGame(struct game_t* game);
-void destroyGame(struct game_t* game, bool freeMem);
 void resetGame(struct game_t* game);
 
 bool isInPlayingState(char state);

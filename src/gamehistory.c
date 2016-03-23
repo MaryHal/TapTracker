@@ -226,7 +226,7 @@ float averageMasterGrade(struct game_history_t* gh)
     return averageHistoryStats(gh, &getMasterGradeFromState_);
 }
 
-float carnivalLevel(struct game_history_t* gh)
+int carnivalScore(struct game_history_t* gh)
 {
     int sum = 0;
     int count = 0;

@@ -36,6 +36,12 @@ struct input_history_t
         struct button_t* lastDown;
 };
 
+void input_history_init(struct input_history_t* ihist);
+void input_history_terminate(struct input_history_t* ihist);
+
+struct input_history_t* input_history_create();
+void input_history_destroy(struct input_history_t* ihist);
+
 struct input_history_t* createInputHistory(struct input_history_t* inputhistory);
 void destroyInputHistory(struct input_history_t* inputhistory, bool freeMe);
 void resetInputHistory(struct input_history_t* inputhistory);

@@ -6,24 +6,37 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <assert.h>
+
 #include <GLFW/glfw3.h>
 
-struct input_history_t* createInputHistory(struct input_history_t* history)
+void input_history_init(struct input_history_t* ihist)
 {
-    if (history == NULL)
-    {
-        history = malloc(sizeof(struct input_history_t));
-    }
-
-    resetInputHistory(history);
-
-    return history;
+    resetInputHistory(ihist);
 }
 
-void destroyInputHistory(struct input_history_t* history, bool freeMe)
+void input_history_terminate(struct input_history_t* ihist)
 {
-    if (freeMe)
-        free(history);
+    (void) ihist;
+}
+
+struct input_history_t* input_history_create()
+{
+    struct input_history_t* ihist = malloc(sizeof(struct input_history_t));
+    if (ihist)
+    {
+        input_history_init(ihist);
+    }
+
+    return ihist;
+}
+
+void input_history_destroy(struct input_history_t* ihist)
+{
+    assert(ihist != NULL);
+
+    input_history_terminate(ihist);
+    free(ihist);
 }
 
 void resetInputHistory(struct input_history_t* history)
