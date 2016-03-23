@@ -513,8 +513,11 @@ void drawGameHistory(struct draw_data_t* data, float width, float height)
         char gameTimeStr[16];
         formatTimeToMinutes(gameTimeStr, 16, gh->data[i].timer);
 
-        char buf[32];
-        snprintf(buf, 32, "%d @ %s", gh->data[i].level, gameTimeStr);
+        char buf[64];
+        snprintf(buf, 32, "%s %d @ %s",
+                 getModeName(gh->data[i].gameMode),
+                 gh->data[i].level,
+                 gameTimeStr);
 
         drawString(font, x, y, buf);
 

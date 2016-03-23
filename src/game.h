@@ -21,6 +21,8 @@ struct game_history_t;
 
 extern const char* DISPLAYED_GRADE[GRADE_COUNT];
 
+const char* getModeName(int gameMode);
+
 struct game_t
 {
     int currentSection;

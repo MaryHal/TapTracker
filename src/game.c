@@ -15,6 +15,41 @@ const char* DISPLAYED_GRADE[GRADE_COUNT] =
     "S5+", "S6-", "S6+", "S7-", "S7+", "S8-", "S8+", "S9"
 };
 
+const char* getModeName(int gameMode)
+{
+    switch (gameMode)
+    {
+    case TAP_MODE_NULL:
+        return "NULL";
+    case TAP_MODE_NORMAL:
+        return "Normal";
+    case TAP_MODE_MASTER:
+        return "Master";
+    case TAP_MODE_DOUBLES:
+        return "Doubles";
+    case TAP_MODE_NORMAL_VERSUS:
+        return "Normal Versus";
+    case TAP_MODE_MASTER_VERSUS:
+        return "Master Versus";
+    case TAP_MODE_MASTER_CREDITS:
+        return "Master Credits";
+    case TAP_MODE_TGMPLUS:
+        return "TGM+";
+    case TAP_MODE_TGMPLUS_VERSUS:
+        return "TGM+ Versus";
+    case TAP_MODE_MASTER_ITEM:
+        return "Master Item";
+    case TAP_MODE_TGMPLUS_ITEM:
+        return "TGM+ Item";
+    case TAP_MODE_DEATH:
+        return "Death";
+    case TAP_MODE_DEATH_VERSUS:
+        return "Death Versus";
+    default:
+        return "???";
+    }
+}
+
 struct game_t* createNewGame(struct game_t* game)
 {
     if (game == NULL)
@@ -63,8 +98,8 @@ bool isInPlayingState(char state)
 
 void updateGameState(struct game_t* game,
                      struct input_history_t* inputHistory,
-                     struct section_table_t* table,
-                     struct game_history_t* gh,
+                     struct section_table_t* sectionTable,
+                     struct game_history_t* gameHistory,
                      struct tap_state* dataPtr)
 {
     assert(game != NULL);
@@ -80,12 +115,12 @@ void updateGameState(struct game_t* game,
         printGameState(game);
     }
 
-    if (table)
+    if (sectionTable)
     {
         if (isInPlayingState(game->curState.state) && game->curState.level - game->prevState.level > 0)
         {
             // Push a data point based on the newly acquired game state.
-            updateSectionTable(table, game);
+            updateSectionTable(sectionTable, game);
         }
     }
 
@@ -94,15 +129,11 @@ void updateGameState(struct game_t* game,
         game->prevState.state == TAP_ACTIVE &&
         (game->curState.state == TAP_LOCKING || game->curState.state == TAP_LINECLEAR))
     {
-        utringbuffer_push_back(game->blockHistory, &game->prevState);
-    }
+        if (gameHistory)
+            utringbuffer_push_back(game->blockHistory, &game->prevState);
 
-    if (inputHistory)
-    {
-        if (game->prevState.state != TAP_ACTIVE && game->curState.state == TAP_ACTIVE)
-        {
+        if (inputHistory)
             pushInputHistoryElement(inputHistory, game->curState.level);
-        }
     }
 
     // Check if a game has completely ended
@@ -111,18 +142,17 @@ void updateGameState(struct game_t* game,
         // Update gold STs now that the game is over. There is technically a
         // "Credit Roll" game mode but it doesn't seem to interfere with normal
         // pb updates.
-        struct pb_table_t* pb = _getPBTable(&table->pbHash, game->prevState.gameMode);
-        updateGoldSTRecords(pb, table, game->prevState.level);
+        struct pb_table_t* pb = _getPBTable(&sectionTable->pbHash, game->prevState.gameMode);
+        updateGoldSTRecords(pb, sectionTable, game->prevState.level);
 
-        pushStateToGameHistory(gh, game->blockHistory);
-        printGameHistory(gh);
+        pushStateToGameHistory(gameHistory, game->blockHistory);
 
         resetGame(game);
 
         if (inputHistory)
             resetInputHistory(inputHistory);
-        if (table)
-            resetSectionTable(table);
+        if (sectionTable)
+            resetSectionTable(sectionTable);
     }
 }
 

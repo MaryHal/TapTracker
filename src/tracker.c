@@ -42,6 +42,11 @@ bool runTracker(struct tap_state* dataPtr, struct tracker_settings_t settings)
     /* addToContainerRatio(mainWindow->layout, &drawSectionTable, 1.00f); */
     /* addToContainerRatio(mainWindow->layout, &drawSectionTableOverall, 1.00f); */
 
+    struct window_t* auxWindow = createWindow(180, 360, "TapTracker Extras", mainWindow);
+
+    createLayoutContainer(&auxWindow->layout, auxWindow->width, auxWindow->height, 14.0f, 2.0f);
+    addToContainerRatio(&auxWindow->layout, &drawGameHistory, 1.0f);
+
     struct window_t* subWindow = NULL;
 
     if (settings.enableJoystick)
@@ -100,6 +105,7 @@ bool runTracker(struct tap_state* dataPtr, struct tracker_settings_t settings)
         glfwPollEvents();
 
         drawWindowLayout(mainWindow, &data);
+        drawWindowLayout(auxWindow, &data);
 
         // Update input history
         if (settings.enableJoystick && joystick)
@@ -122,6 +128,9 @@ bool runTracker(struct tap_state* dataPtr, struct tracker_settings_t settings)
 
     if (mainWindow)
         destroyWindow(mainWindow);
+
+    if (auxWindow)
+        destroyWindow(auxWindow);
 
     if (subWindow)
         destroyWindow(subWindow);
