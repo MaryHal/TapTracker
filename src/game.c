@@ -92,7 +92,7 @@ void updateGameState(struct game_t* game,
     // Piece is locked in
     if (isInPlayingState(game->curState.state) &&
         game->prevState.state == TAP_ACTIVE &&
-        game->curState.state == TAP_LOCKING)
+        (game->curState.state == TAP_LOCKING || game->curState.state == TAP_LINECLEAR))
     {
         utringbuffer_push_back(game->blockHistory, &game->prevState);
     }
@@ -112,9 +112,10 @@ void updateGameState(struct game_t* game,
         // "Credit Roll" game mode but it doesn't seem to interfere with normal
         // pb updates.
         struct pb_table_t* pb = _getPBTable(&table->pbHash, game->prevState.gameMode);
-        updateGoldSTRecords(pb, table);
+        updateGoldSTRecords(pb, table, game->prevState.level);
 
         pushStateToGameHistory(gh, game->blockHistory);
+        printGameHistory(gh);
 
         resetGame(game);
 
