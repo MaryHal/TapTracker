@@ -24,19 +24,25 @@ This project aims to log various game data (and inputs) during a game of [[https
 In contrast, TapTracker takes a more direct route by modifying a [[https://github.com/sanford1/shmupmametgm/][TGM-specific version of MAME]] to output relevant data. You can also build TapTracker MAME like so:
 
 #+BEGIN_SRC sh
-git clone https://github.com/sanford1/shmupmametgm.git
-make SUBTARGET=tgm NOWERROR=1
+  git clone https://github.com/sanford1/shmupmametgm.git
+  make SUBTARGET=tgm NOWERROR=1
 #+END_SRC
 
 ** Building TapTracker
 
-After cloning this repository, retrieve all the submodules:
+First things first, get the source code from this repository:
+
+#+BEGIN_SRC sh
+  git clone https://github.com/sanford1/TapTracker.git
+#+END_SRC
+
+After cloning, enter the created directory and retrieve all the submodules:
 
 #+BEGIN_SRC sh
   git submodule update --init --recursive
 #+END_SRC
 
-Building this project requires [[https://www.python.org/][python]], [[https://martine.github.io/ninja/][ninja]], and [[http://www.glfw.org/][glfw]]:
+Building this project requires [[https://www.python.org/][python]], [[https://martine.github.io/ninja/][ninja]], and [[http://www.glfw.org/][glfw3]]:
 
 #+BEGIN_SRC sh
   python bootstrap.py
