@@ -46,6 +46,12 @@ struct joystick_t
         int8_t axis[8], prevAxis[8];
 };
 
+void joystick_init(struct joystick_t* js, int joystickNum, struct joystick_mapping_t jmap);
+void joystick_terminate(struct joystick_t* js);
+
+struct joystick_t* joystick_create(int joystickNum, struct joystick_mapping_t jmap);
+void joystick_destroy(struct joystick_t* js);
+
 struct joystick_t* createJoystick(struct joystick_t* joystick, int joystickNum,
                                   struct joystick_mapping_t jmap);
 void destroyJoystick(struct joystick_t* joystick, bool freeMe);

@@ -36,6 +36,6 @@ float averageHistoryStats(struct game_history_t* gh,
 float averageDeathLevel(struct game_history_t* gh);
 float averageMasterGrade(struct game_history_t* gh);
 
-float carnivalLevel(struct game_history_t* gh);
+int carnivalScore(struct game_history_t* gh);
 
 #endif /* GAMEHISTORY_H */

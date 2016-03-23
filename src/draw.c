@@ -514,7 +514,7 @@ void drawGameHistory(struct draw_data_t* data, float width, float height)
         formatTimeToMinutes(gameTimeStr, 16, gh->data[i].timer);
 
         char buf[64];
-        snprintf(buf, 32, "%s %d @ %s",
+        snprintf(buf, 32, "%s %03d @ %s",
                  getModeName(gh->data[i].gameMode),
                  gh->data[i].level,
                  gameTimeStr);
@@ -525,10 +525,8 @@ void drawGameHistory(struct draw_data_t* data, float width, float height)
         y += vertStride;
     }
 
-    float avgDeathLevel = averageDeathLevel(gh);
-
     char buf[32];
-    snprintf(buf, 32, "Average Death Level: %.2f", avgDeathLevel);
+    snprintf(buf, 32, "Death Carnival Score: %d", carnivalScore(gh));
 
     drawString(font, x, y, buf);
 }

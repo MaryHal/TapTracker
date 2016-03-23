@@ -49,6 +49,47 @@ struct chardata_t* _getCharData(struct chardata_t** cmap, int codepoint)
     return s;
 }
 
+void font_init(struct font_t* f)
+{
+    (void) f;
+}
+
+void font_terminate(struct font_t* f)
+{
+    glDeleteTextures(1, &f->texture);
+
+    struct chardata_t* current = NULL;
+    struct chardata_t* tmp = NULL;
+
+    HASH_ITER(hh, f->cmap, current, tmp)
+    {
+        HASH_DEL(f->cmap, current);
+        free(current);
+    }
+
+    if (f->bitmap)
+        free(f->bitmap);
+}
+
+struct font_t* font_create()
+{
+    struct font_t* f = malloc(sizeof(struct font_t));
+    if (f)
+    {
+        font_init(f);
+    }
+
+    return f;
+}
+
+void font_destroy(struct font_t* f)
+{
+    assert(f != NULL);
+
+    font_terminate(f);
+    free(f);
+}
+
 void exportBitmap(const char* imgOutFilename, struct font_t* font)
 {
     assert(imgOutFilename != NULL && font != NULL);
@@ -137,10 +178,7 @@ void _bindFontTexture(struct font_t* font, uint8_t* bitmap)
 
 struct font_t* loadTTF(struct font_t* font, const char* filename, float pixelHeight)
 {
-    if (font == NULL)
-    {
-        font = malloc(sizeof(struct font_t));
-    }
+    assert(font != NULL);
 
     font->cmap = NULL;
     font->texture = 0;
@@ -209,10 +247,7 @@ struct font_t* loadTTF(struct font_t* font, const char* filename, float pixelHei
 
 struct font_t* loadBitmapFontFiles(struct font_t* font, const char* imgFile, const char* binFile)
 {
-    if (font == NULL)
-    {
-        font = malloc(sizeof(struct font_t));
-    }
+    assert(font != NULL);
 
     FILE* binInput = fopen(binFile, "rb");
 
@@ -257,10 +292,7 @@ struct font_t* loadBitmapFontData(struct font_t* font,
                                   const uint8_t imgData[], size_t imgDataSize,
                                   const uint8_t binData[], size_t binDataSize)
 {
-    if (font == NULL)
-    {
-        font = malloc(sizeof(struct font_t));
-    }
+    assert(font != NULL);
 
     const uint8_t* dataPtr = binData;
 
@@ -297,26 +329,6 @@ struct font_t* loadBitmapFontData(struct font_t* font,
     stbi_image_free(temp_bitmap);
 
     return font;
-}
-
-void destroyFont(struct font_t* font, bool freeFont)
-{
-    glDeleteTextures(1, &font->texture);
-
-    struct chardata_t* current = NULL;
-    struct chardata_t* tmp = NULL;
-
-    HASH_ITER(hh, font->cmap, current, tmp)
-    {
-        HASH_DEL(font->cmap, current);
-        free(current);
-    }
-
-    if (font->bitmap)
-        free(font->bitmap);
-
-    if (freeFont)
-        free(font);
 }
 
 void getPackedQuad(struct font_t* font, int codepoint,

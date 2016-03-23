@@ -10,13 +10,8 @@
 #include <incbin.h>
 INCBIN(ButtonSheet, "bin/key_button.png");
 
-struct button_spectrum_t* createButtonSpriteSheet(struct button_spectrum_t* bspec)
+void button_spectrum_init(struct button_spectrum_t* bspec)
 {
-    if (!bspec)
-    {
-        bspec = malloc(sizeof(struct button_spectrum_t));
-    }
-
     const int tileSize = 8;
 
     int width, height, n;
@@ -50,16 +45,28 @@ struct button_spectrum_t* createButtonSpriteSheet(struct button_spectrum_t* bspe
         currentQuad->texCoords[6] = (float)(i * tileSize + i) / width;
         currentQuad->texCoords[7] = (float)1.0f;
     }
+}
+
+void button_spectrum_terminate(struct button_spectrum_t* bspec)
+{
+    glDeleteTextures(1, &bspec->textureID);
+}
+
+struct button_spectrum_t* button_spectrum_create()
+{
+    struct button_spectrum_t* bspec = malloc(sizeof(struct button_spectrum_t));
+    if (bspec)
+    {
+        button_spectrum_init(bspec);
+    }
 
     return bspec;
 }
 
-void destroyButtonSpriteSheet(struct button_spectrum_t* bspec, bool freeMe)
+void button_spectrum_destroy(struct button_spectrum_t* bspec)
 {
-    glDeleteTextures(1, &bspec->textureID);
-
-    if (freeMe)
-        free(bspec);
+    button_spectrum_terminate(bspec);
+    free(bspec);
 }
 
 uint8_t joystickButtonToQuadIndex(struct joystick_mapping_t jmap, uint8_t button)

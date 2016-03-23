@@ -15,6 +15,11 @@ struct chardata_t
     stbtt_packedchar pchar;
 };
 
+// uthash functions
+void _addCharData(struct chardata_t** cmap, int codepoint, stbtt_packedchar pchar);
+void _deleteCharData(struct chardata_t** cmap, int codepoint);
+struct chardata_t* _getCharData(struct chardata_t** cmap, int codepoint);
+
 struct font_t
 {
     struct chardata_t* cmap;
@@ -28,12 +33,11 @@ struct font_t
     uint8_t* bitmap;
 };
 
-extern struct chardata_t* dataHash;
+void font_init(struct font_t* f);
+void font_terminate(struct font_t* f);
 
-// uthash functions
-void _addCharData(struct chardata_t** cmap, int codepoint, stbtt_packedchar pchar);
-void _deleteCharData(struct chardata_t** cmap, int codepoint);
-struct chardata_t* _getCharData(struct chardata_t** cmap, int codepoint);
+struct font_t* font_create();
+void font_destroy(struct font_t* f);
 
 // Export internal bitmap for a font. This should not be used if this font is
 // already a bitmap font.
@@ -55,7 +59,6 @@ struct font_t* loadBitmapFontFiles(struct font_t* font, const char* imgFile, con
 struct font_t* loadBitmapFontData(struct font_t* font,
                                   const uint8_t imgData[], size_t imgDataSize,
                                   const uint8_t binData[], size_t binDataSize);
-void destroyFont(struct font_t* font, bool freeFont);
 
 void getPackedQuad(struct font_t* font, int codepoint,
                    float* xpos, float* ypos,

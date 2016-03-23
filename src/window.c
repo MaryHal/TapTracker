@@ -12,7 +12,8 @@ void setupOpenGL(struct window_t* window, const unsigned int width, const unsign
     glfwMakeContextCurrent(window->handle);
 
     // OpenGL 2d perspective
-    glMatrixMode(GL_PROJECTION); glLoadIdentity();
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
     glOrtho(0.0f, width, height, 0.0f, -1.0f, 1.0f);
 
     // Initialize modelview matrix

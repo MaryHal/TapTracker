@@ -50,13 +50,8 @@ const char* getModeName(int gameMode)
     }
 }
 
-struct game_t* createNewGame(struct game_t* game)
+void game_init(struct game_t* g)
 {
-    if (game == NULL)
-    {
-        game = malloc(sizeof(struct game_t));
-    }
-
     UT_icd tap_state_icd =
     {
         sizeof(struct tap_state),
@@ -64,19 +59,33 @@ struct game_t* createNewGame(struct game_t* game)
         NULL, // Copier
         NULL  // Destructor
     };
-    utringbuffer_new(game->blockHistory, GAME_STATE_HISTORY_LENGTH, &tap_state_icd);
+    utringbuffer_new(g->blockHistory, GAME_STATE_HISTORY_LENGTH, &tap_state_icd);
 
-    resetGame(game);
-
-    return game;
+    resetGame(g);
 }
 
-void destroyGame(struct game_t* game, bool freeMem)
+void game_terminate(struct game_t* g)
 {
-    utringbuffer_free(game->blockHistory);
+    utringbuffer_free(g->blockHistory);
+}
 
-    if (freeMem)
-        free(game);
+struct game_t* game_create()
+{
+    struct game_t* g = malloc(sizeof(struct game_t));
+    if (g)
+    {
+        game_init(g);
+    }
+
+    return g;
+}
+
+void game_destroy(struct game_t* g)
+{
+    assert(g != NULL);
+
+    game_terminate(g);
+    free(g);
 }
 
 void resetGame(struct game_t* game)
