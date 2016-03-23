@@ -171,29 +171,6 @@ void pushStateToGameHistory(struct game_history_t* gh, UT_ringbuffer* blockHisto
         return;
     }
 
-    printf("\n\n");
-    for (struct tap_state* c = (struct tap_state*)utringbuffer_front(blockHistory);
-         c != NULL;
-         c = (struct tap_state*)utringbuffer_next(blockHistory, c))
-    {
-        printf("%d %d %d %d %d %d %d %d %d %d %d %d\n",
-               c->state,
-               c->grade,
-               c->gradePoints,
-               c->level,
-               c->timer,
-               c->tetromino,
-               c->xcoord,
-               c->ycoord,
-               c->rotation,
-               c->mrollFlags,
-               c->inCreditRoll,
-               c->gameMode
-            );
-    }
-    printf("\n\n");
-    fflush(stdout);
-
     if (gh->end - gh->start == MAX_GAME_HISTORY_COUNT)
     {
         popGameHistoryElement(gh);
