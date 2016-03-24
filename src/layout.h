@@ -32,10 +32,14 @@ struct layout_container_t
         float leftoverHeight;
 };
 
-struct layout_container_t* createLayoutContainer(struct layout_container_t* c,
-                                                 float width, float height,
-                                                 float outerMargin, float innerMargin);
-void destroyContainer(struct layout_container_t* c, bool freeMe);
+void layout_init(struct layout_container_t* c,
+                 float width, float height,
+                 float outerMargin, float innerMargin);
+void layout_terminate(struct layout_container_t* c);
+
+struct layout_container_t* layout_create(float width, float height,
+                                         float outerMargin, float innerMargin);
+void layout_destroy(struct layout_container_t* c);
 
 // Add a draw function to the layout and make sure it fills (ratio)% of the remaining area.
 void addToContainerRatio(struct layout_container_t* container, draw_function_p drawFunc,
@@ -46,7 +50,7 @@ void addToContainerFixed(struct layout_container_t* container, draw_function_p d
                          float pixelHeight);
 
 // Draw our layout container. If the debug flag is checked, this function will
-// also draw borders for layout element.
+// also draw borders for each layout element.
 void drawLayout(struct layout_container_t* container, struct draw_data_t* data_container, bool debug);
 
 #endif /* LAYOUT_H */

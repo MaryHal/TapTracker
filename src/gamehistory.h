@@ -27,7 +27,9 @@ bool testDemoState(UT_ringbuffer* blockHistory, struct tap_state* demo, size_t d
 
 void printGameHistory(struct game_history_t* gh);
 
-void pushStateToGameHistory(struct game_history_t* gh, UT_ringbuffer* blockHistory);
+void pushStateToGameHistory(struct game_history_t* gh,
+                            UT_ringbuffer* blockHistory,
+                            struct tap_state currentState);
 void popGameHistoryElement(struct game_history_t* gh);
 
 float averageHistoryStats(struct game_history_t* gh,

@@ -154,7 +154,7 @@ void updateGameState(struct game_t* game,
         struct pb_table_t* pb = _getPBTable(&sectionTable->pbHash, game->prevState.gameMode);
         updateGoldSTRecords(pb, sectionTable);
 
-        pushStateToGameHistory(gameHistory, game->blockHistory);
+        pushStateToGameHistory(gameHistory, game->blockHistory, game->prevState);
 
         resetGame(game);
 
