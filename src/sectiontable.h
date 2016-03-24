@@ -30,6 +30,8 @@ struct section_t
     int endTime;
 
     int lines[4];
+
+    bool complete;
 };
 
 struct pb_table_t
@@ -71,9 +73,7 @@ void addDataPointToSection(struct section_t* section, struct game_t* game);
 void readSectionRecords(struct section_table_t* table, const char* filename);
 void writeSectionRecords(struct section_table_t* table);
 
-bool shouldBlockRecordUpdate(struct pb_table_t* pb, struct section_table_t* table);
-
-void updateGoldSTRecords(struct pb_table_t* pb, struct section_table_t* table, int levelOfDeath);
+void updateGoldSTRecords(struct pb_table_t* pb, struct section_table_t* table);
 void updateGameTimeRecords(struct pb_table_t* pb, struct section_table_t* table);
 
 int getModeEndLevel(int gameMode);

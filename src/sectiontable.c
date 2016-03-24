@@ -66,8 +66,8 @@ void section_table_init(struct section_table_t* table)
         if (end > LEVEL_MAX_LONG)
             end = LEVEL_MAX_LONG;
 
-        snprintf(table->sections[i].label, 8,
-                 "%03d-%03d", begin, end);
+        struct section_t* section = &table->sections[i];
+        snprintf(section->label, 8, "%03d-%03d", begin, end);
     }
 
     table->pbHash = NULL;
@@ -117,6 +117,8 @@ void resetSectionTable(struct section_table_t* table)
 
         for (int j = 0; j < 4; ++j)
             section->lines[j] = 0;
+
+        section->complete = false;
     }
 
     // Add an initial data point to the first section
@@ -139,8 +141,9 @@ void updateSectionTable(struct section_table_t* table, struct game_t* game)
     // use the previous frame's timer value.
     if (game->curState.level >= getModeEndLevel(gameMode))
     {
-        // On the first frame reaching the end of the game
-        if (section->endTime == 0)
+        // On the first frame reaching the end of the game, this block should
+        // only be run once.
+        if (!section->complete && section->endTime == 0)
         {
             section->endTime = game->prevState.timer;
 
@@ -151,6 +154,8 @@ void updateSectionTable(struct section_table_t* table, struct game_t* game)
 
             // For consistency, restore original time value.
             game->curState.timer = tempTime;
+
+            section->complete = true;
 
             // Update Records
             updateGameTimeRecords(pb, table);
@@ -169,6 +174,8 @@ void updateSectionTable(struct section_table_t* table, struct game_t* game)
     {
         section->endTime = game->curState.timer;
         addDataPointToSection(section, game);
+
+        section->complete = true;
 
         // Section advance!
         game->currentSection++;
@@ -275,23 +282,7 @@ void writeSectionRecords(struct section_table_t* table)
     }
 }
 
-bool shouldBlockRecordUpdate(struct pb_table_t* pb, struct section_table_t* table)
-{
-    const int NUM_SECTIONS = getModeSectionCount(pb->gameMode);
-    for (int i = 0; i <= NUM_SECTIONS; ++i)
-    {
-        int sectionTime = table->sections[i].endTime - table->sections[i].startTime;
-
-        if (sectionTime < 1200)
-        {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-void updateGoldSTRecords(struct pb_table_t* pb, struct section_table_t* table, int levelOfDeath)
+void updateGoldSTRecords(struct pb_table_t* pb, struct section_table_t* table)
 {
     if (pb == NULL || table == NULL)
     {
@@ -300,20 +291,24 @@ void updateGoldSTRecords(struct pb_table_t* pb, struct section_table_t* table, i
 
     printf("Updating Gold STs for mode %d.\n", pb->gameMode);
 
-    if (shouldBlockRecordUpdate(pb, table))
-    {
-        printf("\tUnrealistic section times detected, Gold ST Update Blocked.\n");
-    }
-
     // Update all new Gold STs.
     const int NUM_SECTIONS = getModeSectionCount(pb->gameMode);
-    for (int i = 0; i < NUM_SECTIONS && i < levelOfDeath / 100; ++i)
+    for (int i = 0; i < NUM_SECTIONS; ++i)
     {
         const struct section_t* section = &table->sections[i];
 
         int sectionTime = section->endTime - section->startTime;
-        if (sectionTime > 0 && pb->goldST[i] > sectionTime)
+        if (section->complete && sectionTime > 0 && pb->goldST[i] > sectionTime)
         {
+            // If a section time is less than 20 seconds, block the update.
+            // Pretty arbitrary choice of time, but if a section is completed,
+            // realistically it won't be less than 20 seconds long. The Death WR
+            // run has fastest STs of about ~23 seconds.
+            if (sectionTime < 1200)
+            {
+                continue;
+            }
+
             pb->goldST[i] = sectionTime;
         }
     }
@@ -328,16 +323,22 @@ void updateGameTimeRecords(struct pb_table_t* pb, struct section_table_t* table)
 
     printf("Updating Game Time PBs for mode %d.\n", pb->gameMode);
 
-    if (shouldBlockRecordUpdate(pb, table))
+    const int NUM_SECTIONS = getModeSectionCount(pb->gameMode);
+
+    // Test if all sections have been completed.
+    for (int i = 0; i < NUM_SECTIONS; ++i)
     {
-        printf("\tUnrealistic section times detected, Game Time PB Update Blocked.\n");
+        if (!table->sections[i].complete)
+        {
+            printf("All sections have not been completed\n");
+            return;
+        }
     }
 
     // Update all PBs if necessary
-    const int NUM_SECTIONS = getModeSectionCount(pb->gameMode);
     if (pb->gameTime[NUM_SECTIONS - 1] > table->sections[NUM_SECTIONS - 1].endTime)
     {
-        for (int i = 0; i <= NUM_SECTIONS; ++i)
+        for (int i = 0; i < NUM_SECTIONS; ++i)
         {
             if (table->sections[i].endTime > 0)
                 pb->gameTime[i] = table->sections[i].endTime;
@@ -348,7 +349,6 @@ void updateGameTimeRecords(struct pb_table_t* pb, struct section_table_t* table)
 int getModeEndLevel(int gameMode)
 {
     if (gameMode == TAP_MODE_NORMAL ||
-        gameMode == TAP_MODE_NORMAL_VERSUS ||
         gameMode == TAP_MODE_DOUBLES)
     {
         return LEVEL_MAX_SHORT;
@@ -360,7 +360,6 @@ int getModeEndLevel(int gameMode)
 int getModeSectionCount(int gameMode)
 {
     if (gameMode == TAP_MODE_NORMAL ||
-        gameMode == TAP_MODE_NORMAL_VERSUS ||
         gameMode == TAP_MODE_DOUBLES)
     {
         return SECTION_COUNT_SHORT;
