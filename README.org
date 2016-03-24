@@ -92,10 +92,29 @@ The top portion graphs the time vs level during the last three sections. Below t
 - [Partially complete] Implement resizable layouts :: TapTracker only supports a single window size and layout right now, and it's difficult to modify.
 - [Partially complete] Rework OpenGL code :: It's rigid and messy right now. Not to mention it also uses a ton of immediate mode. There's an old git branch (gltest) that updates the 15-year-old rendering code to 14-year-old rendering code.
 - Player 2 support :: Log stats for Player 2 too.
-- +Diagram Generation+ :: Create a [[http://fumen.zui.jp/][Fumen]] diagram during play. A prototype (written in Python) can be found in the =autofumen= directory.
+- +Diagram Generation+ :: Create a [[http://fumen.zui.jp/][Fumen]] diagram during play. A prototype (written in Python) can be found in the =autofumen= directory. Functionality is now build into shmupmametgm.
 - +MAME patch for Windows+ :: ...
 - More error logging :: Since in addition to the original TapTracker code, we have to reproduce some of tgm2p's game logic, there may be unforeseen edge cases. We probably should catch those.
 - Config files (json?) :: For configurable layouts and to possibly replace the command line arguments.
+     Maybe something like this:
+     #+BEGIN_SRC text
+       Window MainWindow
+       Size 240x540
+       Layout 14.0 2.0
+       Ratio Graph 0.72
+       Fixed Table 130.0
+       Fixed CurrentState 14.0
+
+       Window ExtraWindow
+       Size 180x120
+       Layout 4.0, 2.0
+       Ratio GameHistory 1.0
+
+       Window ButtonWindow
+       Size 180x112
+       Layout 4.0 0.0
+       Ratio InputHistory 1.0
+     #+END_SRC
 
 ** Appendix
 *** TAP (tgm2p)
