@@ -152,7 +152,7 @@ void updateGameState(struct game_t* game,
         // "Credit Roll" game mode but it doesn't seem to interfere with normal
         // pb updates.
         struct pb_table_t* pb = _getPBTable(&sectionTable->pbHash, game->prevState.gameMode);
-        updateGoldSTRecords(pb, sectionTable, game->prevState.level);
+        updateGoldSTRecords(pb, sectionTable);
 
         pushStateToGameHistory(gameHistory, game->blockHistory);
 
