@@ -110,28 +110,27 @@ bool testDemoState(UT_ringbuffer* blockHistory, struct tap_state* demo, size_t d
         return false;
     }
 
-    // Count the number of false positives
-    int fpCount = 0;
-
     struct tap_state* current = (struct tap_state*)utringbuffer_front(blockHistory);
+    int misses = 0;
 
     for (size_t i = 0; i < demoLength && current != NULL; ++i)
     {
-        if (current->tetromino != demo[i].tetromino &&
-            current->xcoord    != demo[i].xcoord &&
+        if (current->gameMode  != demo[i].gameMode  ||
+            current->tetromino != demo[i].tetromino ||
+            current->xcoord    != demo[i].xcoord    ||
             current->ycoord    != demo[i].ycoord)
         {
-            fpCount++;
+            misses++;
 
-            if ((float)fpCount / demoLength > 0.2f)
+            if (misses >= 4)
             {
                 return false;
             }
-
-            continue;
         }
-
-        current = (struct tap_state*) utringbuffer_next(blockHistory, current);
+        else
+        {
+            current = (struct tap_state*) utringbuffer_next(blockHistory, current);
+        }
     }
     return true;
 }
@@ -230,7 +229,7 @@ int carnivalScore(struct game_history_t* gh)
 {
     int sum = 0;
     int count = 0;
-    for (int i = gh->start; i < gh->end; ++i)
+    for (int i = gh->end; i > gh->start; --i)
     {
         struct tap_state* state = &gh->data[i];
 
