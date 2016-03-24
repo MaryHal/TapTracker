@@ -7,6 +7,58 @@
 
 #include <assert.h>
 
+
+void window_init(struct window_t* w,
+                 const char* title,
+                 const unsigned int width, const unsigned int height,
+                 struct window_t* parent)
+{
+    glfwWindowHint(GLFW_RESIZABLE, false);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+
+    GLFWwindow* sharedContext = (parent == NULL) ? NULL : parent->handle;
+
+    w->handle = glfwCreateWindow(width, height,
+                                 title,
+                                 NULL,
+                                 sharedContext);
+    w->width = width;
+    w->height = height;
+
+    if (w->handle == NULL)
+    {
+        printf("Could not create GLFW window");
+    }
+
+    setupOpenGL(w, width, height);
+}
+
+void window_terminate(struct window_t* w)
+{
+    glfwDestroyWindow(w->handle);
+    layout_destroy(&w->layout);
+}
+
+struct window_t* window_create(const char* title,
+                               const unsigned int width, const unsigned int height,
+                               struct window_t* parent)
+{
+    struct window_t* w = malloc(sizeof(struct window_t));
+    if (w)
+    {
+        window_init(w, title, width, height, parent);
+    }
+
+    return w;
+}
+
+void window_destroy(struct window_t* w)
+{
+    window_terminate(w);
+    free(w);
+}
+
 void setupOpenGL(struct window_t* window, const unsigned int width, const unsigned int height)
 {
     glfwMakeContextCurrent(window->handle);
@@ -27,42 +79,6 @@ void setupOpenGL(struct window_t* window, const unsigned int width, const unsign
 
     glEnable(GL_LINE_SMOOTH);
     glLineWidth(2.0f);
-}
-
-struct window_t* createWindow(unsigned int width, unsigned int height,
-                             const char* title,
-                             struct window_t* parent)
-{
-    struct window_t* window = malloc(sizeof(struct window_t));
-
-    glfwWindowHint(GLFW_RESIZABLE, false);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-
-    window->handle = glfwCreateWindow(width, height,
-                                      title,
-                                      NULL,
-                                      (parent == NULL || parent->handle == NULL) ? NULL : parent->handle);
-    window->width = width;
-    window->height = height;
-
-    if (window->handle == NULL)
-    {
-        perror("Could not create GLFW window");
-        return NULL;
-    }
-
-    setupOpenGL(window, width, height);
-
-    return window;
-}
-
-void destroyWindow(struct window_t* window)
-{
-    glfwDestroyWindow(window->handle);
-    destroyContainer(&window->layout, false);
-
-    free(window);
 }
 
 void drawWindowLayout(struct window_t* window, struct draw_data_t* data)

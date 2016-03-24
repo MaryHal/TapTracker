@@ -5,15 +5,10 @@
 
 #include <GLFW/glfw3.h>
 
-struct layout_container_t* createLayoutContainer(struct layout_container_t* c,
-                                                 float width, float height,
-                                                 float outerMargin, float innerMargin)
+void layout_init(struct layout_container_t* c,
+                 float width, float height,
+                 float outerMargin, float innerMargin)
 {
-    if (c == NULL)
-    {
-        c = malloc(sizeof(struct layout_container_t));
-    }
-
     c->outerMargin = outerMargin;
     c->innerMargin = innerMargin;
 
@@ -21,14 +16,29 @@ struct layout_container_t* createLayoutContainer(struct layout_container_t* c,
     c->leftoverHeight = height - 2 * outerMargin;
 
     c->size = 0;
+}
+
+void layout_terminate(struct layout_container_t* c)
+{
+    (void) c;
+}
+
+struct layout_container_t* layout_create(float width, float height,
+                                         float outerMargin, float innerMargin)
+{
+    struct layout_container_t* c = malloc(sizeof(struct layout_container_t));
+    if (c)
+    {
+        layout_init(c, width, height, outerMargin, innerMargin);
+    }
 
     return c;
 }
 
-void destroyContainer(struct layout_container_t* c, bool freeMe)
+void layout_destroy(struct layout_container_t* c)
 {
-    if (freeMe)
-        free(c);
+    layout_terminate(c);
+    free(c);
 }
 
 void addToContainerRatio(struct layout_container_t* container, draw_function_p drawFunc,

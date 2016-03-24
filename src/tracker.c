@@ -32,34 +32,35 @@ bool runTracker(struct tap_state* dataPtr, struct tracker_settings_t settings)
         return false;
     }
 
-    struct window_t* mainWindow = createWindow(240, 540, "TapTracker Graph", NULL);
+    struct window_t* mainWindow = window_create("TapTracker Graph", 240, 540, NULL);
 
-    createLayoutContainer(&mainWindow->layout, mainWindow->width, mainWindow->height, 14.0f, 2.0f);
+    layout_init(&mainWindow->layout, mainWindow->width, mainWindow->height, 14.0f, 2.0f);
 
     addToContainerRatio(&mainWindow->layout, &drawSectionGraph, 0.72f);
     addToContainerFixed(&mainWindow->layout, &drawSectionTableOverall, 130.0f);
     addToContainerFixed(&mainWindow->layout, &drawCurrentState, 14.0f);
 
-    struct window_t* auxWindow = createWindow(180, 120, "TapTracker Extras", mainWindow);
+    struct window_t* auxWindow = window_create("TapTracker Extras", 180, 120, mainWindow);
 
-    createLayoutContainer(&auxWindow->layout, auxWindow->width, auxWindow->height, 4.0f, 2.0f);
+    layout_init(&auxWindow->layout, auxWindow->width, auxWindow->height, 4.0f, 2.0f);
     addToContainerRatio(&auxWindow->layout, &drawGameHistory, 1.0f);
 
     struct window_t* subWindow = NULL;
 
     if (settings.enableJoystick)
     {
-        subWindow = createWindow(180, 112, "TapTracker ButtonSpectrum", mainWindow);
-        createLayoutContainer(&subWindow->layout, subWindow->width, subWindow->height, 4.0f, 0.0f);
+        subWindow = window_create("TapTracker ButtonSpectrum", 180, 112, mainWindow);
+        layout_init(&subWindow->layout, subWindow->width, subWindow->height, 4.0f, 0.0f);
         addToContainerRatio(&subWindow->layout, &drawInputHistory, 1.00f);
     }
 
-    /* // Load then create bitmap font. */
+    /* // Load then export bitmap font. */
     /* struct font_t* font = loadTTF(font_create(), "/usr/share/fonts/TTF/PP821/PragmataPro.ttf", 13.0f); */
     /* exportBitmap("PP.png", font); */
     /* exportFontData("PP.bin", font); */
 
     /* struct font_t* backupfont = loadTTF(font_create(), "/usr/share/fonts/TTF/DroidSans.ttf", 13.0f); */
+
     /* loadBitmapFontFiles(&font, "PP.png", "PP.bin"); */
 
     struct font_t* font = loadBitmapFontData(font_create(),
@@ -132,13 +133,13 @@ bool runTracker(struct tap_state* dataPtr, struct tracker_settings_t settings)
         joystick_destroy(joystick);
 
     if (mainWindow)
-        destroyWindow(mainWindow);
+        window_destroy(mainWindow);
 
     if (auxWindow)
-        destroyWindow(auxWindow);
+        window_destroy(auxWindow);
 
     if (subWindow)
-        destroyWindow(subWindow);
+        window_destroy(subWindow);
 
     glfwTerminate();
 

@@ -346,9 +346,7 @@ void drawSectionTable(struct draw_data_t* data, float width, float height)
         // Calculate how long this section took / is taking.
         float sectionTime = 0.0f;
 
-        // Section is complete
-        if (game->curState.level >= (i + 1) * SECTION_LENGTH ||
-            game->curState.level >= getModeEndLevel(game->curState.gameMode))
+        if (section->complete)
         {
             int sectionTimeInFrames = table->sections[i].endTime - table->sections[i].startTime;
             sectionTime = frameTimeToSeconds(sectionTimeInFrames);
@@ -430,9 +428,7 @@ void drawSectionTableOverall(struct draw_data_t* data, float width, float height
         int overallPB = pb->gameTime[i];
         int sectionPB = pb->goldST[i];
 
-        // For sections we haven't entered yet
-        if (i >= game->currentSection &&
-            game->curState.level < getModeEndLevel(game->curState.gameMode))
+        if (!section->complete)
         {
             setGLColor(COLOR_FOREGROUND, 0.3f);
 
@@ -448,7 +444,7 @@ void drawSectionTableOverall(struct draw_data_t* data, float width, float height
 
             drawString(font, 172.0f, y, sectionTimeDiff);
         }
-        else // For sections we've completed.
+        else
         {
             setGLColor(COLOR_FOREGROUND, 1.0f);
 
@@ -496,7 +492,7 @@ void drawGameHistory(struct draw_data_t* data, float width, float height)
     struct game_history_t* gh = data->gh;
 
     const float vertStride = font->pixelHeight;
-    const int maxIterations = height / vertStride - 1;
+    const int maxIterations = height / vertStride - 2;
 
     float x = 0.0f;
     float y = vertStride;

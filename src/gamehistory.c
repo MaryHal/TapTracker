@@ -150,7 +150,9 @@ void printGameHistory(struct game_history_t* gh)
     }
 }
 
-void pushStateToGameHistory(struct game_history_t* gh, UT_ringbuffer* blockHistory)
+void pushStateToGameHistory(struct game_history_t* gh,
+                            UT_ringbuffer* blockHistory,
+                            struct tap_state currentState)
 {
     if (utringbuffer_empty(blockHistory))
     {
@@ -177,7 +179,7 @@ void pushStateToGameHistory(struct game_history_t* gh, UT_ringbuffer* blockHisto
 
     const size_t elementIndex = (gh->end) % MAX_GAME_HISTORY_COUNT;
 
-    gh->data[elementIndex] = *(struct tap_state*)utringbuffer_back(blockHistory);
+    gh->data[elementIndex] = currentState;
     gh->end++;
 }
 
