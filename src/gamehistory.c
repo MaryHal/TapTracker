@@ -122,7 +122,9 @@ bool testDemoState(UT_ringbuffer* blockHistory, struct tap_state* demo, size_t d
         {
             misses++;
 
-            if (misses >= 4)
+            // Arbitrary number of misses until we flag this sequence as
+            // negative
+            if (misses >= 6)
             {
                 return false;
             }
