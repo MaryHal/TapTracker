@@ -63,9 +63,11 @@ bool runTracker(struct tap_state* dataPtr, struct tracker_settings_t settings)
 
     /* loadBitmapFontFiles(&font, "PP.png", "PP.bin"); */
 
-    struct font_t* font = loadBitmapFontData(font_create(),
-                                             g_PPImageData, g_PPImageSize,
-                                             g_PPDataData, g_PPDataSize);
+    struct font_t font;
+    font_init(&font);
+    loadBitmapFontData(&font,
+                       g_PPImageData, g_PPImageSize,
+                       g_PPDataData, g_PPDataSize);
 
     struct game_t* game = game_create();
 
@@ -86,7 +88,7 @@ bool runTracker(struct tap_state* dataPtr, struct tracker_settings_t settings)
     struct draw_data_t data =
     {
         .game = game,
-        .font = font,
+        .font = &font,
         .history = history,
         .bspec = bspec,
         .table = table,
@@ -124,7 +126,7 @@ bool runTracker(struct tap_state* dataPtr, struct tracker_settings_t settings)
 
     button_spectrum_destroy(bspec);
     game_destroy(game);
-    font_destroy(font);
+    font_terminate(&font);
 
     if (history)
         input_history_destroy(history);

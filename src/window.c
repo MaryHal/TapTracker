@@ -37,7 +37,7 @@ void window_init(struct window_t* w,
 void window_terminate(struct window_t* w)
 {
     glfwDestroyWindow(w->handle);
-    layout_destroy(&w->layout);
+    layout_terminate(&w->layout);
 }
 
 struct window_t* window_create(const char* title,
