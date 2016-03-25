@@ -4,6 +4,14 @@
    - [[#running-taptracker][Running TapTracker]]
    - [[#screenshots][Screenshots]]
    - [[#to-do-list][To-do list]]
+     - [[#document-tap-states-][Document TAP states ]]
+     - [[#implement-resizable-layouts-][Implement resizable layouts ]]
+     - [[#rework-opengl-code-][Rework OpenGL code ]]
+     - [[#player-2-support-][Player 2 support ]]
+     - [[#diagram-generation-][Diagram Generation ]]
+     - [[#mame-patch-for-windows][MAME patch for Windows]]
+     - [[#more-error-logging-][More error logging ]]
+     - [[#config-files-json-][Config files (json?) ]]
    - [[#appendix][Appendix]]
      - [[#tap-tgm2p][TAP (tgm2p)]]
        - [[#useful-ram-addresses][Useful RAM Addresses]]
@@ -87,15 +95,22 @@ The top portion graphs the time vs level during the last three sections. Below t
 [[https://www.youtube.com/watch?v=NTJTRTVM19w][Old Video of BlockTracker]]
 
 ** To-do list
-
-- [Partially complete] Document TAP states :: I've reverse engineered most of the TGM2+ states (read: I've figured out what they mean), but there may be edge cases that still confuse TapTracker.
-- [Partially complete] Implement resizable layouts :: TapTracker only supports a single window size and layout right now, and it's difficult to modify.
-- [Partially complete] Rework OpenGL code :: It's rigid and messy right now. Not to mention it also uses a ton of immediate mode. There's an old git branch (gltest) that updates the 15-year-old rendering code to 14-year-old rendering code.
-- Player 2 support :: Log stats for Player 2 too.
-- +Diagram Generation+ :: Create a [[http://fumen.zui.jp/][Fumen]] diagram during play. A prototype (written in Python) can be found in the =autofumen= directory. Functionality is now build into shmupmametgm.
-- +MAME patch for Windows+ :: ...
-- More error logging :: Since in addition to the original TapTracker code, we have to reproduce some of tgm2p's game logic, there may be unforeseen edge cases. We probably should catch those.
-- Config files (json?) :: For configurable layouts and to possibly replace the command line arguments.
+*** DONE Document TAP states 
+[Mostly done] I've reverse engineered most of the TGM2+ states (read: I've figured out what they mean), but there may be edge cases that still confuse TapTracker.
+*** DONE Implement resizable layouts 
+[Mostly done] TapTracker only supports a single window size and layout right now, and it's difficult to modify.
+*** TODO Rework OpenGL code 
+It's rigid and messy right now. Not to mention it also uses a ton of immediate mode. There's an old git branch (gltest) that updates the 15-year-old rendering code to 14-year-old rendering code.
+*** TODO Player 2 support 
+Log stats for Player 2 too.
+*** DONE Diagram Generation 
+Create a [[http://fumen.zui.jp/][Fumen]] diagram during play. A old (deprecated) prototype (written in Python) can be found in the =autofumen= directory. This functionality is now built into shmupmametgm.
+*** DONE MAME patch for Windows
+No longer necessary, shmupmametgm fork supports Windows. But TapTracker does not!
+*** TODO More error logging 
+Since in addition to the original TapTracker code, we have to reproduce some of tgm2p's game logic, there may be unforeseen edge cases. We probably should catch those.
+*** TODO Config files (json?) 
+For configurable layouts and to possibly replace the command line arguments.
      Maybe something like this:
      #+BEGIN_SRC text
        Window MainWindow
