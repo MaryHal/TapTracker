@@ -54,6 +54,14 @@ bool runTracker(struct tap_state* dataPtr, struct tracker_settings_t settings)
         addToContainerRatio(&subWindow->layout, &drawInputHistory, 1.00f);
     }
 
+    struct window_t* windows[3] =
+    {
+        mainWindow,
+        auxWindow,
+        subWindow
+    };
+    size_t windowCount = 3;
+
     /* // Load then export bitmap font. */
     /* struct font_t* font = loadTTF(font_create(), "/usr/share/fonts/TTF/PP821/PragmataPro.ttf", 13.0f); */
     /* exportBitmap("PP.png", font); */
@@ -96,7 +104,7 @@ bool runTracker(struct tap_state* dataPtr, struct tracker_settings_t settings)
         .scale = 60.0f
     };
 
-    while (!glfwWindowShouldClose(mainWindow->handle))
+    while (!windowSetShouldClose(windows, windowCount))
     {
         updateGameState(game, history, table, gh, dataPtr);
 
@@ -107,18 +115,14 @@ bool runTracker(struct tap_state* dataPtr, struct tracker_settings_t settings)
 
         glfwPollEvents();
 
-        drawWindowLayout(mainWindow, &data);
-        drawWindowLayout(auxWindow, &data);
-
         // Update input history
         if (settings.enableJoystick && joystick)
         {
             updateButtons(joystick);
             pushInputFromJoystick(history, joystick);
-
-            if (subWindow)
-                drawWindowLayout(subWindow, &data);
         }
+
+        drawWindowSet(windows, windowCount, &data);
     }
 
     game_history_destroy(gh);

@@ -92,3 +92,30 @@ void drawWindowLayout(struct window_t* window, struct draw_data_t* data)
 
     glfwSwapBuffers(window->handle);
 }
+
+bool windowSetShouldClose(struct window_t** windows, size_t windowCount)
+{
+    for (size_t i = 0; i < windowCount; ++i)
+    {
+        struct window_t* w = windows[i];
+
+        if (w)
+        {
+            if (glfwWindowShouldClose(windows[i]->handle))
+                return true;
+        }
+    }
+
+    return false;
+}
+
+void drawWindowSet(struct window_t** windows, size_t windowCount, struct draw_data_t* data)
+{
+    for (size_t i = 0; i < windowCount; ++i)
+    {
+        struct window_t* w = windows[i];
+
+        if (w)
+            drawWindowLayout(w, data);
+    }
+}
