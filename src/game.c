@@ -136,7 +136,7 @@ void updateGameState(struct game_t* game,
     // Piece is locked in
     if (isInPlayingState(game->curState.state) &&
         game->prevState.state == TAP_ACTIVE &&
-        (game->curState.state == TAP_LOCKING || game->curState.state == TAP_LINECLEAR))
+        game->curState.state != TAP_ACTIVE)
     {
         if (gameHistory)
             utringbuffer_push_back(game->blockHistory, &game->prevState);
