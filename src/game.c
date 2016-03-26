@@ -46,7 +46,7 @@ const char* getModeName(int gameMode)
     case TAP_MODE_DEATH_VERSUS:
         return "Death Versus";
     default:
-        return "???";
+        return "??? Mode";
     }
 }
 
