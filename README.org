@@ -94,8 +94,8 @@ The top portion graphs the time vs level during the last three sections. Below t
 - +Diagram Generation+ :: Create a [[http://fumen.zui.jp/][Fumen]] diagram during play. A prototype (written in Python) can be found in the =autofumen= directory. This functionality is now built into shmupmametgm.
 - +MAME patch for Windows+ :: No longer necessary, fork of shmupmametgm supports Windows (but /not/ TapTracker!).
 - More error logging :: Since in addition to the original TapTracker code, we have to reproduce some of tgm2p's game logic, there may be unforeseen edge cases. We probably should catch those.
-- Config files (json?) :: For configurable layouts and to possibly replace the command line arguments.
-     Maybe something like this:
+- Config files :: For configurable layouts and to possibly replace the command line arguments. YAML? JSON? Roll my own plain text data file?
+     Maybe something like this (plain text):
      #+BEGIN_SRC text
        Window MainWindow
        Size 240x540
@@ -113,6 +113,42 @@ The top portion graphs the time vs level during the last three sections. Below t
        Size 180x112
        Layout 4.0 0.0
        Ratio InputHistory 1.0
+     #+END_SRC
+     
+     Or this (yaml):
+     #+BEGIN_SRC text
+       joystick:
+           enabled: yes
+           axis-hori: 6
+           axis-vert: 7
+           button-a:  1
+           button-b:  2
+           button-c:  3
+
+       windows:
+           - name:   MainWindow
+             width:  240
+             height: 540
+             layout:
+                 - type:  graph
+                   ratio: 0.72
+                 - type:  table
+                   fixed: 130
+                 - type: state
+                   fixed 14
+           - name:   Extra
+             width:  180
+             height: 120
+             layout:
+                 - type:  history
+                   ratio: 1
+
+           - name:   ButtonWindow
+             width:  180
+             height: 112
+             layout:
+                 - type:  buttons
+                   ratio: 1
      #+END_SRC
 - Adaptive draw functions :: Some draw routines are very static and don't change with size.
 ** Appendix
