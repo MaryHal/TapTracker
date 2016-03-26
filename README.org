@@ -4,14 +4,6 @@
    - [[#running-taptracker][Running TapTracker]]
    - [[#screenshots][Screenshots]]
    - [[#to-do-list][To-do list]]
-     - [[#document-tap-states-][Document TAP states ]]
-     - [[#implement-resizable-layouts-][Implement resizable layouts ]]
-     - [[#rework-opengl-code-][Rework OpenGL code ]]
-     - [[#player-2-support-][Player 2 support ]]
-     - [[#diagram-generation-][Diagram Generation ]]
-     - [[#mame-patch-for-windows][MAME patch for Windows]]
-     - [[#more-error-logging-][More error logging ]]
-     - [[#config-files-json-][Config files (json?) ]]
    - [[#appendix][Appendix]]
      - [[#tap-tgm2p][TAP (tgm2p)]]
        - [[#useful-ram-addresses][Useful RAM Addresses]]
@@ -27,7 +19,7 @@
 
 This project aims to log various game data (and inputs) during a game of [[https://en.wikipedia.org/wiki/Tetris:_The_Grand_Master][Tetris: The Grandmaster 2 Plus]] (TGM2p/TGM2+/TAP) when run in an emulator ([[http://mamedev.org/][MAME]]). TapTracker runs alongside the emulator and performs its logging in real-time. This is linux-only for now.
 
-[[https://github.com/sanford1/BlockTracker][BlockTracker]] was my first attempt at this. It was done by interacting with [[https://github.com/scanmem/scanmem][scanmem]] as a child process. Ultimately, this meant every time I started up the game, I had to probe for the memory address holding level data (not unlike someone using [[http://www.cheatengine.org/][cheat-engine]]) then pass the proper memory addresses to BlockTracker. Along the way I wrote quite possibly the worst code I've ever written. Despite being such a small program, it wasn't too pleasant for me to look at and maintain. (There was one upside though: this method was game-agnostic; I could probe any TGM-style game for level data).
+[[https://github.com/sanford1/BlockTracker][BlockTracker]] was my first attempt at this. It was done by interacting with [[https://github.com/scanmem/scanmem][scanmem]] as a child process, but ultimately, this meant every time I started up the game, I had to probe for the memory address holding level data (not unlike someone using [[http://www.cheatengine.org/][cheat-engine]]) then pass the proper memory addresses to BlockTracker. Along the way I wrote quite possibly the worst code I've ever written, so despite it being such a small program, it wasn't too pleasant for me to look at and maintain. (There was one upside though: this method was game-agnostic, so I could probe any TGM-style game for level data).
 
 In contrast, TapTracker takes a more direct route by modifying a [[https://github.com/sanford1/shmupmametgm/][TGM-specific version of MAME]] to output relevant data. You can also build TapTracker MAME like so:
 
@@ -95,22 +87,14 @@ The top portion graphs the time vs level during the last three sections. Below t
 [[https://www.youtube.com/watch?v=NTJTRTVM19w][Old Video of BlockTracker]]
 
 ** To-do list
-*** DONE Document TAP states 
-[Mostly done] I've reverse engineered most of the TGM2+ states (read: I've figured out what they mean), but there may be edge cases that still confuse TapTracker.
-*** DONE Implement resizable layouts 
-[Mostly done] TapTracker only supports a single window size and layout right now, and it's difficult to modify.
-*** TODO Rework OpenGL code 
-It's rigid and messy right now. Not to mention it also uses a ton of immediate mode. There's an old git branch (gltest) that updates the 15-year-old rendering code to 14-year-old rendering code.
-*** TODO Player 2 support 
-Log stats for Player 2 too.
-*** DONE Diagram Generation 
-Create a [[http://fumen.zui.jp/][Fumen]] diagram during play. A old (deprecated) prototype (written in Python) can be found in the =autofumen= directory. This functionality is now built into shmupmametgm.
-*** DONE MAME patch for Windows
-No longer necessary, shmupmametgm fork supports Windows. But TapTracker does not!
-*** TODO More error logging 
-Since in addition to the original TapTracker code, we have to reproduce some of tgm2p's game logic, there may be unforeseen edge cases. We probably should catch those.
-*** TODO Config files (json?) 
-For configurable layouts and to possibly replace the command line arguments.
+- [Partially complete] Document TAP states :: I've reverse engineered most of the TGM2+ states (read: I've figured out what they mean), but there may be edge cases that still confuse TapTracker.
+- [Partially complete] Implement resizable layouts :: TapTracker only supports a single window size and layout right now, and it's difficult to modify.
+- [Partially complete] Rework OpenGL code :: It's rigid and messy right now. Not to mention it also uses a ton of immediate mode. There's an old git branch (gltest) that updates the 15-year-old rendering code to 14-year-old rendering code.
+- Player 2 support :: Log stats for Player 2 too.
+- +Diagram Generation+ :: Create a [[http://fumen.zui.jp/][Fumen]] diagram during play. A prototype (written in Python) can be found in the =autofumen= directory. This functionality is now built into shmupmametgm.
+- +MAME patch for Windows+ :: No longer necessary, fork of shmupmametgm supports Windows (but /not/ TapTracker!).
+- More error logging :: Since in addition to the original TapTracker code, we have to reproduce some of tgm2p's game logic, there may be unforeseen edge cases. We probably should catch those.
+- Config files (json?) :: For configurable layouts and to possibly replace the command line arguments.
      Maybe something like this:
      #+BEGIN_SRC text
        Window MainWindow
@@ -130,7 +114,7 @@ For configurable layouts and to possibly replace the command line arguments.
        Layout 4.0 0.0
        Ratio InputHistory 1.0
      #+END_SRC
-
+- Adaptive draw functions :: Some draw routines are very static and don't change with size.
 ** Appendix
 *** TAP (tgm2p)
 **** Useful RAM Addresses
