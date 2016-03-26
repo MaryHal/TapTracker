@@ -13,7 +13,7 @@
 #include "tap_state.h"
 #include "tracker.h"
 
-#define VERSION "v1.1"
+#define VERSION "v1.2"
 
 int main(int argc, const char *argv[])
 {
