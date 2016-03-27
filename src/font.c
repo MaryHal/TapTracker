@@ -110,7 +110,7 @@ void exportFontData(const char* binOutFilename, struct font_t* font)
 
     if (!binOutput)
     {
-        perror("Could not open file for font data output");
+        printf("Could not open file for font data output");
         return;
     }
 
@@ -144,7 +144,7 @@ void _loadTTF_file(const char* filename, uint8_t** ttfData)
 
     if (!ttf_file)
     {
-        perror("Could not open TTF file");
+        printf("Could not open TTF file");
         return;
     }
 
@@ -199,7 +199,7 @@ struct font_t* loadTTF(struct font_t* font, const char* filename, float pixelHei
 
         if (!stbtt_PackBegin(&pc, font->bitmap, font->textureWidth, font->textureHeight, 0, 1, NULL))
         {
-            perror("stbtt_PackBegin error");
+            printf("stbtt_PackBegin error");
         }
 
         const int NUM_RANGES = 2;
@@ -220,7 +220,7 @@ struct font_t* loadTTF(struct font_t* font, const char* filename, float pixelHei
 
         if (!stbtt_PackFontRanges(&pc, ttf_buffer, 0, pr, 2))
         {
-            perror("stbtt_PackFontRanges error. Chars cannot fit on bitmap?");
+            printf("stbtt_PackFontRanges error. Chars cannot fit on bitmap?");
             return NULL;
         }
 
@@ -253,7 +253,7 @@ struct font_t* loadBitmapFontFiles(struct font_t* font, const char* imgFile, con
 
     if (!binInput)
     {
-        perror("Could not open file for font data output");
+        printf("Could not open file for font data output");
         return NULL;
     }
 
