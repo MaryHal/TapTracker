@@ -28,7 +28,7 @@ bool runTracker(struct tap_state* dataPtr, struct tracker_settings_t settings)
 {
     if (glfwInit() == GL_FALSE)
     {
-        perror("Could not initialize GLFW");
+        printf("Could not initialize GLFW");
         return false;
     }
 
