@@ -218,7 +218,7 @@ void drawInputHistory(struct draw_data_t* data, float width, float height)
 
         glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 
-        struct element_t* element = &inputHistory->data[i % INPUT_HISTORY_LENGTH];
+        struct element_t* element = getInputHistoryElement(inputHistory, i);
         for (size_t j = 0; j < element->size; j++)
         {
             unsigned int index = element->spectrum[j].jkey;
@@ -506,13 +506,15 @@ void drawGameHistory(struct draw_data_t* data, float width, float height)
             continue;
         }
 
+        struct tap_state* state = getGameHistoryElement(gh, i);
+
         char gameTimeStr[16];
-        formatTimeToMinutes(gameTimeStr, 16, gh->data[i].timer);
+        formatTimeToMinutes(gameTimeStr, 16, state->timer);
 
         char buf[64];
         snprintf(buf, 32, "%s %03d @ %s",
-                 getModeName(gh->data[i].gameMode),
-                 gh->data[i].level,
+                 getModeName(state->gameMode),
+                 state->level,
                  gameTimeStr);
 
         drawString(font, x, y, buf);
