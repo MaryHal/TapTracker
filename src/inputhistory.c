@@ -90,6 +90,13 @@ void popInputHistoryElement(struct input_history_t* history)
     history->start++;
 }
 
+struct element_t* getInputHistoryElement(struct input_history_t* inputhistory, int index)
+{
+    assert(index >= inputhistory->start);
+    assert(index <  inputhistory->end);
+    return &inputhistory->data[index % INPUT_HISTORY_LENGTH];
+}
+
 void pushInputFromJoystick(struct input_history_t* history, struct joystick_t* joystick)
 {
     for (int i = 0; i < BUTTON_COUNT; i++)

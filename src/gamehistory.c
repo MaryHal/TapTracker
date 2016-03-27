@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include <assert.h>
+
 // First Demo: Two simultaneous single player games.
 static const size_t demo01_length = 16;
 static struct tap_state demo01[] =
@@ -174,7 +176,7 @@ void pushStateToGameHistory(struct game_history_t* gh,
         return;
     }
 
-    if (gh->end - gh->start == MAX_GAME_HISTORY_COUNT)
+    if (gh->end - gh->start >= MAX_GAME_HISTORY_COUNT)
     {
         popGameHistoryElement(gh);
     }
@@ -190,13 +192,20 @@ void popGameHistoryElement(struct game_history_t* gh)
     gh->start++;
 }
 
+struct tap_state* getGameHistoryElement(struct game_history_t* gh, int index)
+{
+    assert(index >= gh->start);
+    assert(index <  gh->end);
+    return &gh->data[index % MAX_GAME_HISTORY_COUNT];
+}
+
 float averageHistoryStats(struct game_history_t* gh, int (*getVar)(struct tap_state* state))
 {
     int count = 0;
     int sum= 0;
     for (int i = gh->start; i < gh->end; ++i)
     {
-        struct tap_state* state = &gh->data[i];
+        struct tap_state* state = getGameHistoryElement(gh, i);
 
         int var = getVar(state);
         if (var)
@@ -233,9 +242,9 @@ int carnivalScore(struct game_history_t* gh)
 {
     int sum = 0;
     int count = 0;
-    for (int i = gh->end; i > gh->start; --i)
+    for (int i = gh->end - 1; i >= gh->start; --i)
     {
-        struct tap_state* state = &gh->data[i];
+        struct tap_state* state = getGameHistoryElement(gh, i);
 
         if (state->gameMode == TAP_MODE_DEATH)
         {

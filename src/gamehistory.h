@@ -32,6 +32,9 @@ void pushStateToGameHistory(struct game_history_t* gh,
                             struct tap_state currentState);
 void popGameHistoryElement(struct game_history_t* gh);
 
+// Given an index between start and end, return the associated data element.
+struct tap_state* getGameHistoryElement(struct game_history_t* gh, int index);
+
 float averageHistoryStats(struct game_history_t* gh,
                           int (*getVar)(struct tap_state* state));
 

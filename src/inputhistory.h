@@ -51,6 +51,9 @@ struct button_t* pushKey(struct input_history_t* inputhistory, int key);
 
 void popInputHistoryElement(struct input_history_t* inputhistory);
 
+// Given an index between start and end, return the associated data element.
+struct element_t* getInputHistoryElement(struct input_history_t* inputhistory, int index);
+
 void pushInputFromJoystick(struct input_history_t* inputhistory, struct joystick_t* joystick);
 
 #endif /* INPUTHISTORY_H */
