@@ -3,6 +3,7 @@
    - [[#building-taptracker][Building TapTracker]]
    - [[#running-taptracker][Running TapTracker]]
    - [[#screenshots][Screenshots]]
+   - [[#videos][Videos]]
    - [[#to-do-list][To-do list]]
    - [[#appendix][Appendix]]
      - [[#tap-tgm2p][TAP (tgm2p)]]
@@ -82,7 +83,11 @@ UI is still a work-in-progress.
 
 The top portion graphs the time vs level during the last three sections. Below that is a table listing section times (newer, more speedrun-timer-like layout on the left). If joystick support is enabled, a second window is opened that displays joystick inputs per level (no keyboard support yet).
 
-[[https://www.youtube.com/watch?v=6sReyaKpt70][Video of TapTracker (without input viewer)]]
+** Videos
+
+[[https://www.youtube.com/watch?v=QFYieLU8zkc][TapTracker Demo]]
+
+[[https://www.youtube.com/watch?v=6sReyaKpt70][Old Video of TapTracker (without input viewer)]]
 
 [[https://www.youtube.com/watch?v=NTJTRTVM19w][Old Video of BlockTracker]]
 

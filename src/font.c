@@ -23,6 +23,12 @@ void _addCharData(struct chardata_t** cmap, int codepoint, stbtt_packedchar pcha
     if (s == NULL)
     {
         s = malloc(sizeof(struct chardata_t));
+
+        if (!s)
+        {
+            printf("Could not allocate chardata for codepoint %d.", codepoint);
+        }
+
         s->id = codepoint;
         s->pchar = pchar;
 
@@ -144,7 +150,7 @@ void _loadTTF_file(const char* filename, uint8_t** ttfData)
 
     if (!ttf_file)
     {
-        printf("Could not open TTF file");
+        printf("Could not open TTF file.");
         return;
     }
 
@@ -154,8 +160,12 @@ void _loadTTF_file(const char* filename, uint8_t** ttfData)
     rewind(ttf_file);
 
     *ttfData = malloc(sizeof(uint8_t) * filesize);
-    size_t readsize = fread(*ttfData, 1, filesize, ttf_file);
+    if (!*ttfData)
+    {
+        printf("Could not allocate data for ttf file.");
+    }
 
+    size_t readsize = fread(*ttfData, 1, filesize, ttf_file);
     assert(filesize == readsize);
 
     fclose(ttf_file);
@@ -193,6 +203,12 @@ struct font_t* loadTTF(struct font_t* font, const char* filename, float pixelHei
     _loadTTF_file(filename, &ttf_buffer);
     {
         font->bitmap = malloc(sizeof(uint8_t) * font->textureWidth * font->textureHeight);
+
+        if (!font->bitmap)
+        {
+            printf("Could not allocate data for font bitmap.");
+            return NULL;
+        }
 
         // Pack our font
         stbtt_pack_context pc;

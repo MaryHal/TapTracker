@@ -205,9 +205,7 @@ void drawInputHistory(struct draw_data_t* data, float width, float height)
     const int tileSize = 12;
     const int margin = 2;
     const int vertStride = tileSize + margin;
-    const int maxIterations = height / vertStride;
-
-    /* printf("%f / %d = %d\n", height, vertStride, maxIterations); */
+    const int maxIterations = height / vertStride - 1;
 
     for (int i = inputHistory->end - maxIterations; i < inputHistory->end; i++)
     {
@@ -499,7 +497,7 @@ void drawGameHistory(struct draw_data_t* data, float width, float height)
 
     setGLColor(COLOR_FOREGROUND, 1.0f);
 
-    for (int i = gh->end - maxIterations - 1; i < gh->end; i++)
+    for (int i = gh->end - maxIterations; i < gh->end; i++)
     {
         if (i < gh->start)
         {
