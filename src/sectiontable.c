@@ -137,7 +137,7 @@ void updateSectionTable(struct section_table_t* table, struct game_t* game)
 
     struct section_t* section = &table->sections[game->currentSection];
 
-    int gameMode = game->curState.gameMode;
+    int gameMode = game->originalGameMode;
     struct pb_table_t* pb     = _getPBTable(&table->pbHash, gameMode);
 
     // Special case for when we're at the end of the game (level 999). The

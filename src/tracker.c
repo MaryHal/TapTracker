@@ -99,7 +99,7 @@ bool runTracker(struct tap_state* dataPtr, int argc, const char* argv[])
     {
         updateGameState(game, history, table, gh, dataPtr);
 
-        if (game->curState.gameMode == TAP_MODE_DEATH)
+        if (getBaseMode(game->curState.gameMode) == TAP_MODE_DEATH)
             data.scale = 45.0f;
         else
             data.scale = 60.0f;
