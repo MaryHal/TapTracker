@@ -373,7 +373,7 @@ void drawSectionTable(struct draw_data_t* data, float width, float height)
             int sectionTimeInFrames = table->sections[i].endTime - table->sections[i].startTime;
             sectionTime = frameTimeToSeconds(sectionTimeInFrames);
 
-            struct pb_table_t* pb = _addPBTable(&table->pbHash, game->curState.gameMode);
+            struct pb_table_t* pb = _addPBTable(&table->pbHash, game->originalGameMode);
 
             if (pb->goldST[i] < sectionTimeInFrames)
             {
@@ -432,7 +432,7 @@ void drawSectionTableOverall(struct draw_data_t* data, float width, float height
         top = 0;
     }
 
-    const int NUM_SECTIONS = getModeSectionCount(game->curState.gameMode);
+    const int NUM_SECTIONS = getModeSectionCount(game->originalGameMode);
     if (bottom > NUM_SECTIONS)
     {
         top -= bottom - NUM_SECTIONS;
@@ -445,7 +445,7 @@ void drawSectionTableOverall(struct draw_data_t* data, float width, float height
     for (int i = top; i < bottom; ++i)
     {
         struct section_t* section = &table->sections[i];
-        struct pb_table_t* pb = _addPBTable(&table->pbHash, game->curState.gameMode);
+        struct pb_table_t* pb = _addPBTable(&table->pbHash, game->originalGameMode);
 
         int overallPB = pb->gameTime[i];
         int sectionPB = pb->goldST[i];
