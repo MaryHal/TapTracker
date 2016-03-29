@@ -203,10 +203,6 @@ void updateGameState(struct game_t* game,
         }
     }
 
-    // push an input history element so we can
-    // see the inputs for the initial piece.
-    if (!isInPlayingState(game->prevState.state) &&
-
     // Piece is locked in
     if (isInPlayingState(game->curState.state) &&
         game->prevState.state == TAP_ACTIVE &&
