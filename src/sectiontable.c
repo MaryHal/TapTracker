@@ -11,12 +11,19 @@
 
 const char* DEFAULT_GOLD_ST_FILENAME = "GoldST.txt";
 
-void setDefaultPBTimes(struct pb_table_t* pb)
+void setDefaultPBTimes(struct pb_table_t* pb, int gameMode)
 {
+    int defaultSectionTime = 3900; // 01:05:00
+
+    if (getBaseMode(gameMode) == TAP_MODE_DEATH)
+    {
+        defaultSectionTime = 2700; // 00:45:00
+    }
+
     for (int i = 0; i < SECTION_COUNT_LONG; ++i)
     {
-        pb->gameTime[i] = 3900 * (i + 1); // 01:05:00 for every section
-        pb->goldST[i] = 3900;             // 01:05:00
+        pb->gameTime[i] = defaultSectionTime * (i + 1);
+        pb->goldST[i] = defaultSectionTime;
     }
 }
 
@@ -29,7 +36,7 @@ struct pb_table_t* _addPBTable(struct pb_table_t** map, int gameMode)
         pb = malloc(sizeof(struct pb_table_t));
         pb->gameMode = gameMode;
 
-        setDefaultPBTimes(pb);
+        setDefaultPBTimes(pb, gameMode);
 
         char modeName[32];
         getModeName(modeName, 32, pb->gameMode);
