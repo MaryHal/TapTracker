@@ -15,39 +15,94 @@ const char* DISPLAYED_GRADE[GRADE_COUNT] =
     "S5+", "S6-", "S6+", "S7-", "S7+", "S8-", "S8+", "S9"
 };
 
-const char* getModeName(int gameMode)
+bool isVersusMode(int gameMode)
 {
-    switch (gameMode)
+    return gameMode & MODE_VERSUS_MASK;
+}
+
+bool is20GMode(int gameMode)
+{
+    return gameMode & MODE_20G_MASK;
+}
+
+bool isBigMode(int gameMode)
+{
+    return gameMode & MODE_BIG_MASK;
+}
+
+bool isItemMode(int gameMode)
+{
+    return gameMode & MODE_ITEM_MASK;
+}
+
+bool isTLSMode(int gameMode)
+{
+    return gameMode & MODE_TLS_MASK;
+}
+
+int getBaseMode(int gameMode)
+{
+    int megaModeMask =
+        MODE_VERSUS_MASK  |
+        MODE_CREDITS_MASK |
+        MODE_20G_MASK     |
+        MODE_BIG_MASK     |
+        MODE_ITEM_MASK    |
+        MODE_TLS_MASK;
+
+    return gameMode & ~megaModeMask;
+}
+
+void getModeName(char* buffer, size_t bufferLength, int gameMode)
+{
+    char modifierMode[16] = "";
+    if (isVersusMode(gameMode))
+    {
+        strcpy(modifierMode, "Versus ");
+    }
+    else if (is20GMode(gameMode))
+    {
+        strcpy(modifierMode, "20G ");
+    }
+    else if (isBigMode(gameMode))
+    {
+        strcpy(modifierMode, "Big ");
+    }
+    else if (isItemMode(gameMode))
+    {
+        strcpy(modifierMode, "Item ");
+    }
+    else if (isTLSMode(gameMode))
+    {
+        strcpy(modifierMode, "TLS ");
+    }
+
+    char baseMode[16] = "";
+    switch (getBaseMode(gameMode))
     {
     case TAP_MODE_NULL:
-        return "NULL";
+        strcpy(baseMode, "NULL");
+        break;
     case TAP_MODE_NORMAL:
-        return "Normal";
+        strcpy(baseMode, "Normal");
+        break;
     case TAP_MODE_MASTER:
-        return "Master";
+        strcpy(baseMode, "Master");
+        break;
     case TAP_MODE_DOUBLES:
-        return "Doubles";
-    case TAP_MODE_NORMAL_VERSUS:
-        return "Normal Versus";
-    case TAP_MODE_MASTER_VERSUS:
-        return "Master Versus";
-    case TAP_MODE_MASTER_CREDITS:
-        return "Master Credits";
+        strcpy(baseMode, "Doubles");
+        break;
     case TAP_MODE_TGMPLUS:
-        return "TGM+";
-    case TAP_MODE_TGMPLUS_VERSUS:
-        return "TGM+ Versus";
-    case TAP_MODE_MASTER_ITEM:
-        return "Master Item";
-    case TAP_MODE_TGMPLUS_ITEM:
-        return "TGM+ Item";
+        strcpy(baseMode, "TGM+");
+        break;
     case TAP_MODE_DEATH:
-        return "Death";
-    case TAP_MODE_DEATH_VERSUS:
-        return "Death Versus";
+        strcpy(baseMode, "Death");
+        break;
     default:
-        return "??? Mode";
+        strcpy(baseMode, "???");
     }
+
+    snprintf(buffer, bufferLength, "%s%s", modifierMode, baseMode);
 }
 
 void game_init(struct game_t* g)
@@ -137,6 +192,8 @@ void updateGameState(struct game_t* game,
     if (!isInPlayingState(game->prevState.state) &&
         isInPlayingState(game->curState.state))
     {
+        game->originalGameMode = game->curState.gameMode;
+
         if (inputHistory)
             pushInputHistoryElement(inputHistory, game->curState.level);
     }
@@ -159,10 +216,10 @@ void updateGameState(struct game_t* game,
         // Update gold STs now that the game is over. There is technically a
         // "Credit Roll" game mode but it doesn't seem to interfere with normal
         // pb updates.
-        struct pb_table_t* pb = _getPBTable(&sectionTable->pbHash, game->prevState.gameMode);
+        struct pb_table_t* pb = _getPBTable(&sectionTable->pbHash, game->originalGameMode);
         updateGoldSTRecords(pb, sectionTable);
 
-        pushStateToGameHistory(gameHistory, game->blockHistory, game->prevState);
+        pushStateToGameHistory(gameHistory, game->blockHistory, game->prevState, game->originalGameMode);
 
         resetGame(game);
 

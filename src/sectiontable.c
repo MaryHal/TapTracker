@@ -31,7 +31,10 @@ struct pb_table_t* _addPBTable(struct pb_table_t** map, int gameMode)
 
         setDefaultPBTimes(pb);
 
-        printf("Adding pb table: %d\n", gameMode);
+        char modeName[32];
+        getModeName(modeName, 32, pb->gameMode);
+
+        printf("Adding pb table: %d (%s).\n", gameMode, modeName);
 
         HASH_ADD_INT(*map, gameMode, pb);
     }
@@ -293,7 +296,10 @@ void updateGoldSTRecords(struct pb_table_t* pb, struct section_table_t* table)
         return;
     }
 
-    printf("Updating Gold STs for mode %d.\n", pb->gameMode);
+    char modeName[32];
+    getModeName(modeName, 32, pb->gameMode);
+
+    printf("Updating Gold STs for mode %d (%s).\n", pb->gameMode, modeName);
 
     // Update all new Gold STs.
     const int NUM_SECTIONS = getModeSectionCount(pb->gameMode);

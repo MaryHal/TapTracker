@@ -21,11 +21,24 @@ struct game_history_t;
 
 extern const char* DISPLAYED_GRADE[GRADE_COUNT];
 
-const char* getModeName(int gameMode);
+bool isVersusMode(int gameMode);
+bool is20GMode(int gameMode);
+bool isBigMode(int gameMode);
+bool isItemMode(int gameMode);
+bool isTLSMode(int gameMode);
+
+int getBaseMode(int gameMode);
+
+void getModeName(char* buffer, size_t bufferLength, int gameMode);
 
 struct game_t
 {
     int currentSection;
+
+    // When the game is completed, tgm2p throws away all mode modifiers (20G,
+    // Versus, Item), so let's keep track of the game mode that we started the
+    // game with.
+    int originalGameMode;
 
     // We want to detect change on each frame, so we'll keep track of how
     // things looked on the previous frame for comparison.

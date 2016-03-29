@@ -8,10 +8,16 @@
 
 #define MAX_GAME_HISTORY_COUNT 32
 
+struct game_history_element_t
+{
+    struct tap_state state;
+    int gameMode;
+};
+
 // Keep a history of ending game states.
 struct game_history_t
 {
-        struct tap_state data[MAX_GAME_HISTORY_COUNT];
+        struct game_history_element_t data[MAX_GAME_HISTORY_COUNT];
         int start;
         int end;
 };
@@ -29,11 +35,12 @@ void printGameHistory(struct game_history_t* gh);
 
 void pushStateToGameHistory(struct game_history_t* gh,
                             UT_ringbuffer* blockHistory,
-                            struct tap_state currentState);
+                            struct tap_state currentState,
+                            int gameMode);
 void popGameHistoryElement(struct game_history_t* gh);
 
 // Given an index between start and end, return the associated data element.
-struct tap_state* getGameHistoryElement(struct game_history_t* gh, int index);
+struct game_history_element_t* getGameHistoryElement(struct game_history_t* gh, int index);
 
 float averageHistoryStats(struct game_history_t* gh,
                           int (*getVar)(struct tap_state* state));

@@ -235,23 +235,26 @@ All these addresses are for player 1. I still need to double check some of these
 |    71 | Garbage value when the game is still loading.     |
 
 ***** Game Mode
-| Value          | Mode |
+****** Base Modes
+| Mode | Value |
 |----------------+------|
 | No Game Mode   |    0 |
 | Normal         |    1 |
 | Master         |    2 |
 | Doubles        |    4 |
-| Normal Versus  |    9 |
-| Master Versus  |   10 |
-| Master Credits |   18 |
-| Tgm+ Versus    |  136 |
 | Tgm+           |  128 |
-| Master Item    |  514 |
-| Tgm+ Item      |  640 |
 | Death          | 4096 |
-| Death Versus   | 4104 |
 
-This list may not be exhaustive just yet
+****** Mode Masks
+| Mask    | Value |
+|---------+-------|
+| Versus  |     8 |
+| Credits |    16 |
+| 20G     |    32 |
+| Big     |    64 |
+| Item    |   512 |
+| TLS     |  1024 |
+
 *** TGM1 (tgmj)
 **** Useful RAM Addresses
 |    Address | Type    | Description    | Notes |
