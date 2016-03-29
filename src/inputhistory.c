@@ -10,6 +10,8 @@
 
 #include <GLFW/glfw3.h>
 
+struct button_t EMPTY_BUTTON_T = { .jkey = 0, .held = false };
+
 void input_history_init(struct input_history_t* ihist)
 {
     resetInputHistory(ihist);
@@ -45,7 +47,14 @@ void resetInputHistory(struct input_history_t* history)
     history->start = 0;
     history->end = 0;
 
-    /* pushHistoryElement(history, -1); */
+    history->heldButtons[0] = &EMPTY_BUTTON_T;
+    history->heldButtons[1] = &EMPTY_BUTTON_T;
+    history->heldButtons[2] = &EMPTY_BUTTON_T;
+
+    history->lastLeft  = &EMPTY_BUTTON_T;
+    history->lastUp    = &EMPTY_BUTTON_T;
+    history->lastRight = &EMPTY_BUTTON_T;
+    history->lastDown  = &EMPTY_BUTTON_T;
 }
 
 void pushInputHistoryElement(struct input_history_t* history, int level)

@@ -10,3 +10,6 @@
 [submodule "ext/flag"]
 	path = ext/flag
 	url = https://github.com/clibs/flag.git
+[submodule "ext/parson"]
+	path = ext/parson
+	url = https://github.com/kgabis/parson.git

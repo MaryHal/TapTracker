@@ -1,0 +1,69 @@
+{
+    // joystick options control whether or not TapTracker will keep track of
+    // joystick inputs. For now, it /must/ be a joystick/gamepad. Getting axis
+    // indices and button indices can be a bit complicated since there really is
+    // no standard, so you have to check your system options, then guess and
+    // check (and pray).
+    "joystick" :
+    {
+        "enabled"   : false,
+        "axis-hori" : 6,
+        "axis-vert" : 7,
+        "button-a"  : 1,
+        "button-b"  : 2,
+        "button-c"  : 3
+    },
+
+    // Define a list of windows to create and what to draw inside each one.
+    "windows" :
+    [
+        // outer-margin is a pixel padding between the edges of the window and
+        // the set of layout elements inside each window. inner-margin is the
+        // pixel padding for each layout element and the contents it draws. It
+        // could be a bit simpler...
+
+        // Each element in the layout list is an object that contains a type
+        // (what to draw) and a fill ratio. If the fill ratio <= 1.0, it will
+        // fill that percentage of the leftover area in the window. If ratio >
+        // 1.0, then the layout element will be exactly 'ratio' pixels tall.
+
+        // Layout types: section-graph, input-history, line-count,
+        // current-state, section-table-old, section-table, game-history,
+        {
+            "name"   : "MainWindow",
+            "width"  : 240,
+            "height" : 540,
+            "inner-margin" : 14,
+            "outer-margin" : 2,
+            "layout" :
+            [
+                {
+                    "type"  : "section-graph",
+                    "ratio" : 0.72
+                },
+                {
+                    "type"  : "section-table",
+                    "ratio" : 130
+                },
+                {
+                    "type"  : "current-state",
+                    "ratio" : 14
+                }
+            ]
+        },
+        {
+            "name"   : "Extra",
+            "width"  : 180,
+            "height" : 120,
+            "inner-margin" : 4,
+            "outer-margin" : 2,
+            "layout" :
+            [
+                {
+                    "type"  : "game-history",
+                    "ratio" : 1
+                }
+            ]
+        }
+    ]
+}

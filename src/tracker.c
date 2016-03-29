@@ -15,16 +15,22 @@
 #include "window.h"
 #include "layout.h"
 
+#include "config.h"
+
 #include <stdio.h>
 
 #include <GLFW/glfw3.h>
+
+#include <flag.h>
+
+#define VERSION "v2.0"
 
 #define INCBIN_PREFIX g_
 #include <incbin.h>
 INCBIN(PPImage, "bin/PP.png");
 INCBIN(PPData, "bin/PP.bin");
 
-bool runTracker(struct tap_state* dataPtr, struct tracker_settings_t settings)
+bool runTracker(struct tap_state* dataPtr, int argc, const char* argv[])
 {
     if (glfwInit() == GL_FALSE)
     {
@@ -32,35 +38,21 @@ bool runTracker(struct tap_state* dataPtr, struct tracker_settings_t settings)
         return false;
     }
 
-    struct window_t* mainWindow = window_create("TapTracker Graph", 240, 540, NULL);
+    int arg_enableJoystick = -1;
+    const char* config_path = DEFAULT_CONFIG_FILENAME;
+    const char* pb_path = DEFAULT_GOLD_ST_FILENAME;
 
-    layout_init(&mainWindow->layout, mainWindow->width, mainWindow->height, 14.0f, 2.0f);
+    flag_int(&arg_enableJoystick, "js", "Set to 1 to enable joystick support. This setting has priority over the config file.");
+    flag_str(&config_path, "config", "Set json config file path");
+    flag_str(&pb_path, "pb", "Set \"Personal Bests\" file path");
+    flag_parse(argc, argv, VERSION);
 
-    addToContainerRatio(&mainWindow->layout, &drawSectionGraph, 0.72f);
-    addToContainerFixed(&mainWindow->layout, &drawSectionTableOverall, 130.0f);
-    addToContainerFixed(&mainWindow->layout, &drawCurrentState, 14.0f);
+    loadConfig(config_path);
 
-    struct window_t* auxWindow = window_create("TapTracker Extras", 180, 120, mainWindow);
-
-    layout_init(&auxWindow->layout, auxWindow->width, auxWindow->height, 4.0f, 2.0f);
-    addToContainerRatio(&auxWindow->layout, &drawGameHistory, 1.0f);
-
-    struct window_t* subWindow = NULL;
-
-    if (settings.enableJoystick)
+    if (arg_enableJoystick == 1)
     {
-        subWindow = window_create("TapTracker ButtonSpectrum", 180, 112, mainWindow);
-        layout_init(&subWindow->layout, subWindow->width, subWindow->height, 4.0f, 0.0f);
-        addToContainerRatio(&subWindow->layout, &drawInputHistory, 1.00f);
+        tt_config.enableJoystick = true;
     }
-
-    struct window_t* windows[3] =
-    {
-        mainWindow,
-        auxWindow,
-        subWindow
-    };
-    size_t windowCount = 3;
 
     /* // Load then export bitmap font. */
     /* struct font_t* font = loadTTF(font_create(), "/usr/share/fonts/TTF/PP821/PragmataPro.ttf", 13.0f); */
@@ -80,16 +72,15 @@ bool runTracker(struct tap_state* dataPtr, struct tracker_settings_t settings)
     struct game_t* game = game_create();
 
     struct joystick_t* joystick = NULL;
-    struct input_history_t* history = NULL;
+    struct input_history_t* history = input_history_create();
 
-    if (settings.enableJoystick)
+    if (tt_config.enableJoystick)
     {
-        joystick = joystick_create(GLFW_JOYSTICK_1, settings.jmap);
-        history = input_history_create();
+        joystick = joystick_create(GLFW_JOYSTICK_1, tt_config.jmap);
     }
 
     struct button_spectrum_t* bspec = button_spectrum_create();
-    struct section_table_t* table = section_table_create();
+    struct section_table_t* table = section_table_create(pb_path);
 
     struct game_history_t* gh = game_history_create();
 
@@ -104,7 +95,7 @@ bool runTracker(struct tap_state* dataPtr, struct tracker_settings_t settings)
         .scale = 60.0f
     };
 
-    while (!windowSetShouldClose(windows, windowCount))
+    while (!windowSetShouldClose(tt_config.windowset, tt_config.windowCount))
     {
         updateGameState(game, history, table, gh, dataPtr);
 
@@ -116,13 +107,13 @@ bool runTracker(struct tap_state* dataPtr, struct tracker_settings_t settings)
         glfwPollEvents();
 
         // Update input history
-        if (settings.enableJoystick && joystick)
+        if (tt_config.enableJoystick && joystick)
         {
             updateButtons(joystick);
             pushInputFromJoystick(history, joystick);
         }
 
-        drawWindowSet(windows, windowCount, &data);
+        drawWindowSet(tt_config.windowset, tt_config.windowCount, &data);
     }
 
     game_history_destroy(gh);
@@ -138,16 +129,9 @@ bool runTracker(struct tap_state* dataPtr, struct tracker_settings_t settings)
     if (joystick)
         joystick_destroy(joystick);
 
-    if (mainWindow)
-        window_destroy(mainWindow);
-
-    if (auxWindow)
-        window_destroy(auxWindow);
-
-    if (subWindow)
-        window_destroy(subWindow);
+    windowSet_destroy(tt_config.windowset, tt_config.windowCount);
 
     glfwTerminate();
 
-    return true;
-}
+    return true;}
+

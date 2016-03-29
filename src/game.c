@@ -133,6 +133,14 @@ void updateGameState(struct game_t* game,
         }
     }
 
+    // And the first piece of the game to the input history
+    if (!isInPlayingState(game->prevState.state) &&
+        isInPlayingState(game->curState.state))
+    {
+        if (inputHistory)
+            pushInputHistoryElement(inputHistory, game->curState.level);
+    }
+
     // Piece is locked in
     if (isInPlayingState(game->curState.state) &&
         game->prevState.state == TAP_ACTIVE &&

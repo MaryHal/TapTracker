@@ -119,3 +119,11 @@ void drawWindowSet(struct window_t** windows, size_t windowCount, struct draw_da
             drawWindowLayout(w, data);
     }
 }
+
+void windowSet_destroy(struct window_t** windowset, size_t windowCount)
+{
+    for (size_t i = 0; i < windowCount; ++i)
+    {
+        window_destroy(windowset[i]);
+    }
+}
