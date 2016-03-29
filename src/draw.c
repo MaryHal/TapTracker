@@ -528,15 +528,18 @@ void drawGameHistory(struct draw_data_t* data, float width, float height)
             continue;
         }
 
-        struct tap_state* state = getGameHistoryElement(gh, i);
+        struct game_history_element_t* gh_element = getGameHistoryElement(gh, i);
 
         char gameTimeStr[16];
-        formatTimeToMinutes(gameTimeStr, 16, state->timer);
+        formatTimeToMinutes(gameTimeStr, 16, gh_element->state.timer);
+
+        char modeName[32];
+        getModeName(modeName, 32, gh_element->gameMode);
 
         char buf[64];
         snprintf(buf, 32, "%s %03d @ %s",
-                 getModeName(state->gameMode),
-                 state->level,
+                 modeName,
+                 gh_element->state.level,
                  gameTimeStr);
 
         drawString(font, x, y, buf);

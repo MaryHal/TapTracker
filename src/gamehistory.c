@@ -144,19 +144,20 @@ void printGameHistory(struct game_history_t* gh)
     for (int i = gh->start; i < gh->end; ++i)
     {
         printf("%d %d %d %d %d %d\n",
-               gh->data[i].gameMode,
-               gh->data[i].level,
-               gh->data[i].timer,
-               gh->data[i].tetromino,
-               gh->data[i].xcoord,
-               gh->data[i].ycoord
+               gh->data[i].state.gameMode,
+               gh->data[i].state.level,
+               gh->data[i].state.timer,
+               gh->data[i].state.tetromino,
+               gh->data[i].state.xcoord,
+               gh->data[i].state.ycoord
             );
     }
 }
 
 void pushStateToGameHistory(struct game_history_t* gh,
                             UT_ringbuffer* blockHistory,
-                            struct tap_state currentState)
+                            struct tap_state currentState,
+                            int gameMode)
 {
     if (utringbuffer_empty(blockHistory))
     {
@@ -164,7 +165,7 @@ void pushStateToGameHistory(struct game_history_t* gh,
         return;
     }
 
-    if (((struct tap_state*)utringbuffer_back(blockHistory))->gameMode == 0)
+    if (gameMode == TAP_MODE_NULL)
     {
         printf("Null game mode, skipping addition to game history.\n");
         return;
@@ -183,7 +184,7 @@ void pushStateToGameHistory(struct game_history_t* gh,
 
     const size_t elementIndex = (gh->end) % MAX_GAME_HISTORY_COUNT;
 
-    gh->data[elementIndex] = currentState;
+    gh->data[elementIndex] = (struct game_history_element_t) { currentState, gameMode };
     gh->end++;
 }
 
@@ -192,7 +193,7 @@ void popGameHistoryElement(struct game_history_t* gh)
     gh->start++;
 }
 
-struct tap_state* getGameHistoryElement(struct game_history_t* gh, int index)
+struct game_history_element_t* getGameHistoryElement(struct game_history_t* gh, int index)
 {
     assert(index >= gh->start);
     assert(index <  gh->end);
@@ -205,7 +206,7 @@ float averageHistoryStats(struct game_history_t* gh, int (*getVar)(struct tap_st
     int sum= 0;
     for (int i = gh->start; i < gh->end; ++i)
     {
-        struct tap_state* state = getGameHistoryElement(gh, i);
+        struct tap_state* state = &getGameHistoryElement(gh, i)->state;
 
         int var = getVar(state);
         if (var)
@@ -244,7 +245,7 @@ int carnivalScore(struct game_history_t* gh)
     int count = 0;
     for (int i = gh->end - 1; i >= gh->start; --i)
     {
-        struct tap_state* state = getGameHistoryElement(gh, i);
+        struct tap_state* state = &getGameHistoryElement(gh, i)->state;
 
         if (state->gameMode == TAP_MODE_DEATH)
         {
