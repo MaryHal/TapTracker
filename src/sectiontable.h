@@ -56,6 +56,8 @@ struct section_table_t
 {
     struct section_t sections[SECTION_COUNT_LONG];
     struct pb_table_t* pbHash;
+
+    const char* filename;
 };
 
 struct game_t;
@@ -73,7 +75,7 @@ void updateSectionTable(struct section_table_t* table, struct game_t* game);
 void addDataPointToSection(struct section_t* section, struct game_t* game);
 
 void readSectionRecords(struct section_table_t* table, const char* filename);
-void writeSectionRecords(struct section_table_t* table);
+void writeSectionRecords(struct section_table_t* table, const char* filename);
 
 void updateGoldSTRecords(struct pb_table_t* pb, struct section_table_t* table);
 void updateGameTimeRecords(struct pb_table_t* pb, struct section_table_t* table);
