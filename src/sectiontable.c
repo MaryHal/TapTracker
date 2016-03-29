@@ -84,13 +84,15 @@ void section_table_init(struct section_table_t* table, const char* pbfile)
 
     table->pbHash = NULL;
 
-    readSectionRecords(table, pbfile);
+    table->filename = pbfile;
+
+    readSectionRecords(table, table->filename);
     resetSectionTable(table);
 }
 
 void section_table_terminate(struct section_table_t* table)
 {
-    writeSectionRecords(table);
+    writeSectionRecords(table, table->filename);
 }
 
 struct section_table_t* section_table_create(const char* pbfile)
@@ -246,6 +248,7 @@ void addDataPointToSection(struct section_t* section, struct game_t* game)
 void readSectionRecords(struct section_table_t* table, const char* filename)
 {
     assert(table != NULL);
+    assert(filename != NULL);
 
     FILE* pbfile = fopen(filename, "r");
 
@@ -271,12 +274,13 @@ void readSectionRecords(struct section_table_t* table, const char* filename)
     }
 }
 
-void writeSectionRecords(struct section_table_t* table)
+void writeSectionRecords(struct section_table_t* table, const char* filename)
 {
     assert(table != NULL);
+    assert(filename != NULL);
 
     // Write PB file
-    FILE* pbfile = fopen("GoldST.txt", "w");
+    FILE* pbfile = fopen(filename, "w");
 
     if (pbfile)
     {
