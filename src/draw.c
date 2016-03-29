@@ -15,7 +15,31 @@
 
 #include <stdio.h>
 
+#include <assert.h>
+
 #include <GLFW/glfw3.h>
+
+draw_function_p stringToDrawFunc(const char* functionIdentifier)
+{
+    assert(functionIdentifier != NULL);
+
+    if (strcmp(functionIdentifier, "section-graph") == 0)
+        return &drawSectionGraph;
+    else if (strcmp(functionIdentifier, "input-history") == 0)
+        return &drawInputHistory;
+    else if (strcmp(functionIdentifier, "line-count") == 0)
+        return &drawLineCount;
+    else if (strcmp(functionIdentifier, "current-state") == 0)
+        return &drawCurrentState;
+    else if (strcmp(functionIdentifier, "section-table-old") == 0)
+        return &drawSectionTable;
+    else if (strcmp(functionIdentifier, "section-table") == 0)
+        return &drawSectionTableOverall;
+    else if (strcmp(functionIdentifier, "game-history") == 0)
+        return &drawGameHistory;
+
+    return NULL;
+}
 
 void drawSectionGraph(struct draw_data_t* data, float width, float height)
 {
@@ -26,7 +50,7 @@ void drawSectionGraph(struct draw_data_t* data, float width, float height)
 
     if (!table)
     {
-        fprintf(stderr, "drawSectionGraph: section_table_t is NULL");
+        fprintf(stderr, "drawSectionGraph: section_table_t is NULL.\n");
         return;
     }
 
@@ -205,7 +229,7 @@ void drawInputHistory(struct draw_data_t* data, float width, float height)
     const int tileSize = 12;
     const int margin = 2;
     const int vertStride = tileSize + margin;
-    const int maxIterations = height / vertStride - 1;
+    const int maxIterations = height / vertStride;
 
     for (int i = inputHistory->end - maxIterations; i < inputHistory->end; i++)
     {

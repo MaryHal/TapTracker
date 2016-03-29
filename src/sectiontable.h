@@ -13,6 +13,8 @@
 #define SECTION_LENGTH 100
 #define SECTION_MAX    128
 
+extern const char* DEFAULT_GOLD_ST_FILENAME;
+
 struct datapoint_t
 {
     int level;
@@ -58,10 +60,10 @@ struct section_table_t
 
 struct game_t;
 
-void section_table_init(struct section_table_t* table);
+void section_table_init(struct section_table_t* table, const char* pbfile);
 void section_table_terminate(struct section_table_t* table);
 
-struct section_table_t* section_table_create();
+struct section_table_t* section_table_create(const char* pbfile);
 void section_table_destroy(struct section_table_t* table);
 
 void resetSectionTable(struct section_table_t* table);

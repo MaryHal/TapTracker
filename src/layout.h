@@ -8,8 +8,6 @@
 
 #define MAX_LAYOUT_ELEMENTS 4
 
-typedef void (*draw_function_p)(struct draw_data_t* data, float width, float height);
-
 struct layout_element_t
 {
         float x;

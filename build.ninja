@@ -1,9 +1,9 @@
 ninja_required_version = 1.3
 ar = ar
 cxx = clang
-cxxflags = -Wall -Wextra -pedantic -std=c11 -g -O0 -DDEBUG $
+cxxflags = -Wall -Wextra -pedantic -std=gnu11 -g -O0 -DDEBUG $
     -isystem./ext/uthash/include -isystem./ext/stb -isystem./ext/incbin $
-    -isystem./ext/flag
+    -isystem./ext/flag -isystem./ext/parson
 ldflags = -lGL -lglfw -lm -lrt
 
 rule bootstrap
@@ -31,6 +31,7 @@ build obj/src/joystick.o: compile src/joystick.c
 build obj/src/window.o: compile src/window.c
 build obj/src/font.o: compile src/font.c
 build obj/src/colortheme.o: compile src/colortheme.c
+build obj/src/config.o: compile src/config.c
 build obj/src/main.o: compile src/main.c
 build obj/src/sectiontable.o: compile src/sectiontable.c
 build obj/src/game.o: compile src/game.c
@@ -38,9 +39,11 @@ build obj/src/draw.o: compile src/draw.c
 build obj/src/stb_truetype_impl.o: compile src/stb_truetype_impl.c
 build obj/src/util.o: compile src/util.c
 build obj/ext/flag/flag.o: compile ext/flag/flag.c
+build obj/ext/parson/parson.o: compile ext/parson/parson.c
 
 build ./bin/TapTracker: link obj/src/buttonquads.o obj/src/layout.o $
     obj/src/inputhistory.o obj/src/gamehistory.o obj/src/tracker.o $
     obj/src/joystick.o obj/src/window.o obj/src/font.o obj/src/colortheme.o $
-    obj/src/main.o obj/src/sectiontable.o obj/src/game.o obj/src/draw.o $
-    obj/src/stb_truetype_impl.o obj/src/util.o obj/ext/flag/flag.o
+    obj/src/config.o obj/src/main.o obj/src/sectiontable.o obj/src/game.o $
+    obj/src/draw.o obj/src/stb_truetype_impl.o obj/src/util.o $
+    obj/ext/flag/flag.o obj/ext/parson/parson.o

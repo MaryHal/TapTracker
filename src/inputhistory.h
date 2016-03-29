@@ -6,7 +6,7 @@
 
 #include "joystick.h"
 
-#define MAX_INPUT_STRING_LENGTH 10
+#define MAX_INPUT_STRING_LENGTH 14
 #define INPUT_HISTORY_LENGTH    10
 
 struct button_t
@@ -35,6 +35,8 @@ struct input_history_t
         struct button_t* lastRight;
         struct button_t* lastDown;
 };
+
+extern struct button_t EMPTY_BUTTON_T;
 
 void input_history_init(struct input_history_t* ihist);
 void input_history_terminate(struct input_history_t* ihist);

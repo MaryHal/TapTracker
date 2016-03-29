@@ -56,24 +56,22 @@ Alternatively, if you trust me enough, you can find a "stable" build [[https://g
 
 TapTracker no longer runs shmupmametgm as a child process, but TapTracker must be run /after/ shmupmametgm has started. For now, TapTracker only logs stats for player 1. You must also [[https://github.com/sanford1/shmupmametgm/#taptracker][enable TapTracker]] in /modded/ shmupmametgm with the =-taptracker= switch or the correct option in your mame.ini.
 
-There is some shoehorned command line arguments to enable joystick support/set joystick buttons:
+Command line arguments:
 
 #+BEGIN_SRC sh
-  Usage: ./TapTracker [options] [arguments]
+    Usage: ./TapTracker [options] [arguments]
 
-  Options:
-    --j       Set joystick index for input display. If negative, disable joystick support. (-1)
-    --a       Set index for button A. (1)
-    --b       Set index for button B. (2)
-    --c       Set index for button C. (3)
-    --h       Set index for horizontal axis. (6)
-    --v       Set index for vertical axis. (7)
-    --version Output version
-    --help    Output help
-
-  Example:
-    ./TapTracker --j 0 --a 0 --b 1 --c 2
+    Options:
+      --js       Set to 1 to enable joystick support. This setting has priority over the config file. (-1)
+      --config   Set json config file path (config.json)
+      --pb       Set "Personal Bests" file path (GoldST.txt)
+      --version  Output version
+      --help     Output help
 #+END_SRC
+
+On first run, TapTracker will create a (commented) json configuration file (config.json is the default file if you don't specify a different path). You can use this file to create windows / layouts.
+
+TapTracker also tracks your personal best times for sections and completed games. TapTracker will import/export a file named "GoldST.txt" by default.
 
 ** Screenshots
 

@@ -9,6 +9,8 @@
 
 #include <assert.h>
 
+const char* DEFAULT_GOLD_ST_FILENAME = "GoldST.txt";
+
 void setDefaultPBTimes(struct pb_table_t* pb)
 {
     for (int i = 0; i < SECTION_COUNT_LONG; ++i)
@@ -56,7 +58,7 @@ struct pb_table_t* _getPBTable(struct pb_table_t** map, int gameMode)
     return pb;
 }
 
-void section_table_init(struct section_table_t* table)
+void section_table_init(struct section_table_t* table, const char* pbfile)
 {
     for (int i = 0; i < SECTION_COUNT_LONG; ++i)
     {
@@ -72,7 +74,7 @@ void section_table_init(struct section_table_t* table)
 
     table->pbHash = NULL;
 
-    readSectionRecords(table, "GoldST.txt");
+    readSectionRecords(table, pbfile);
     resetSectionTable(table);
 }
 
@@ -81,11 +83,11 @@ void section_table_terminate(struct section_table_t* table)
     writeSectionRecords(table);
 }
 
-struct section_table_t* section_table_create()
+struct section_table_t* section_table_create(const char* pbfile)
 {
     struct section_table_t* s = malloc(sizeof(struct section_table_t));
     if (s)
-        section_table_init(s);
+        section_table_init(s, pbfile);
 
     return s;
 }
@@ -240,6 +242,8 @@ void readSectionRecords(struct section_table_t* table, const char* filename)
     // If file was found, load section times!
     if (pbfile)
     {
+        printf("Reading PB times @ \"%s\".\n", filename);
+
         int mode = 0;
         while (fscanf(pbfile, "%d", &mode) == 1)
         {

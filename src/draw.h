@@ -22,6 +22,12 @@ struct draw_data_t
         float scale;
 };
 
+
+typedef void (*draw_function_p)(struct draw_data_t* data, float width, float height);
+
+// Returns a function pointer to a draw function given a string identifier.
+draw_function_p stringToDrawFunc(const char* functionIdentifier);
+
 void prepareDrawData(struct draw_data_t* data);
 
 void drawSectionGraph(struct draw_data_t* data, float width, float height);

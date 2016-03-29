@@ -2,6 +2,11 @@
 #define UTIL_H
 
 #include <stddef.h>
+#include <stdbool.h>
+#include <stdio.h>
+
+bool fileExists(const char* filename);
+FILE* createOrOpenFile(const char* filename);
 
 float frameTimeToSeconds(int frames);
 int frameTime(float seconds);
