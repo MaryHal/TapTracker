@@ -84,7 +84,7 @@ void formatTimeToMinutes(char* buf, size_t bufferSize, int frames)
     int ms = (int)(time * 100) % 100;
     int m  = time / 60;
     int s  = (int)time % 60;
-    snprintf(buf, bufferSize, "%02d:%02d:%02d", m, s, ms);
+    snprintf(buf, bufferSize, "%02d:%02d.%02d", m, s, ms);
 }
 
 void formatTimeToSeconds(char* buf, size_t bufferSize, int frames)
@@ -96,6 +96,6 @@ void formatTimeToSeconds(char* buf, size_t bufferSize, int frames)
         time = -time;
 
     int ms = (int)(time * 100) % 100;
-    int s  = (int)time % 100;
-    snprintf(buf, bufferSize, "%c%02d:%02d", neg ? '-' : '+', s, ms);
+    int s  = (int)((time / 100) * 100);
+    snprintf(buf, bufferSize, "%c%d.%02d", neg ? '-' : '+', s, ms);
 }

@@ -188,7 +188,9 @@ void updateGameState(struct game_t* game,
         }
     }
 
-    // And the first piece of the game to the input history
+    // When the game has begun, save the game mode (since tgm2p removes mode
+    // modifiers when the game ends) and push an input history element so we can
+    // see the inputs for the initial piece.
     if (!isInPlayingState(game->prevState.state) &&
         isInPlayingState(game->curState.state))
     {
