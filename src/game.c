@@ -6,7 +6,9 @@
 
 #include <stdio.h>
 #include <string.h>
+
 #include <assert.h>
+#include <zf_log.h>
 
 const char* DISPLAYED_GRADE[GRADE_COUNT] =
 {
@@ -175,7 +177,6 @@ void updateGameState(struct game_t* game,
 
     if (isInPlayingState(game->curState.state) && game->curState.level < game->prevState.level)
     {
-        printf("Internal State Error: ");
         printGameState(game);
     }
 
@@ -221,7 +222,7 @@ void updateGameState(struct game_t* game,
         // Update gold STs now that the game is over. There is technically a
         // "Credit Roll" game mode but it doesn't seem to interfere with normal
         // pb updates.
-        struct pb_table_t* pb = _getPBTable(&sectionTable->pbHash, game->originalGameMode);
+        struct pb_table_t* pb = getPBTable(&sectionTable->pbHash, game->originalGameMode);
         updateGoldSTRecords(pb, sectionTable);
 
         pushStateToGameHistory(gameHistory, game->blockHistory, game->prevState, game->originalGameMode);
@@ -237,10 +238,10 @@ void updateGameState(struct game_t* game,
 
 void printGameState(struct game_t* game)
 {
-    printf("state: %d -> %d, level %d -> %d, time %d -> %d\n",
-           game->prevState.state, game->curState.state,
-           game->prevState.level, game->curState.level,
-           game->prevState.timer, game->curState.timer);
+    ZF_LOGW("state: %d -> %d, level %d -> %d, time %d -> %d.",
+            game->prevState.state, game->curState.state,
+            game->prevState.level, game->curState.level,
+            game->prevState.timer, game->curState.timer);
 }
 
 bool testMasterConditions(struct game_t* game)

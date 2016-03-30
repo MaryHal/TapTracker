@@ -7,18 +7,7 @@
 #include <uthash.h>
 #include <stb_truetype.h>
 
-struct chardata_t
-{
-    int id;
-    UT_hash_handle hh;
-
-    stbtt_packedchar pchar;
-};
-
-// uthash functions
-void _addCharData(struct chardata_t** cmap, int codepoint, stbtt_packedchar pchar);
-void _deleteCharData(struct chardata_t** cmap, int codepoint);
-struct chardata_t* _getCharData(struct chardata_t** cmap, int codepoint);
+struct chardata_t;
 
 struct font_t
 {
@@ -47,12 +36,6 @@ void exportFontData(const char* binOutFilename, struct font_t* font);
 // Throwaway bitmap font data. If you loaded a TTF, we keep the generated bitmap
 // just in case we want to export it, but it isn't necessary to keep around.
 void flushFontBitmap(struct font_t* font);
-
-// Loads a TTF file on the heap into *ttfData. Remember to free it!
-void _loadTTF_file(const char* filename, uint8_t** ttfData);
-
-// Load a bitmap into a font's texture handle.
-void _bindFontTexture(struct font_t* font, uint8_t* bitmap);
 
 struct font_t* loadTTF(struct font_t* font, const char* filename, float pixelHeight);
 struct font_t* loadBitmapFontFiles(struct font_t* font, const char* imgFile, const char* binFile);

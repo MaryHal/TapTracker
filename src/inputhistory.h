@@ -36,8 +36,6 @@ struct input_history_t
         struct button_t* lastDown;
 };
 
-extern struct button_t EMPTY_BUTTON_T;
-
 void input_history_init(struct input_history_t* ihist);
 void input_history_terminate(struct input_history_t* ihist);
 

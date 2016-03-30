@@ -5,6 +5,8 @@
 
 #include <assert.h>
 
+#include <zf_log.h>
+
 // First Demo: Two simultaneous single player games.
 static const size_t demo01_length = 16;
 static struct tap_state demo01[] =
@@ -143,13 +145,13 @@ void printGameHistory(struct game_history_t* gh)
 {
     for (int i = gh->start; i < gh->end; ++i)
     {
-        printf("%d %d %d %d %d %d\n",
-               gh->data[i].state.gameMode,
-               gh->data[i].state.level,
-               gh->data[i].state.timer,
-               gh->data[i].state.tetromino,
-               gh->data[i].state.xcoord,
-               gh->data[i].state.ycoord
+        ZF_LOGW("%d %d %d %d %d %d",
+                gh->data[i].state.gameMode,
+                gh->data[i].state.level,
+                gh->data[i].state.timer,
+                gh->data[i].state.tetromino,
+                gh->data[i].state.xcoord,
+                gh->data[i].state.ycoord
             );
     }
 }
@@ -161,19 +163,19 @@ void pushStateToGameHistory(struct game_history_t* gh,
 {
     if (utringbuffer_empty(blockHistory))
     {
-        printf("Empty block history, skipping addition to game history.\n");
+        ZF_LOGD("Empty block history, skipping addition to game history.");
         return;
     }
 
     if (gameMode == TAP_MODE_NULL)
     {
-        printf("Null game mode, skipping addition to game history.\n");
+        ZF_LOGW("Null game mode, skipping addition to game history.");
         return;
     }
 
     if (isDemoState(blockHistory))
     {
-        printf("Demo state detected, skipping addition to game history.\n");
+        ZF_LOGD("Demo state detected, skipping addition to game history.");
         return;
     }
 

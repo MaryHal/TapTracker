@@ -123,12 +123,12 @@ void drawLayout(struct layout_container_t* container, struct draw_data_t* data_c
 
             vertices[0] = e->x;
             vertices[1] = e->y;
-            vertices[0] = e->x + e->width;
-            vertices[1] = e->y;
-            vertices[0] = e->x + e->width;
-            vertices[1] = e->y + e->height;
-            vertices[0] = e->x;
-            vertices[1] = e->y + e->height;
+            vertices[2] = e->x + e->width;
+            vertices[3] = e->y;
+            vertices[4] = e->x + e->width;
+            vertices[5] = e->y + e->height;
+            vertices[6] = e->x;
+            vertices[7] = e->y + e->height;
 
             glEnableClientState(GL_VERTEX_ARRAY);
 

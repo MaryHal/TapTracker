@@ -47,9 +47,6 @@ void button_spectrum_terminate(struct button_spectrum_t* bspec);
 struct button_spectrum_t* button_spectrum_create();
 void button_spectrum_destroy(struct button_spectrum_t* bspec);
 
-struct button_spectrum_t* createButtonSpriteSheet(struct button_spectrum_t* bspec);
-void destroyButtonSpriteSheet(struct button_spectrum_t* bspec, bool freeMe);
-
 uint8_t joystickButtonToQuadIndex(struct joystick_mapping_t jmap, uint8_t button);
 
 #endif /* BUTTONQUADS_H */

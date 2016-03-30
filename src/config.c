@@ -6,6 +6,8 @@
 #include <string.h>
 
 #include <assert.h>
+#include <zf_log.h>
+
 #include <parson.h>
 
 #include "window.h"
@@ -42,7 +44,7 @@ void loadConfig(const char* filename)
     // this file after we check that it doesn't exist, bad news bears.
     if (!fileExists(filename))
     {
-        printf("Config file @ \"%s\" not found, attempting to create it.\n", filename);
+        ZF_LOGI("Config file @ \"%s\" not found, attempting to create it.", filename);
 
         FILE* f = createOrOpenFile(filename);
 
@@ -57,18 +59,19 @@ void loadConfig(const char* filename)
         fclose(f);
     }
 
-    printf("Reading config file @ \"%s\".\n", filename);
+    ZF_LOGV("Reading config file @ \"%s\".", filename);
 
     root = json_parse_file_with_comments(filename);
 
     if (root == NULL)
     {
-        printf("Error reading config file.\n");
+        ZF_LOGE("Error reading config file.");
+        return;
     }
 
     if (json_value_get_type(root) != JSONObject)
     {
-        printf("Unexpected root type for config file\n");
+        ZF_LOGE("Unexpected root type for config file");
         return;
     }
 

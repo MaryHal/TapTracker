@@ -5,6 +5,7 @@
 #include <math.h>
 
 #include <assert.h>
+#include <zf_log.h>
 
 #include <GLFW/glfw3.h>
 
@@ -16,6 +17,24 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <stb_image_write.h>
 
+#define DEFAULT_FONT_RANGE_COUNT 2
+
+struct chardata_t
+{
+    int id;
+    UT_hash_handle hh;
+
+    stbtt_packedchar pchar;
+};
+
+struct chardata_t* _getCharData(struct chardata_t** cmap, int codepoint)
+{
+    struct chardata_t* s = NULL;
+
+    HASH_FIND_INT(*cmap, &codepoint, s);  /* s: output */
+    return s;
+}
+
 void _addCharData(struct chardata_t** cmap, int codepoint, stbtt_packedchar pchar)
 {
     struct chardata_t* s = _getCharData(cmap, codepoint);
@@ -26,7 +45,8 @@ void _addCharData(struct chardata_t** cmap, int codepoint, stbtt_packedchar pcha
 
         if (!s)
         {
-            printf("Could not allocate chardata for codepoint %d.", codepoint);
+            ZF_LOGE("Could not allocate chardata for codepoint %d.", codepoint);
+            return;
         }
 
         s->id = codepoint;
@@ -47,13 +67,55 @@ void _deleteCharData(struct chardata_t** cmap, int codepoint)
     }
 }
 
-struct chardata_t* _getCharData(struct chardata_t** cmap, int codepoint)
+// Loads a TTF file on the heap into *ttfData.
+void _loadTTF_file(const char* filename, uint8_t** ttfData)
 {
-    struct chardata_t* s = NULL;
+    assert(filename != NULL && ttfData != NULL);
 
-    HASH_FIND_INT(*cmap, &codepoint, s);  /* s: output */
-    return s;
+    FILE* ttf_file = fopen(filename, "rb");
+
+    if (!ttf_file)
+    {
+        ZF_LOGE("Could not open TTF file.");
+        return;
+    }
+
+    // Get filesize so we know how much memory to allocate.
+    fseek(ttf_file, 0L, SEEK_END);
+    size_t filesize = ftell(ttf_file);
+    rewind(ttf_file);
+
+    *ttfData = malloc(sizeof(uint8_t) * filesize);
+    if (!*ttfData)
+    {
+        ZF_LOGE("Could not allocate data for ttf file.");
+        return;
+    }
+
+    size_t readsize = fread(*ttfData, 1, filesize, ttf_file);
+    assert(filesize == readsize);
+
+    fclose(ttf_file);
 }
+
+// Load a bitmap into a font's texture handle.
+void _bindFontTexture(struct font_t* font, uint8_t* bitmap)
+{
+    assert(font != NULL);
+    assert(bitmap != NULL);
+
+    glGenTextures(1, &font->texture);
+    glBindTexture(GL_TEXTURE_2D, font->texture);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA,
+                 font->textureWidth, font->textureHeight, 0, GL_ALPHA, GL_UNSIGNED_BYTE, bitmap);
+
+    // can free temp_bitmap at this point
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+}
+
+
 
 void font_init(struct font_t* f)
 {
@@ -102,7 +164,8 @@ void exportBitmap(const char* imgOutFilename, struct font_t* font)
 
     if (font->bitmap == NULL)
     {
-        fprintf(stderr, "Cannot export font bitmap. Is this font already a bitmap font?");
+        ZF_LOGW("Cannot export font bitmap. Is this font already a bitmap font?");
+        return;
     }
 
     stbi_write_png(imgOutFilename, font->textureWidth, font->textureHeight, 1, font->bitmap, 0);
@@ -116,7 +179,7 @@ void exportFontData(const char* binOutFilename, struct font_t* font)
 
     if (!binOutput)
     {
-        printf("Could not open file for font data output");
+        ZF_LOGE("Could not open file for font data output.");
         return;
     }
 
@@ -142,53 +205,10 @@ void flushFontBitmap(struct font_t* font)
     }
 }
 
-void _loadTTF_file(const char* filename, uint8_t** ttfData)
-{
-    assert(filename != NULL && ttfData != NULL);
-
-    FILE* ttf_file = fopen(filename, "rb");
-
-    if (!ttf_file)
-    {
-        printf("Could not open TTF file.");
-        return;
-    }
-
-    // Get filesize so we know how much memory to allocate.
-    fseek(ttf_file, 0L, SEEK_END);
-    size_t filesize = ftell(ttf_file);
-    rewind(ttf_file);
-
-    *ttfData = malloc(sizeof(uint8_t) * filesize);
-    if (!*ttfData)
-    {
-        printf("Could not allocate data for ttf file.");
-    }
-
-    size_t readsize = fread(*ttfData, 1, filesize, ttf_file);
-    assert(filesize == readsize);
-
-    fclose(ttf_file);
-}
-
-void _bindFontTexture(struct font_t* font, uint8_t* bitmap)
-{
-    assert(font != NULL);
-
-    glGenTextures(1, &font->texture);
-    glBindTexture(GL_TEXTURE_2D, font->texture);
-
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA,
-                 font->textureWidth, font->textureHeight, 0, GL_ALPHA, GL_UNSIGNED_BYTE, bitmap);
-
-    // can free temp_bitmap at this point
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-}
-
 struct font_t* loadTTF(struct font_t* font, const char* filename, float pixelHeight)
 {
     assert(font != NULL);
+    assert(filename != NULL);
 
     font->cmap = NULL;
     font->texture = 0;
@@ -206,7 +226,7 @@ struct font_t* loadTTF(struct font_t* font, const char* filename, float pixelHei
 
         if (!font->bitmap)
         {
-            printf("Could not allocate data for font bitmap.");
+            ZF_LOGE("Could not allocate data for font bitmap.");
             return NULL;
         }
 
@@ -215,11 +235,10 @@ struct font_t* loadTTF(struct font_t* font, const char* filename, float pixelHei
 
         if (!stbtt_PackBegin(&pc, font->bitmap, font->textureWidth, font->textureHeight, 0, 1, NULL))
         {
-            printf("stbtt_PackBegin error");
+            ZF_LOGE("stbtt_PackBegin error");
         }
 
-        const int NUM_RANGES = 2;
-        stbtt_pack_range pr[NUM_RANGES];
+        stbtt_pack_range pr[DEFAULT_FONT_RANGE_COUNT];
         stbtt_packedchar pdata[256*2];
 
         pr[0].chardata_for_range = pdata;
@@ -236,14 +255,14 @@ struct font_t* loadTTF(struct font_t* font, const char* filename, float pixelHei
 
         if (!stbtt_PackFontRanges(&pc, ttf_buffer, 0, pr, 2))
         {
-            printf("stbtt_PackFontRanges error. Chars cannot fit on bitmap?");
+            ZF_LOGE("stbtt_PackFontRanges error. Chars cannot fit on bitmap?");
             return NULL;
         }
 
         stbtt_PackEnd(&pc);
 
         // Move all rects to hash table.
-        for (int i = 0; i < NUM_RANGES; i++)
+        for (int i = 0; i < DEFAULT_FONT_RANGE_COUNT; i++)
         {
             for (int j = 0; j < pr[i].num_chars; j++)
             {
@@ -269,7 +288,7 @@ struct font_t* loadBitmapFontFiles(struct font_t* font, const char* imgFile, con
 
     if (!binInput)
     {
-        printf("Could not open file for font data output");
+        ZF_LOGE("Could not open file for font data output");
         return NULL;
     }
 

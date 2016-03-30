@@ -8,6 +8,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include <zf_log.h>
+
 #include "tap_state.h"
 #include "tracker.h"
 
@@ -32,7 +34,7 @@ int main(int argc, const char *argv[])
 
     if (!runTracker(addr, argc, argv))
     {
-        printf("Error running TapTracker.");
+        ZF_LOGF("Error running TapTracker.");
     }
 
     if (munmap(addr, vSize) != 0)

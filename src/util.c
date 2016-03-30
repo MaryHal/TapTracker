@@ -4,6 +4,9 @@
 #include <stdbool.h>
 #include <stdio.h>
 
+#include <assert.h>
+#include <zf_log.h>
+
 #if !defined(_WIN32) && (defined(__unix__) || defined(__unix) || (defined(__APPLE__) && defined(__MACH__)))
 
 #include <unistd.h>
@@ -29,7 +32,7 @@ FILE* createOrOpenFile(const char* filename)
     {
         if (errno == EEXIST)
         {
-            /* printf("File \"%s\" does not exist. Attempting to create it...", filename); */
+            ZF_LOGV("File \"%s\" does not exist. Attempting to create it...", filename);
         }
     }
 
@@ -57,7 +60,7 @@ FILE* createOrOpenFile(const char* filename)
 
     if (f == NULL)
     {
-        printf("File \"%s\" does not exist. Attempting to create it...", filename);
+        ZF_LOGV("File \"%s\" does not exist. Attempting to create it...", filename);
 
         fclose(file);
         return fopen(filename, "wb");
