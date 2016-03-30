@@ -415,10 +415,10 @@ bool drawSectionTable(struct draw_data_t* data, float width, float height)
 
         char lineCount[20];
         sprintf(lineCount, "%2d : %2d : %2d : %2d",
-                section->lines[0],
-                section->lines[1],
-                section->lines[2],
-                section->lines[3]);
+                section->lines[LINE_SINGLE],
+                section->lines[LINE_DOUBLE],
+                section->lines[LINE_TRIPLE],
+                section->lines[LINE_TETRIS]);
 
         setGLColor(COLOR_FOREGROUND, 1.0f);
         drawString(font, 106.0f, y, lineCount);
@@ -505,7 +505,7 @@ bool drawSectionTableOverall(struct draw_data_t* data, float width, float height
             }
 
             char tetrisCount[6];
-            snprintf(tetrisCount, 6, "%d*", section->lines[3]);
+            snprintf(tetrisCount, 6, "%d*", section->lines[LINE_TETRIS]);
 
             drawString(font, 50.0f, y, tetrisCount);
 
