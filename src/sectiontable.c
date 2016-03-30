@@ -130,7 +130,7 @@ void resetSectionTable(struct section_table_t* table)
         section->startTime = 0;
         section->endTime = 0;
 
-        for (int j = 0; j < 4; ++j)
+        for (int j = 0; j < LINE_TYPE_COUNT; ++j)
             section->lines[j] = 0;
 
         section->complete = false;

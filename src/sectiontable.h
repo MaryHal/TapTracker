@@ -13,6 +13,15 @@
 #define SECTION_LENGTH 100
 #define SECTION_MAX    128
 
+enum
+{
+    LINE_SINGLE = 0,
+    LINE_DOUBLE = 1,
+    LINE_TRIPLE = 2,
+    LINE_TETRIS = 3,
+    LINE_TYPE_COUNT
+};
+
 extern const char* DEFAULT_GOLD_ST_FILENAME;
 
 struct datapoint_t
@@ -31,7 +40,7 @@ struct section_t
     int startTime; // Frame count for when this section began.
     int endTime;
 
-    int lines[4];
+    int lines[LINE_TYPE_COUNT];
 
     bool complete;
     bool mTest;
