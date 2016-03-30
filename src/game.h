@@ -11,7 +11,6 @@
 #include <utringbuffer.h>
 
 #define GAME_STATE_HISTORY_LENGTH 32
-
 #define MASTER_S9_INTERNAL_GRADE 31
 #define GRADE_COUNT 32
 
@@ -70,8 +69,8 @@ void updateGameState(struct game_t* game,
 
 void printGameState(struct game_t* game);
 
-// Will return true if _currently_ not invalidated from getting M-rank.
-bool testMasterConditions(struct game_t* game);
+// Will return true if state is not invalidated from getting M-rank.
+bool testMasterConditions(struct tap_state* state);
 
 /* // Deprecated since we now pull the flag directly from MAME. */
 /* bool calculateMasterConditions_(struct game_t* game); */
