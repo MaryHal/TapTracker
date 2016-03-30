@@ -34,6 +34,7 @@ struct section_t
     int lines[4];
 
     bool complete;
+    bool mTest;
 };
 
 struct pb_table_t

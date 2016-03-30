@@ -193,7 +193,7 @@ bool drawSectionGraph(struct draw_data_t* data, float width, float height)
     drawString(font, width - 12.0f, graphHeight + font->pixelHeight, levelStr);
 
     // Draw grade and grade points
-    if (testMasterConditions(game))
+    if (testMasterConditions(&game->curState))
         glColor4f(0.3f, 1.0f, 0.3f, 1.0f);
     else
         glColor4f(1.0f, 0.3f, 0.3f, 1.0f);
@@ -495,9 +495,24 @@ bool drawSectionTableOverall(struct draw_data_t* data, float width, float height
 
             drawString(font, 0.0f, y, section->label);
 
+            if (section->mTest)
+            {
+                setGLColor(COLOR_TETRIS, 1.0f);
+            }
+            else
+            {
+                setGLColor(COLOR_FOREGROUND, 1.0f);
+            }
+
+            char tetrisCount[6];
+            snprintf(tetrisCount, 6, "%d*", section->lines[3]);
+
+            drawString(font, 50.0f, y, tetrisCount);
+
             char sectionTime[16];
             formatTimeToMinutes(sectionTime, 16, section->endTime);
 
+            setGLColor(COLOR_FOREGROUND, 1.0f);
             drawString(font, 71.0f, y, sectionTime);
 
             char overallTimeDiff[16];

@@ -134,6 +134,7 @@ void resetSectionTable(struct section_table_t* table)
             section->lines[j] = 0;
 
         section->complete = false;
+        section->mTest = false;
     }
 
     // Add an initial data point to the first section
@@ -171,13 +172,10 @@ void updateSectionTable(struct section_table_t* table, struct game_t* game)
             game->curState.timer = tempTime;
 
             section->complete = true;
+            section->mTest = testMasterConditions(&game->curState);
 
-            // Update Records
+            // Update (completed game) records
             updateGameTimeRecords(pb, table);
-
-            // We update Gold STs when the game ends in any way, not just when
-            // we complete the game.
-            /* updateGoldSTRecords(pb, table); */
         }
 
         return;
@@ -191,6 +189,7 @@ void updateSectionTable(struct section_table_t* table, struct game_t* game)
         addDataPointToSection(section, game);
 
         section->complete = true;
+        section->mTest = testMasterConditions(&game->curState);
 
         // Section advance!
         game->currentSection++;

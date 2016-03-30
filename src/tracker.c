@@ -134,5 +134,6 @@ bool runTracker(struct tap_state* dataPtr, int argc, const char* argv[])
 
     glfwTerminate();
 
-    return true;}
+    return true;
+}
 
