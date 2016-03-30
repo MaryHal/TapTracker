@@ -18,6 +18,7 @@
 #include "config.h"
 
 #include <stdio.h>
+#include <zf_log.h>
 
 #include <GLFW/glfw3.h>
 
@@ -34,7 +35,7 @@ bool runTracker(struct tap_state* dataPtr, int argc, const char* argv[])
 {
     if (glfwInit() == GL_FALSE)
     {
-        printf("Could not initialize GLFW");
+        ZF_LOGF("Could not initialize GLFW.");
         return false;
     }
 

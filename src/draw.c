@@ -16,6 +16,7 @@
 #include <stdio.h>
 
 #include <assert.h>
+#include <zf_log.h>
 
 #include <GLFW/glfw3.h>
 
@@ -41,8 +42,10 @@ draw_function_p stringToDrawFunc(const char* functionIdentifier)
     return NULL;
 }
 
-void drawSectionGraph(struct draw_data_t* data, float width, float height)
+bool drawSectionGraph(struct draw_data_t* data, float width, float height)
 {
+    assert(data != NULL);
+
     struct game_t* game = data->game;
     struct font_t* font = data->font;
 
@@ -50,8 +53,8 @@ void drawSectionGraph(struct draw_data_t* data, float width, float height)
 
     if (!table)
     {
-        fprintf(stderr, "drawSectionGraph: section_table_t is NULL.\n");
-        return;
+        ZF_LOGW("drawSectionGraph: section_table_t is NULL.");
+        return false;
     }
 
     const float scale = data->scale;
@@ -208,10 +211,14 @@ void drawSectionGraph(struct draw_data_t* data, float width, float height)
     /*         game->currentBlockY, */
     /*         game->currentRotState); */
     /* drawString(font, width - 100.0f, graphHeight - 40, levelStr); */
+
+    return true;
 }
 
-void drawInputHistory(struct draw_data_t* data, float width, float height)
+bool drawInputHistory(struct draw_data_t* data, float width, float height)
 {
+    assert(data != NULL);
+
     (void) width;
 
     struct input_history_t* inputHistory = data->history;
@@ -219,8 +226,8 @@ void drawInputHistory(struct draw_data_t* data, float width, float height)
 
     if (!inputHistory)
     {
-        fprintf(stderr, "drawInputHistory: input_history_t is NULL");
-        return;
+        ZF_LOGE("drawInputHistory: input_history_t is NULL");
+        return false;
     }
 
     float x = 0.0f;
@@ -279,10 +286,14 @@ void drawInputHistory(struct draw_data_t* data, float width, float height)
         x = 0.0f;
         y += vertStride;
     }
+
+    return true;
 }
 
-void drawLineCount(struct draw_data_t* data, float width, float height)
+bool drawLineCount(struct draw_data_t* data, float width, float height)
 {
+    assert(data != NULL);
+
     (void) height;
 
     struct game_t* game = data->game;
@@ -301,10 +312,14 @@ void drawLineCount(struct draw_data_t* data, float width, float height)
     setGLColor(COLOR_FOREGROUND, 1.0f);
 
     drawString(font, (width - getStringWidth(font, lineCount)) / 2, font->pixelHeight, lineCount);
+
+    return true;
 }
 
-void drawCurrentState(struct draw_data_t* data, float width, float height)
+bool drawCurrentState(struct draw_data_t* data, float width, float height)
 {
+    assert(data != NULL);
+
     (void) width, (void) height;
 
     struct game_t* game = data->game;
@@ -337,10 +352,14 @@ void drawCurrentState(struct draw_data_t* data, float width, float height)
 
     drawString(font, 0.0f, font->pixelHeight, gameStatsStr);
     /* drawString(font, 0.0f, font->pixelHeight * 2, lineCount); */
+
+    return true;
 }
 
-void drawSectionTable(struct draw_data_t* data, float width, float height)
+bool drawSectionTable(struct draw_data_t* data, float width, float height)
 {
+    assert(data != NULL);
+
     (void) width;
 
     struct game_t* game = data->game;
@@ -373,7 +392,7 @@ void drawSectionTable(struct draw_data_t* data, float width, float height)
             int sectionTimeInFrames = table->sections[i].endTime - table->sections[i].startTime;
             sectionTime = frameTimeToSeconds(sectionTimeInFrames);
 
-            struct pb_table_t* pb = _addPBTable(&table->pbHash, game->originalGameMode);
+            struct pb_table_t* pb = addPBTable(&table->pbHash, game->originalGameMode);
 
             if (pb->goldST[i] < sectionTimeInFrames)
             {
@@ -406,10 +425,14 @@ void drawSectionTable(struct draw_data_t* data, float width, float height)
 
         y += vertStride;
     }
+
+    return true;
 }
 
-void drawSectionTableOverall(struct draw_data_t* data, float width, float height)
+bool drawSectionTableOverall(struct draw_data_t* data, float width, float height)
 {
+    assert(data != NULL);
+
     (void) width, (void) height;
 
     struct game_t* game = data->game;
@@ -445,7 +468,7 @@ void drawSectionTableOverall(struct draw_data_t* data, float width, float height
     for (int i = top; i < bottom; ++i)
     {
         struct section_t* section = &table->sections[i];
-        struct pb_table_t* pb = _addPBTable(&table->pbHash, game->originalGameMode);
+        struct pb_table_t* pb = addPBTable(&table->pbHash, game->originalGameMode);
 
         int overallPB = pb->gameTime[i];
         int sectionPB = pb->goldST[i];
@@ -503,10 +526,14 @@ void drawSectionTableOverall(struct draw_data_t* data, float width, float height
 
         y += vertStride;
     }
+
+    return true;
 }
 
-void drawGameHistory(struct draw_data_t* data, float width, float height)
+bool drawGameHistory(struct draw_data_t* data, float width, float height)
 {
+    assert(data != NULL);
+
     (void) width;
 
     /* struct game_t* game = data->game; */
@@ -552,4 +579,6 @@ void drawGameHistory(struct draw_data_t* data, float width, float height)
     snprintf(buf, 32, "Death Carnival Score: %d", carnivalScore(gh));
 
     drawString(font, x, y, buf);
+
+    return true;
 }

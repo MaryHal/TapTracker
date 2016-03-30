@@ -10,7 +10,7 @@
 
 #include <GLFW/glfw3.h>
 
-struct button_t EMPTY_BUTTON_T = { .jkey = 0, .held = false };
+static struct button_t EMPTY_BUTTON_T = { .jkey = 0, .held = false };
 
 void input_history_init(struct input_history_t* ihist)
 {

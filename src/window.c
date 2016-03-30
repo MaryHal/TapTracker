@@ -6,7 +6,7 @@
 #include <stdlib.h>
 
 #include <assert.h>
-
+#include <zf_log.h>
 
 void window_init(struct window_t* w,
                  const char* title,
@@ -28,7 +28,7 @@ void window_init(struct window_t* w,
 
     if (w->handle == NULL)
     {
-        printf("Could not create GLFW window");
+        ZF_LOGF("Could not create GLFW window.");
     }
 
     setupOpenGL(w, width, height);

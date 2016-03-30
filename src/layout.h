@@ -10,24 +10,24 @@
 
 struct layout_element_t
 {
-        float x;
-        float y;
-        float width;
-        float height;
+    float x;
+    float y;
+    float width;
+    float height;
 
-        draw_function_p drawFunc;
+    draw_function_p drawFunc;
 };
 
 // Vertical only for now
 struct layout_container_t
 {
-        struct layout_element_t elements[MAX_LAYOUT_ELEMENTS];
-        size_t size;
+    struct layout_element_t elements[MAX_LAYOUT_ELEMENTS];
+    size_t size;
 
-        float outerMargin;
-        float innerMargin;
-        float leftoverWidth;
-        float leftoverHeight;
+    float outerMargin;
+    float innerMargin;
+    float leftoverWidth;
+    float leftoverHeight;
 };
 
 void layout_init(struct layout_container_t* c,

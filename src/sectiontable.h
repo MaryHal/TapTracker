@@ -46,11 +46,9 @@ struct pb_table_t
     UT_hash_handle hh;
 };
 
-void setDefaultPBTimes(struct pb_table_t* pb, int gameMode);
-
-struct pb_table_t* _addPBTable(struct pb_table_t** map, int gameMode);
-void _deletePBTable(struct pb_table_t** map, int gameMode);
-struct pb_table_t* _getPBTable(struct pb_table_t** map, int gameMode);
+struct pb_table_t* addPBTable(struct pb_table_t** map, int gameMode);
+void deletePBTable(struct pb_table_t** map, int gameMode);
+struct pb_table_t* getPBTable(struct pb_table_t** map, int gameMode);
 
 struct section_table_t
 {

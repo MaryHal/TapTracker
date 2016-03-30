@@ -8,10 +8,11 @@
 #include <string.h>
 
 #include <assert.h>
+#include <zf_log.h>
 
 const char* DEFAULT_GOLD_ST_FILENAME = "GoldST.txt";
 
-void setDefaultPBTimes(struct pb_table_t* pb, int gameMode)
+static void setDefaultPBTimes(struct pb_table_t* pb, int gameMode)
 {
     int defaultSectionTime = 3900; // 01:05:00
 
@@ -27,9 +28,9 @@ void setDefaultPBTimes(struct pb_table_t* pb, int gameMode)
     }
 }
 
-struct pb_table_t* _addPBTable(struct pb_table_t** map, int gameMode)
+struct pb_table_t* addPBTable(struct pb_table_t** map, int gameMode)
 {
-    struct pb_table_t* pb = _getPBTable(map, gameMode);
+    struct pb_table_t* pb = getPBTable(map, gameMode);
 
     if (pb == NULL)
     {
@@ -41,7 +42,7 @@ struct pb_table_t* _addPBTable(struct pb_table_t** map, int gameMode)
         char modeName[32];
         getModeName(modeName, 32, pb->gameMode);
 
-        printf("Adding pb table: %d (%s).\n", gameMode, modeName);
+        ZF_LOGD("Adding pb table: %d (%s).", gameMode, modeName);
 
         HASH_ADD_INT(*map, gameMode, pb);
     }
@@ -49,9 +50,9 @@ struct pb_table_t* _addPBTable(struct pb_table_t** map, int gameMode)
     return pb;
 }
 
-void _deletePBTable(struct pb_table_t** map, int gameMode)
+void deletePBTable(struct pb_table_t** map, int gameMode)
 {
-    struct pb_table_t* pb = _getPBTable(map, gameMode);
+    struct pb_table_t* pb = getPBTable(map, gameMode);
 
     if (pb != NULL)
     {
@@ -60,7 +61,7 @@ void _deletePBTable(struct pb_table_t** map, int gameMode)
     }
 }
 
-struct pb_table_t* _getPBTable(struct pb_table_t** map, int gameMode)
+struct pb_table_t* getPBTable(struct pb_table_t** map, int gameMode)
 {
     struct pb_table_t* pb = NULL;
 
@@ -147,7 +148,7 @@ void updateSectionTable(struct section_table_t* table, struct game_t* game)
     struct section_t* section = &table->sections[game->currentSection];
 
     int gameMode = game->originalGameMode;
-    struct pb_table_t* pb     = _getPBTable(&table->pbHash, gameMode);
+    struct pb_table_t* pb     = getPBTable(&table->pbHash, gameMode);
 
     // Special case for when we're at the end of the game (level 999). The
     // in-game timer seems to reset back to 00:00:00 on the same exact frame
@@ -223,8 +224,7 @@ void addDataPointToSection(struct section_t* section, struct game_t* game)
         {
             if (levelDifference > 4)
             {
-                fprintf(stderr,
-                        "Abnormally large level jump: %d -> %d\n",
+                ZF_LOGW("Abnormally large level jump: %d -> %d.",
                         section->data[section->size - 1].level,
                         game->curState.level);
             }
@@ -255,12 +255,12 @@ void readSectionRecords(struct section_table_t* table, const char* filename)
     // If file was found, load section times!
     if (pbfile)
     {
-        printf("Reading PB times @ \"%s\".\n", filename);
+        ZF_LOGD("Reading PB times @ \"%s\".", filename);
 
         int mode = 0;
         while (fscanf(pbfile, "%d", &mode) == 1)
         {
-            struct pb_table_t* pb = _addPBTable(&table->pbHash, mode);
+            struct pb_table_t* pb = addPBTable(&table->pbHash, mode);
 
             for (size_t i = 0; i < SECTION_COUNT_LONG; ++i)
             {
@@ -284,6 +284,8 @@ void writeSectionRecords(struct section_table_t* table, const char* filename)
 
     if (pbfile)
     {
+        ZF_LOGD("Writing PB times @ \"%s\".\n", filename);
+
         for (struct pb_table_t* pb = table->pbHash; pb != NULL; pb = pb->hh.next)
         {
             fprintf(pbfile, "%d\n", pb->gameMode);
@@ -310,7 +312,7 @@ void updateGoldSTRecords(struct pb_table_t* pb, struct section_table_t* table)
     char modeName[32];
     getModeName(modeName, 32, pb->gameMode);
 
-    printf("Updating Gold STs for mode %d (%s).\n", pb->gameMode, modeName);
+    ZF_LOGD("Updating Gold STs for mode %d (%s).", pb->gameMode, modeName);
 
     // Update all new Gold STs.
     const int NUM_SECTIONS = getModeSectionCount(pb->gameMode);
@@ -342,7 +344,7 @@ void updateGameTimeRecords(struct pb_table_t* pb, struct section_table_t* table)
         return;
     }
 
-    printf("Updating Game Time PBs for mode %d.\n", pb->gameMode);
+    ZF_LOGD("Updating Game Time PBs for mode %d.", pb->gameMode);
 
     const int NUM_SECTIONS = getModeSectionCount(pb->gameMode);
 
@@ -351,7 +353,7 @@ void updateGameTimeRecords(struct pb_table_t* pb, struct section_table_t* table)
     {
         if (!table->sections[i].complete)
         {
-            printf("All sections have not been completed\n");
+            ZF_LOGD("All sections have not been completed, skipping update.\n");
             return;
         }
     }
@@ -369,6 +371,8 @@ void updateGameTimeRecords(struct pb_table_t* pb, struct section_table_t* table)
 
 int getModeEndLevel(int gameMode)
 {
+    gameMode = getBaseMode(gameMode);
+
     if (gameMode == TAP_MODE_NORMAL ||
         gameMode == TAP_MODE_DOUBLES)
     {
@@ -380,6 +384,8 @@ int getModeEndLevel(int gameMode)
 
 int getModeSectionCount(int gameMode)
 {
+    gameMode = getBaseMode(gameMode);
+
     if (gameMode == TAP_MODE_NORMAL ||
         gameMode == TAP_MODE_DOUBLES)
     {

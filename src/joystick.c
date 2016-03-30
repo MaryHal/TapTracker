@@ -5,6 +5,7 @@
 #include <string.h>
 
 #include <assert.h>
+#include <zf_log.h>
 
 #include <math.h>
 
@@ -14,7 +15,7 @@ void joystick_init(struct joystick_t* js, int joystickNum, struct joystick_mappi
 {
     if (!glfwJoystickPresent(joystickNum))
     {
-        printf("Requested joystick ID not found");
+        ZF_LOGE("Requested joystick ID not found.");
         return;
     }
 

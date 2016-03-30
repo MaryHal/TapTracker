@@ -37,7 +37,12 @@ args = parser.parse_args()
 BUILD_FILENAME = 'build.ninja'
 
 compiler = args.cxx
-include = ['-isystem./ext/uthash/include', '-isystem./ext/stb', '-isystem./ext/incbin', '-isystem./ext/flag', '-isystem./ext/parson']
+include = ['-isystem./ext/uthash/include',
+           '-isystem./ext/stb',
+           '-isystem./ext/incbin',
+           '-isystem./ext/flag',
+           '-isystem./ext/parson',
+           '-isystem./ext/zf_log/zf_log']
 depends = []
 libdirs = []
 ldflags = ['-lGL', '-lglfw', '-lm', '-lrt']
@@ -54,9 +59,9 @@ def warning(string):
 #     warning('compiler not explicitly supported: {}'.format(args.cxx))
 
 if args.debug:
-    cxxflags.extend(['-g', '-O0', '-DDEBUG'])
+    cxxflags.extend(['-g', '-O0', '-DDEBUG', '-DZF_LOG_DEF_LEVEL=ZF_LOG_VERBOSE'])
 else:
-    cxxflags.extend(['-DNDEBUG', '-O3'])
+    cxxflags.extend(['-DNDEBUG', '-O3', '-DZF_LOG_DEF_LEVEL=ZF_LOG_WARN'])
 
 if args.cxx == 'clang++':
     cxxflags.extend(['-Wno-constexpr-not-const', '-Wno-unused-value', '-Wno-mismatched-tags'])
@@ -86,7 +91,7 @@ ninja.newline()
 ninja.build('build.ninja', 'bootstrap', implicit = 'bootstrap.py')
 
 testobjs = []
-srcfiles = files_from('src/', '**.c') + ['ext/flag/flag.c'] + ['ext/parson/parson.c']
+srcfiles = files_from('src/', '**.c') + ['ext/flag/flag.c'] + ['ext/parson/parson.c'] + ['ext/zf_log/zf_log/zf_log.c']
 for f in srcfiles:
     obj = object_file(f)
     testobjs.append(obj)
