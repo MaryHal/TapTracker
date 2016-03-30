@@ -13,6 +13,6 @@
 [submodule "ext/parson"]
 	path = ext/parson
 	url = https://github.com/kgabis/parson.git
-[submodule "ext/zf_log/"]
+[submodule "ext/zf_log"]
 	path = ext/zf_log
 	url = https://github.com/wonder-mice/zf_log.git
