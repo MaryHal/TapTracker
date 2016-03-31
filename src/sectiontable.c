@@ -42,7 +42,7 @@ struct pb_table_t* addPBTable(struct pb_table_t** map, int gameMode)
         char modeName[32];
         getModeName(modeName, 32, pb->gameMode);
 
-        ZF_LOGD("Adding pb table: %d (%s).", gameMode, modeName);
+        ZF_LOGI("Adding pb table: %d (%s).", gameMode, modeName);
 
         HASH_ADD_INT(*map, gameMode, pb);
     }
@@ -254,7 +254,7 @@ void readSectionRecords(struct section_table_t* table, const char* filename)
     // If file was found, load section times!
     if (pbfile)
     {
-        ZF_LOGD("Reading PB times @ \"%s\".", filename);
+        ZF_LOGI("Reading PB times @ \"%s\".", filename);
 
         int mode = 0;
         while (fscanf(pbfile, "%d", &mode) == 1)
@@ -283,7 +283,7 @@ void writeSectionRecords(struct section_table_t* table, const char* filename)
 
     if (pbfile)
     {
-        ZF_LOGD("Writing PB times @ \"%s\".\n", filename);
+        ZF_LOGI("Writing PB times @ \"%s\".\n", filename);
 
         for (struct pb_table_t* pb = table->pbHash; pb != NULL; pb = pb->hh.next)
         {
@@ -311,7 +311,7 @@ void updateGoldSTRecords(struct pb_table_t* pb, struct section_table_t* table)
     char modeName[32];
     getModeName(modeName, 32, pb->gameMode);
 
-    ZF_LOGD("Updating Gold STs for mode %d (%s).", pb->gameMode, modeName);
+    ZF_LOGI("Updating Gold STs for mode %d (%s).", pb->gameMode, modeName);
 
     // Update all new Gold STs.
     const int NUM_SECTIONS = getModeSectionCount(pb->gameMode);
@@ -343,7 +343,7 @@ void updateGameTimeRecords(struct pb_table_t* pb, struct section_table_t* table)
         return;
     }
 
-    ZF_LOGD("Updating Game Time PBs for mode %d.", pb->gameMode);
+    ZF_LOGI("Updating Game Time PBs for mode %d.", pb->gameMode);
 
     const int NUM_SECTIONS = getModeSectionCount(pb->gameMode);
 
@@ -352,7 +352,7 @@ void updateGameTimeRecords(struct pb_table_t* pb, struct section_table_t* table)
     {
         if (!table->sections[i].complete)
         {
-            ZF_LOGD("All sections have not been completed, skipping update.\n");
+            ZF_LOGI("All sections have not been completed, skipping update.\n");
             return;
         }
     }

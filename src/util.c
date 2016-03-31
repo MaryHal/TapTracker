@@ -100,5 +100,5 @@ void formatTimeToSeconds(char* buf, size_t bufferSize, int frames)
 
     int ms = (int)(time * 100) % 100;
     int s  = (int)((time / 100) * 100);
-    snprintf(buf, bufferSize, "%+.2d.%02d", s, ms);
+    snprintf(buf, bufferSize, "%c%.2d:%02d", neg ? '-' : '+', s, ms);
 }
