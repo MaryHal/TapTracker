@@ -73,6 +73,8 @@ On first run, TapTracker will create a (commented) json configuration file (conf
 
 TapTracker also tracks your personal best times for sections and completed games. TapTracker will import/export a file named "GoldST.txt" by default.
 
+Check bin/default_config.json (or run TapTracker without a config file) to generate a commented config file.
+
 ** Screenshots
 
 UI is still a work-in-progress.

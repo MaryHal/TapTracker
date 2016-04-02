@@ -2,8 +2,8 @@
     // joystick options control whether or not TapTracker will keep track of
     // joystick inputs. For now, it /must/ be a joystick/gamepad. Getting axis
     // indices and button indices can be a bit complicated since there really is
-    // no standard, so you have to check your system options, then guess and
-    // check (and pray).
+    // no standard, so you have to check your system options, then guess, check,
+    // and pray.
     "joystick" :
     {
         "enabled"   : false,
@@ -27,9 +27,18 @@
         // fill that percentage of the leftover area in the window. If ratio >
         // 1.0, then the layout element will be exactly 'ratio' pixels tall.
 
-        // Layout types: section-graph, input-history, line-count,
-        // current-state, section-table-old, section-table, game-history,
-        // mroll-test
+        // Layout types:
+        // - section-graph: display a graph of the current section, highlighting
+        //                  line clears.
+        // - input-history: show joystick inputs per tetromino.
+        // - line-count: simply display the current section's line count.
+        // - section-table-old: old, deprecated section table that shows line
+        //                      count and section time.
+        // - section-table: display a speedrun-timer-like table for each section.
+        // - current-state: draw the current level, timer value, and section time.
+        // - game-history: display a listing of recently finished TAP games.
+        // - mroll-test: draw's a simple rectangle that's green if the mroll
+        //               conditions have been met, red otherwise.
         {
             "name"   : "MainWindow",
             "width"  : 240,
