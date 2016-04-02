@@ -43,4 +43,6 @@ bool drawSectionTableOverall(struct draw_data_t* data, float width, float height
 
 bool drawGameHistory(struct draw_data_t* data, float width, float height);
 
+bool drawMRollPassFail(struct draw_data_t* data, float width, float height);
+
 #endif /* DRAW_H */

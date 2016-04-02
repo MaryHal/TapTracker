@@ -119,16 +119,24 @@ void loadConfig(const char* filename)
                 const char* layoutElementType = json_object_get_string(layoutElementObject, "type");
                 float ratioOrFixed = json_object_get_number(layoutElementObject, "ratio");
 
+                draw_function_p func = stringToDrawFunc(layoutElementType);
+
+                if (func == NULL)
+                {
+                    ZF_LOGE("Invalid draw function name: %s", layoutElementType);
+                    continue;
+                }
+
                 if (ratioOrFixed <= 1.0f)
                 {
                     addToContainerRatio(&tt_config.windowset[i]->layout,
-                                        stringToDrawFunc(layoutElementType),
+                                        func,
                                         ratioOrFixed);
                 }
                 else
                 {
                     addToContainerFixed(&tt_config.windowset[i]->layout,
-                                        stringToDrawFunc(layoutElementType),
+                                        func,
                                         ratioOrFixed);
                 }
             }
