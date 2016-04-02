@@ -29,6 +29,7 @@
 
         // Layout types: section-graph, input-history, line-count,
         // current-state, section-table-old, section-table, game-history,
+        // mroll-test
         {
             "name"   : "MainWindow",
             "width"  : 240,

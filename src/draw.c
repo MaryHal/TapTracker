@@ -38,6 +38,8 @@ draw_function_p stringToDrawFunc(const char* functionIdentifier)
         return &drawSectionTableOverall;
     else if (strcmp(functionIdentifier, "game-history") == 0)
         return &drawGameHistory;
+    else if (strcmp(functionIdentifier, "mroll-test") == 0)
+        return &drawMRollPassFail;
 
     return NULL;
 }
@@ -594,6 +596,36 @@ bool drawGameHistory(struct draw_data_t* data, float width, float height)
     snprintf(buf, 32, "Death Carnival Score: %d", carnivalScore(gh));
 
     drawString(font, x, y, buf);
+
+    return true;
+}
+
+bool drawMRollPassFail(struct draw_data_t* data, float width, float height)
+{
+    assert(data != NULL);
+
+    struct game_t* game = data->game;
+
+    if (testMasterConditions(&game->curState))
+        glColor4f(0.3f, 1.0f, 0.3f, 1.0f);
+    else
+        glColor4f(1.0f, 0.3f, 0.3f, 1.0f);
+
+    float box[2 * 4];
+
+    box[0] = 0;
+    box[1] = 0;
+    box[2] = width;
+    box[3] = 0;
+    box[4] = width;
+    box[5] = height;
+    box[6] = 0;
+    box[7] = height;
+
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glVertexPointer(2, GL_FLOAT, 0, box);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 2 * 4);
+    glDisableClientState(GL_VERTEX_ARRAY);
 
     return true;
 }
