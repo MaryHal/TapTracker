@@ -172,7 +172,7 @@ void updateSectionTable(struct section_table_t* table, struct game_t* game)
             game->curState.timer = tempTime;
 
             section->complete = true;
-            section->mTest = testMasterConditions(&game->curState);
+            section->mTest = testMasterConditions(&game->prevState);
 
             // Update (completed game) records
             updateGameTimeRecords(pb, table);
