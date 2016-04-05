@@ -246,12 +246,7 @@ void printGameState(struct game_t* game)
 
 bool testMasterConditions(struct tap_state* state)
 {
-    // Of course we can also check the bit mask, but this works too.
-    return
-        state->mrollFlags == M_NEUTRAL ||
-        state->mrollFlags == M_PASS_1  ||
-        state->mrollFlags == M_PASS_2  ||
-        state->mrollFlags == M_SUCCESS;
+    return state->mrollFlags & MROLL_PASS_MASK;
 }
 
 #if 0
