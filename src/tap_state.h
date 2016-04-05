@@ -33,6 +33,8 @@ enum tap_mroll_flags
     M_SUCCESS  = 127,
 };
 
+#define MROLL_PASS_MASK (1 << 5)
+
 enum tap_game_mode
 {
     TAP_MODE_NULL           = 0,
@@ -55,12 +57,12 @@ enum tap_game_mode
     TAP_MODE_DEATH_20G      = 4128
 };
 
-#define MODE_VERSUS_MASK  8
-#define MODE_CREDITS_MASK 16
-#define MODE_20G_MASK     32
-#define MODE_BIG_MASK     64
-#define MODE_ITEM_MASK    512
-#define MODE_TLS_MASK     1024
+#define MODE_VERSUS_MASK  (1 << 3)
+#define MODE_CREDITS_MASK (1 << 4)
+#define MODE_20G_MASK     (1 << 5)
+#define MODE_BIG_MASK     (1 << 6)
+#define MODE_ITEM_MASK    (1 << 9)
+#define MODE_TLS_MASK     (1 << 10)
 
 struct tap_state
 {
