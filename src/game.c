@@ -246,7 +246,11 @@ void printGameState(struct game_t* game)
 
 bool testMasterConditions(struct tap_state* state)
 {
-    return state->mrollFlags & MROLL_PASS_MASK;
+    return
+        state->mrollFlags == M_NEUTRAL ||
+        state->mrollFlags == M_PASS_1  ||
+        state->mrollFlags == M_PASS_2  ||
+        state->mrollFlags == M_SUCCESS;
 }
 
 #if 0
