@@ -17,7 +17,7 @@
 
 #define INCBIN_PREFIX g_
 #include <incbin.h>
-INCBIN(DEFAULT_CONFIG_FILE_CONTENTS_, "bin/default_config.json");
+INCBIN(DEFAULT_CONFIG_FILE_CONTENTS_, "src/bin/default_config.json");
 
 const char* DEFAULT_CONFIG_FILENAME = "config.json";
 struct config_t tt_config =

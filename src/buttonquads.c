@@ -8,7 +8,7 @@
 
 #define INCBIN_PREFIX g_
 #include <incbin.h>
-INCBIN(ButtonSheet, "bin/key_button.png");
+INCBIN(ButtonSheet, "src/bin/key_button.png");
 
 void button_spectrum_init(struct button_spectrum_t* bspec)
 {

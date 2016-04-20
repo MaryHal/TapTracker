@@ -28,8 +28,8 @@
 
 #define INCBIN_PREFIX g_
 #include <incbin.h>
-INCBIN(PPImage, "bin/PP.png");
-INCBIN(PPData, "bin/PP.bin");
+INCBIN(PPImage, "src/bin/PP.png");
+INCBIN(PPData,  "src/bin/PP.bin");
 
 bool runTracker(struct tap_state* dataPtr, int argc, const char* argv[])
 {
