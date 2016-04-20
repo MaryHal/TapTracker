@@ -16,7 +16,6 @@ addons:
         packages:
             - gcc-4.8
             - clang
-            - ninja-build
 
 before_script:
   - curl -sSL https://ftp-master.debian.org/keys/archive-key-7.0.asc | sudo -E apt-key add -
@@ -25,5 +24,4 @@ before_script:
   - sudo apt-get install -y -qq libglfw3-dev
 
 script:
-    - python ./bootstrap.py --ci --cxx=$CC
-    - ninja
+    - make
