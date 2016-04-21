@@ -16,7 +16,7 @@ ifeq ($(config),debug)
   TARGET = $(TARGETDIR)/TapTracker
   OBJDIR = obj/debug
   DEFINES += -DDEBUG -DZF_LOG_DEF_LEVEL=ZF_LOG_VERBOSE
-  INCLUDES += -Iext/uthash/include -Iext/stb -Iext/incbin -Iext/flag -Iext/parson -Iext/zf_log/zf_log
+  INCLUDES += -isystem ext/uthash/src -isystem ext/stb -isystem ext/incbin -isystem ext/flag -isystem ext/parson -isystem ext/zf_log/zf_log
   FORCE_INCLUDE +=
   ALL_CPPFLAGS += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
   ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -g -Wall -Wextra -pedantic -std=gnu11
@@ -43,7 +43,7 @@ ifeq ($(config),release)
   TARGET = $(TARGETDIR)/TapTracker
   OBJDIR = obj/release
   DEFINES += -DNDEBUG -DZF_LOG_DEF_LEVEL=ZF_LOG_WARN
-  INCLUDES += -Iext/uthash/include -Iext/stb -Iext/incbin -Iext/flag -Iext/parson -Iext/zf_log/zf_log
+  INCLUDES += -isystem ext/uthash/src -isystem ext/stb -isystem ext/incbin -isystem ext/flag -isystem ext/parson -isystem ext/zf_log/zf_log
   FORCE_INCLUDE +=
   ALL_CPPFLAGS += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
   ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -O2 -Wall -Wextra -pedantic -std=gnu11

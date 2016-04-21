@@ -8,14 +8,16 @@ kind "ConsoleApp"
 language "C"
 targetdir "bin/%{cfg.buildcfg}"
 
-includedirs {
-   "ext/uthash/include",
+sysincludedirs {
+   "ext/uthash/src",
    "ext/stb",
    "ext/incbin",
    "ext/flag",
    "ext/parson",
    "ext/zf_log/zf_log"
 }
+
+includedirs {}
 
 libdirs {}
 
