@@ -23,8 +23,7 @@ obj/
 /.ninja_deps
 /compile_commands.json
 
-/bin/TapTracker
-/bin/fonttest3.png
+/bin
 *.pyc
 *.i64
 /bin/tt.valgrind

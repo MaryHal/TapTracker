@@ -12,9 +12,9 @@ endif
 
 ifeq ($(config),debug)
   RESCOMP = windres
-  TARGETDIR = bin/Debug
+  TARGETDIR = bin/debug
   TARGET = $(TARGETDIR)/TapTracker
-  OBJDIR = obj/Debug
+  OBJDIR = obj/debug
   DEFINES += -DDEBUG -DZF_LOG_DEF_LEVEL=ZF_LOG_VERBOSE
   INCLUDES += -Iext/uthash/include -Iext/stb -Iext/incbin -Iext/flag -Iext/parson -Iext/zf_log/zf_log
   FORCE_INCLUDE +=
@@ -39,9 +39,9 @@ endif
 
 ifeq ($(config),release)
   RESCOMP = windres
-  TARGETDIR = bin/Release
+  TARGETDIR = bin/release
   TARGET = $(TARGETDIR)/TapTracker
-  OBJDIR = obj/Release
+  OBJDIR = obj/release
   DEFINES += -DNDEBUG -DZF_LOG_DEF_LEVEL=ZF_LOG_WARN
   INCLUDES += -Iext/uthash/include -Iext/stb -Iext/incbin -Iext/flag -Iext/parson -Iext/zf_log/zf_log
   FORCE_INCLUDE +=
