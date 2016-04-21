@@ -71,7 +71,7 @@ void addToContainerFixed(struct layout_container_t* container, draw_function_p d
     container->size++;
 }
 
-void drawLayout(struct layout_container_t* container, struct draw_data_t* data_container, bool debug)
+void drawLayout(struct layout_container_t* container, bool debug)
 {
     float vertices[8];
 
@@ -90,7 +90,7 @@ void drawLayout(struct layout_container_t* container, struct draw_data_t* data_c
         glPushMatrix();
         glTranslatef(adjustedX, adjustedY, 0.0f);
         {
-            e->drawFunc(data_container, adjustedWidth, adjustedHeight);
+            e->drawFunc(adjustedWidth, adjustedHeight);
 
             if (debug)
             {

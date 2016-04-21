@@ -20,6 +20,20 @@
 
 #include <GLFW/glfw3.h>
 
+static struct draw_data_t data = {0};
+
+void bindDrawData(struct draw_data_t d)
+{
+    data.game = d.game;
+    data.font = d.font;
+
+    data.history = d.history;
+    data.bspec = d.bspec;
+
+    data.table = d.table;
+    data.gh = d.gh;
+}
+
 draw_function_p stringToDrawFunc(const char* functionIdentifier)
 {
     assert(functionIdentifier != NULL);
@@ -44,14 +58,12 @@ draw_function_p stringToDrawFunc(const char* functionIdentifier)
     return NULL;
 }
 
-bool drawSectionGraph(struct draw_data_t* data, float width, float height)
+bool drawSectionGraph(float width, float height)
 {
-    assert(data != NULL);
+    struct game_t* game = data.game;
+    struct font_t* font = data.font;
 
-    struct game_t* game = data->game;
-    struct font_t* font = data->font;
-
-    struct section_table_t* table = data->table;
+    struct section_table_t* table = data.table;
 
     if (!table)
     {
@@ -59,7 +71,12 @@ bool drawSectionGraph(struct draw_data_t* data, float width, float height)
         return false;
     }
 
-    const float scale = data->scale;
+    float scale = 0.0f;
+
+    if (getBaseMode(game->curState.gameMode) == TAP_MODE_DEATH)
+        scale = 45.0f;
+    else
+        scale = 60.0f;
 
     const float graphWidth  = width;
     const float graphHeight = height - font->pixelHeight;
@@ -217,14 +234,12 @@ bool drawSectionGraph(struct draw_data_t* data, float width, float height)
     return true;
 }
 
-bool drawInputHistory(struct draw_data_t* data, float width, float height)
+bool drawInputHistory(float width, float height)
 {
-    assert(data != NULL);
-
     (void) width;
 
-    struct input_history_t* inputHistory = data->history;
-    struct button_spectrum_t* bspec = data->bspec;
+    struct input_history_t* inputHistory = data.history;
+    struct button_spectrum_t* bspec = data.bspec;
 
     if (!inputHistory)
     {
@@ -292,15 +307,13 @@ bool drawInputHistory(struct draw_data_t* data, float width, float height)
     return true;
 }
 
-bool drawLineCount(struct draw_data_t* data, float width, float height)
+bool drawLineCount(float width, float height)
 {
-    assert(data != NULL);
-
     (void) height;
 
-    struct game_t* game = data->game;
-    struct font_t* font = data->font;
-    struct section_table_t* table = data->table;
+    struct game_t* game = data.game;
+    struct font_t* font = data.font;
+    struct section_table_t* table = data.table;
 
     struct section_t* section = &table->sections[game->currentSection];
 
@@ -318,15 +331,13 @@ bool drawLineCount(struct draw_data_t* data, float width, float height)
     return true;
 }
 
-bool drawCurrentState(struct draw_data_t* data, float width, float height)
+bool drawCurrentState(float width, float height)
 {
-    assert(data != NULL);
-
     (void) width, (void) height;
 
-    struct game_t* game = data->game;
-    struct font_t* font = data->font;
-    struct section_table_t* table = data->table;
+    struct game_t* game = data.game;
+    struct font_t* font = data.font;
+    struct section_table_t* table = data.table;
 
     struct section_t* section = &table->sections[game->currentSection];
 
@@ -358,15 +369,13 @@ bool drawCurrentState(struct draw_data_t* data, float width, float height)
     return true;
 }
 
-bool drawSectionTable(struct draw_data_t* data, float width, float height)
+bool drawSectionTable(float width, float height)
 {
-    assert(data != NULL);
-
     (void) width;
 
-    struct game_t* game = data->game;
-    struct font_t* font = data->font;
-    struct section_table_t* table = data->table;
+    struct game_t* game = data.game;
+    struct font_t* font = data.font;
+    struct section_table_t* table = data.table;
 
     const float vertStride = font->pixelHeight;
     const int maxIterations = height / vertStride;
@@ -431,15 +440,13 @@ bool drawSectionTable(struct draw_data_t* data, float width, float height)
     return true;
 }
 
-bool drawSectionTableOverall(struct draw_data_t* data, float width, float height)
+bool drawSectionTableOverall(float width, float height)
 {
-    assert(data != NULL);
-
     (void) width, (void) height;
 
-    struct game_t* game = data->game;
-    struct font_t* font = data->font;
-    struct section_table_t* table = data->table;
+    struct game_t* game = data.game;
+    struct font_t* font = data.font;
+    struct section_table_t* table = data.table;
 
     const float vertStride = font->pixelHeight;
     const int maxIterations = height / vertStride + 1;
@@ -547,15 +554,13 @@ bool drawSectionTableOverall(struct draw_data_t* data, float width, float height
     return true;
 }
 
-bool drawGameHistory(struct draw_data_t* data, float width, float height)
+bool drawGameHistory(float width, float height)
 {
-    assert(data != NULL);
-
     (void) width;
 
-    /* struct game_t* game = data->game; */
-    struct font_t* font = data->font;
-    struct game_history_t* gh = data->gh;
+    /* struct game_t* game = data.game; */
+    struct font_t* font = data.font;
+    struct game_history_t* gh = data.gh;
 
     const float vertStride = font->pixelHeight;
     const int maxIterations = height / vertStride - 2;
@@ -600,11 +605,9 @@ bool drawGameHistory(struct draw_data_t* data, float width, float height)
     return true;
 }
 
-bool drawMRollPassFail(struct draw_data_t* data, float width, float height)
+bool drawMRollPassFail(float width, float height)
 {
-    assert(data != NULL);
-
-    struct game_t* game = data->game;
+    struct game_t* game = data.game;
 
     if (testMasterConditions(&game->curState))
         glColor4f(0.3f, 1.0f, 0.3f, 1.0f);
