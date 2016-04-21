@@ -25,10 +25,10 @@ struct window_t* window_create(const char* title,
 void window_destroy(struct window_t* w);
 
 void setupOpenGL(struct window_t* window, const unsigned int width, const unsigned int height);
-void drawWindowLayout(struct window_t* window, struct draw_data_t* data);
+void drawWindowLayout(struct window_t* window);
 
 bool windowSetShouldClose(struct window_t** windows, size_t windowCount);
-void drawWindowSet(struct window_t** windows, size_t windowCount, struct draw_data_t* data);
+void drawWindowSet(struct window_t** windows, size_t windowCount);
 
 void windowSet_destroy(struct window_t** windowset, size_t windowCount);
 

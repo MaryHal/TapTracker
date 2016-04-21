@@ -49,6 +49,6 @@ void addToContainerFixed(struct layout_container_t* container, draw_function_p d
 
 // Draw our layout container. If the debug flag is checked, this function will
 // also draw borders for each layout element.
-void drawLayout(struct layout_container_t* container, struct draw_data_t* data_container, bool debug);
+void drawLayout(struct layout_container_t* container, bool debug);
 
 #endif /* LAYOUT_H */

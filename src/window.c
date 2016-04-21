@@ -81,14 +81,14 @@ void setupOpenGL(struct window_t* window, const unsigned int width, const unsign
     glLineWidth(2.0f);
 }
 
-void drawWindowLayout(struct window_t* window, struct draw_data_t* data)
+void drawWindowLayout(struct window_t* window)
 {
     glfwMakeContextCurrent(window->handle);
 
     setGLClearColor();
     glClear(GL_COLOR_BUFFER_BIT);
 
-    drawLayout(&window->layout, data, false);
+    drawLayout(&window->layout, false);
 
     glfwSwapBuffers(window->handle);
 }
@@ -109,14 +109,14 @@ bool windowSetShouldClose(struct window_t** windows, size_t windowCount)
     return false;
 }
 
-void drawWindowSet(struct window_t** windows, size_t windowCount, struct draw_data_t* data)
+void drawWindowSet(struct window_t** windows, size_t windowCount)
 {
     for (size_t i = 0; i < windowCount; ++i)
     {
         struct window_t* w = windows[i];
 
         if (w)
-            drawWindowLayout(w, data);
+            drawWindowLayout(w);
     }
 }
 

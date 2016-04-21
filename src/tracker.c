@@ -85,25 +85,21 @@ bool runTracker(struct tap_state* dataPtr, int argc, const char* argv[])
 
     struct game_history_t* gh = game_history_create();
 
-    struct draw_data_t data =
-    {
-        .game = game,
-        .font = &font,
-        .history = history,
-        .bspec = bspec,
-        .table = table,
-        .gh = gh,
-        .scale = 60.0f
-    };
+    bindDrawData(
+        (struct draw_data_t)
+        {
+            .game = game,
+                .font = &font,
+                .history = history,
+                .bspec = bspec,
+                .table = table,
+                .gh = gh
+                }
+        );
 
     while (!windowSetShouldClose(tt_config.windowset, tt_config.windowCount))
     {
         updateGameState(game, history, table, gh, dataPtr);
-
-        if (getBaseMode(game->curState.gameMode) == TAP_MODE_DEATH)
-            data.scale = 45.0f;
-        else
-            data.scale = 60.0f;
 
         glfwPollEvents();
 
@@ -114,7 +110,7 @@ bool runTracker(struct tap_state* dataPtr, int argc, const char* argv[])
             pushInputFromJoystick(history, joystick);
         }
 
-        drawWindowSet(tt_config.windowset, tt_config.windowCount, &data);
+        drawWindowSet(tt_config.windowset, tt_config.windowCount);
     }
 
     game_history_destroy(gh);
