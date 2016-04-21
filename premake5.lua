@@ -29,6 +29,7 @@ links {
 }
 
 files {
+   "data.c",
    "src/**.c",
    "ext/flag/flag.c",
    "ext/parson/parson.c",
