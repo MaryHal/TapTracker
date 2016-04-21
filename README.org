@@ -43,11 +43,11 @@ After cloning, enter the created directory and retrieve all the submodules:
   git submodule update --init --recursive
 #+END_SRC
 
-Building this project requires [[https://www.python.org/][python]], [[https://martine.github.io/ninja/][ninja]], and [[http://www.glfw.org/][glfw3]]:
+Building this project requires [[http://premake.github.io/][premake5]], [[https://en.wikipedia.org/wiki/Make_(software)][make]], and [[http://www.glfw.org/][glfw3]]:
 
 #+BEGIN_SRC sh
-  python bootstrap.py
-  ninja
+  premake5 gmake
+  make
 #+END_SRC
 
 Alternatively, if you trust me enough, you can find a "stable" build [[https://github.com/sanford1/TapTracker/releases/latest][here]].
