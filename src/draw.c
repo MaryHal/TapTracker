@@ -497,6 +497,15 @@ bool drawSectionTableOverall(float width, float height)
             formatTimeToSeconds(sectionTimeDiff, 16, sectionPB);
 
             drawString(font, 172.0f, y, sectionTimeDiff);
+
+            // Tetris count
+            setGLColor(COLOR_FOREGROUND, 0.2f);
+
+            char tetrisCount[6];
+            snprintf(tetrisCount, 6, "%d*", section->lines[LINE_TETRIS]);
+
+            drawString(font, 50.0f, y, tetrisCount);
+
         }
         else
         {
