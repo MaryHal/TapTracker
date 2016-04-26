@@ -6,7 +6,6 @@
 #include <stb_image.h>
 #include <GLFW/glfw3.h>
 
-#define INCBIN_PREFIX g_
 #include <incbin.h>
 INCBIN(ButtonSheet, "src/bin/key_button.png");
 
@@ -15,7 +14,7 @@ void button_spectrum_init(struct button_spectrum_t* bspec)
     const int tileSize = 8;
 
     int width, height, n;
-    uint8_t* bitmap = stbi_load_from_memory(g_ButtonSheetData, g_ButtonSheetSize, &width, &height, &n, 4);
+    uint8_t* bitmap = stbi_load_from_memory(gButtonSheetData, gButtonSheetSize, &width, &height, &n, 4);
 
     glGenTextures(1, &bspec->textureID);
     glBindTexture(GL_TEXTURE_2D, bspec->textureID);

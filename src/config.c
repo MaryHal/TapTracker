@@ -15,7 +15,6 @@
 
 #include "util.h"
 
-#define INCBIN_PREFIX g_
 #include <incbin.h>
 INCBIN(DEFAULT_CONFIG_FILE_CONTENTS_, "src/bin/default_config.json");
 
@@ -49,12 +48,12 @@ void loadConfig(const char* filename)
         FILE* f = createOrOpenFile(filename);
 
         unsigned int ret =
-        fwrite(g_DEFAULT_CONFIG_FILE_CONTENTS_Data,
+        fwrite(gDEFAULT_CONFIG_FILE_CONTENTS_Data,
                sizeof(unsigned char),
-               g_DEFAULT_CONFIG_FILE_CONTENTS_Size,
+               gDEFAULT_CONFIG_FILE_CONTENTS_Size,
                f);
 
-        assert(ret == g_DEFAULT_CONFIG_FILE_CONTENTS_Size);
+        assert(ret == gDEFAULT_CONFIG_FILE_CONTENTS_Size);
 
         fclose(f);
     }
