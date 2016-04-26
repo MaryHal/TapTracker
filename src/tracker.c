@@ -26,7 +26,6 @@
 
 #define VERSION "v2.0"
 
-#define INCBIN_PREFIX g_
 #include <incbin.h>
 INCBIN(PPImage, "src/bin/PP.png");
 INCBIN(PPData,  "src/bin/PP.bin");
@@ -67,8 +66,8 @@ bool runTracker(struct tap_state* dataPtr, int argc, const char* argv[])
     struct font_t font;
     font_init(&font);
     loadBitmapFontData(&font,
-                       g_PPImageData, g_PPImageSize,
-                       g_PPDataData, g_PPDataSize);
+                       gPPImageData, gPPImageSize,
+                       gPPDataData, gPPDataSize);
 
     struct game_t* game = game_create();
 
