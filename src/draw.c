@@ -629,14 +629,14 @@ bool drawMRollPassFail(float width, float height)
     box[1] = 0;
     box[2] = width;
     box[3] = 0;
-    box[4] = width;
+    box[4] = 0;
     box[5] = height;
-    box[6] = 0;
+    box[6] = width;
     box[7] = height;
 
     glEnableClientState(GL_VERTEX_ARRAY);
     glVertexPointer(2, GL_FLOAT, 0, box);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 2 * 4);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     glDisableClientState(GL_VERTEX_ARRAY);
 
     return true;
