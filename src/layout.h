@@ -6,7 +6,7 @@
 
 #include "draw.h"
 
-#define MAX_LAYOUT_ELEMENTS 4
+#define MAX_LAYOUT_ELEMENTS 6
 
 struct layout_element_t
 {

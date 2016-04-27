@@ -202,6 +202,16 @@ struct game_history_element_t* getGameHistoryElement(struct game_history_t* gh, 
     return &gh->data[index % MAX_GAME_HISTORY_COUNT];
 }
 
+int getGameHistoryCount(struct game_history_t* gh)
+{
+    return gh->end;
+}
+
+int getGameHistorySize(struct game_history_t* gh)
+{
+    return gh->end - gh->start;
+}
+
 float averageHistoryStats(struct game_history_t* gh, int (*getVar)(struct tap_state* state))
 {
     int count = 0;
