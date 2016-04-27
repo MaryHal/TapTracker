@@ -6,7 +6,7 @@
 #include <utringbuffer.h>
 #include <stdbool.h>
 
-#define MAX_GAME_HISTORY_COUNT 32
+#define MAX_GAME_HISTORY_COUNT 64
 
 struct game_history_element_t
 {
@@ -41,6 +41,12 @@ void popGameHistoryElement(struct game_history_t* gh);
 
 // Given an index between start and end, return the associated data element.
 struct game_history_element_t* getGameHistoryElement(struct game_history_t* gh, int index);
+
+// Get total pushes to the game history
+int getGameHistoryCount(struct game_history_t* gh);
+
+// Get the number of elements currently in the game history
+int getGameHistorySize(struct game_history_t* gh);
 
 float averageHistoryStats(struct game_history_t* gh,
                           int (*getVar)(struct tap_state* state));

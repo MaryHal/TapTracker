@@ -246,14 +246,9 @@ struct font_t* loadTTF(struct font_t* font, const char* filename, float pixelHei
         pr[0].num_chars = 95;
         pr[0].font_size = pixelHeight;
 
-        pr[1].chardata_for_range = pdata+256;
-        pr[1].first_unicode_codepoint_in_range = 0x2190;
-        pr[1].num_chars = 0x2193 - 0x2190 + 1;
-        pr[1].font_size = pixelHeight;
-
         stbtt_PackSetOversampling(&pc, 2, 2);
 
-        if (!stbtt_PackFontRanges(&pc, ttf_buffer, 0, pr, 2))
+        if (!stbtt_PackFontRanges(&pc, ttf_buffer, 0, pr, 1))
         {
             ZF_LOGE("stbtt_PackFontRanges error. Chars cannot fit on bitmap?");
             return NULL;
@@ -374,7 +369,11 @@ void getPackedQuad(struct font_t* font, int codepoint,
     float ipw = 1.0f / font->textureWidth;
     float iph = 1.0f / font->textureHeight;
 
-    assert(_getCharData(&font->cmap, codepoint) != NULL);
+    if (_getCharData(&font->cmap, codepoint) == NULL)
+    {
+        ZF_LOGF("Missing character in font: %d", codepoint);
+        return;
+    }
 
     stbtt_packedchar* b = &_getCharData(&font->cmap, codepoint)->pchar;
 
@@ -409,8 +408,17 @@ void drawString(struct font_t* font, float x, float y, const char* string)
     float vertices[len * 8];
     float texCoords[len * 8];
 
+    float xdefault = x;
+
     for (size_t i = 0; i < len; ++i)
     {
+        if (string[i] == '\n')
+        {
+            y += font->pixelHeight;
+            x = xdefault;
+            continue;
+        }
+
         stbtt_aligned_quad q;
         getPackedQuad(font, string[i], &x, &y, 0, &q);
 
