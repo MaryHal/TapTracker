@@ -14,7 +14,7 @@
          - [[#internal-state][Internal State]]
          - [[#game-mode][Game Mode]]
      - [[#tgm1-tgmj][TGM1 (tgmj)]]
-       - [[#useful-ram-addresses][Useful RAM Addresses]]
+       - [[#useful-ram-addresses-1][Useful RAM Addresses]]
 
 ** About
 
@@ -238,24 +238,24 @@ All these addresses are for player 1. I still need to double check some of these
 
 ***** Game Mode
 ****** Base Modes
-| Mode | Value |
-|----------------+------|
-| No Game Mode   |    0 |
-| Normal         |    1 |
-| Master         |    2 |
-| Doubles        |    4 |
-| Tgm+           |  128 |
-| Death          | 4096 |
+| Mode         | Value |
+|--------------+-------|
+| No Game Mode |     0 |
+| Normal       |     1 |
+| Master       |     2 |
+| Doubles      |     4 |
+| Tgm+         |   128 |
+| Death        |  4096 |
 
 ****** Mode Masks
-| Mask    | Value |
-|---------+-------|
-| Versus  |     8 |
-| Credits |    16 |
-| 20G     |    32 |
-| Big     |    64 |
-| Item    |   512 |
-| TLS     |  1024 |
+| Mask    | Value | Bit-shift |
+|---------+-------+-----------|
+| Versus  |     8 | (1 << 3)  |
+| Credits |    16 | (1 << 4)  |
+| 20G     |    32 | (1 << 5)  |
+| Big     |    64 | (1 << 6)  |
+| Item    |   512 | (1 << 9)  |
+| TLS     |  1024 | (1 << 10) |
 
 *** TGM1 (tgmj)
 **** Useful RAM Addresses
