@@ -84,17 +84,18 @@ bool runTracker(struct tap_state* dataPtr, int argc, const char* argv[])
 
     struct game_history_t* gh = game_history_create();
 
-    bindDrawData(
+    struct draw_data_t drawData =
         (struct draw_data_t)
         {
             .game = game,
-                .font = &font,
-                .history = history,
-                .bspec = bspec,
-                .table = table,
-                .gh = gh
-                }
-        );
+            .font = &font,
+            .history = history,
+            .bspec = bspec,
+            .table = table,
+            .gh = gh
+        };
+
+    bindDrawData(drawData);
 
     while (!windowSetShouldClose(tt_config.windowset, tt_config.windowCount))
     {
