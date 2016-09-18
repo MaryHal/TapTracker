@@ -608,7 +608,7 @@ bool drawGameHistory(float width, float height)
 
     char buf[64];
     snprintf(buf, 64,
-             "Credits Used: %d",
+             "Credits Played: %d",
              getGameHistoryCount(gh));
 
     drawString(font, x, y, buf);
