@@ -1,4 +1,4 @@
-* TapTracker  [[https://travis-ci.org/sanford1/TapTracker][https://travis-ci.org/sanford1/TapTracker.svg?branch=master]] :TOC_5_gh:
+* TapTracker  :TOC_5_gh:
    - [[#about][About]]
    - [[#building-taptracker][Building TapTracker]]
    - [[#running-taptracker][Running TapTracker]]
