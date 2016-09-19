@@ -59,7 +59,7 @@ void getModeName(char* buffer, size_t bufferLength, int gameMode)
 {
     const uint8_t BUF_SIZE = 16;
 
-    char modifierMode[BUF_SIZE] = "";
+    char modifierMode[BUF_SIZE];
     if (isVersusMode(gameMode))
     {
         strncpy(modifierMode, "Versus ", BUF_SIZE);
@@ -81,7 +81,7 @@ void getModeName(char* buffer, size_t bufferLength, int gameMode)
         strncpy(modifierMode, "TLS ", BUF_SIZE);
     }
 
-    char baseMode[BUF_SIZE] = "";
+    char baseMode[BUF_SIZE];
     switch (getBaseMode(gameMode))
     {
     case TAP_MODE_NULL:
