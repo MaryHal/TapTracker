@@ -19,5 +19,8 @@ addons:
             - clang
             - libglfw3-dev
 
+before_install:
+- sudo apt-get update -qq
+
 script:
     - make
