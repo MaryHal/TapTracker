@@ -80,7 +80,7 @@ struct tap_state
         int16_t gradePoints;
 
         int16_t level;
-        int16_t timer; // Timer value in frames. Runs at 60 fps.
+        uint16_t timer; // Timer value in frames. Runs at 60 fps.
 
         int16_t tetromino;
         int16_t xcoord;
