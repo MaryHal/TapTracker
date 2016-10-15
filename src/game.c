@@ -80,6 +80,10 @@ void getModeName(char* buffer, size_t bufferLength, int gameMode)
     {
         strncpy(modifierMode, "TLS ", BUF_SIZE);
     }
+    else
+    {
+        modifierMode[0] = '\0';
+    }
 
     char baseMode[BUF_SIZE];
     switch (getBaseMode(gameMode))
