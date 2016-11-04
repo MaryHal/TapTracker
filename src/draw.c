@@ -211,16 +211,16 @@ bool drawSectionGraph(float width, float height)
     sprintf(levelStr, "%d", (int)scale);
     drawString(font, width - 12.0f, graphHeight + font->pixelHeight, levelStr);
 
-    // Draw grade and grade points
-    if (testMasterConditions(&game->curState))
-        glColor4f(0.3f, 1.0f, 0.3f, 1.0f);
-    else
-        glColor4f(1.0f, 0.3f, 0.3f, 1.0f);
+    /* // Draw grade and grade points */
+    /* if (testMasterConditions(&game->curState)) */
+    /*     glColor4f(0.3f, 1.0f, 0.3f, 1.0f); */
+    /* else */
+    /*     glColor4f(1.0f, 0.3f, 0.3f, 1.0f); */
 
-    sprintf(levelStr, "%2d %2d",
-            game->curState.grade,
-            game->curState.gradePoints);
-    drawString(font, width - 30.0f, graphHeight - 2.0f, levelStr);
+    /* sprintf(levelStr, "%2d %2d", */
+    /*         game->curState.grade, */
+    /*         game->curState.gradePoints); */
+    /* drawString(font, width - 30.0f, graphHeight - 2.0f, levelStr); */
 
     /* // Draw some block data */
     /* sprintf(levelStr, "%d %d %d %d %d", */
@@ -319,10 +319,10 @@ bool drawLineCount(float width, float height)
 
     char lineCount[20];
     snprintf(lineCount, 20, "%2d : %2d : %2d : %2d",
-            section->lines[0],
-            section->lines[1],
-            section->lines[2],
-            section->lines[3]);
+             section->lines[0],
+             section->lines[1],
+             section->lines[2],
+             section->lines[3]);
 
     setGLColor(COLOR_FOREGROUND, 1.0f);
 
