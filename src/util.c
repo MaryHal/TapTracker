@@ -50,7 +50,7 @@ bool fileExists(const char* filename)
         return false;
     }
 
-    fclose(file);
+    fclose(f);
     return true;
 }
 
@@ -62,7 +62,7 @@ FILE* createOrOpenFile(const char* filename)
     {
         ZF_LOGV("File \"%s\" does not exist. Attempting to create it...", filename);
 
-        fclose(file);
+        fclose(f);
         return fopen(filename, "wb");
     }
 

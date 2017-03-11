@@ -7,14 +7,13 @@
 #include <GLFW/glfw3.h>
 
 #include <incbin.h>
-INCBIN(ButtonSheet, "src/bin/key_button.png");
 
-void button_spectrum_init(struct button_spectrum_t* bspec)
+void button_spectrum_init(struct button_spectrum_t* bspec, const uint8_t* data, size_t size)
 {
     const int tileSize = 8;
 
     int width, height, n;
-    uint8_t* bitmap = stbi_load_from_memory(gButtonSheetData, gButtonSheetSize, &width, &height, &n, 4);
+    uint8_t* bitmap = stbi_load_from_memory(data, size, &width, &height, &n, 4);
 
     glGenTextures(1, &bspec->textureID);
     glBindTexture(GL_TEXTURE_2D, bspec->textureID);
@@ -51,12 +50,12 @@ void button_spectrum_terminate(struct button_spectrum_t* bspec)
     glDeleteTextures(1, &bspec->textureID);
 }
 
-struct button_spectrum_t* button_spectrum_create()
+struct button_spectrum_t* button_spectrum_create(const uint8_t* data, size_t size)
 {
     struct button_spectrum_t* bspec = malloc(sizeof(struct button_spectrum_t));
     if (bspec)
     {
-        button_spectrum_init(bspec);
+        button_spectrum_init(bspec, data, size);
     }
 
     return bspec;
