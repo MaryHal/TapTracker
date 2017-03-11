@@ -30,6 +30,8 @@
 INCBIN(PPImage, "src/bin/PP.png");
 INCBIN(PPData,  "src/bin/PP.bin");
 
+INCBIN(ButtonSheet, "src/bin/key_button.png");
+
 bool runTracker(struct tap_state* dataPtr, int argc, const char* argv[])
 {
     if (glfwInit() == GL_FALSE)
@@ -79,7 +81,7 @@ bool runTracker(struct tap_state* dataPtr, int argc, const char* argv[])
         joystick = joystick_create(GLFW_JOYSTICK_1, tt_config.jmap);
     }
 
-    struct button_spectrum_t* bspec = button_spectrum_create();
+    struct button_spectrum_t* bspec = button_spectrum_create(gButtonSheetData, gButtonSheetSize);
     struct section_table_t* table = section_table_create(pb_path);
 
     struct game_history_t* gh = game_history_create();

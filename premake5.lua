@@ -2,7 +2,6 @@
 workspace "TapTracker"
 configurations { "debug", "release" }
 
-
 project "TapTracker"
 kind "ConsoleApp"
 language "C"
@@ -21,13 +20,6 @@ includedirs {}
 
 libdirs {}
 
-links {
-   "GL",
-   "glfw",
-   "m",
-   "rt"
-}
-
 files {
    "src/**.c",
    "ext/flag/flag.c",
@@ -42,9 +34,24 @@ buildoptions {
    "-std=gnu11"
 }
 
+filter "system:windows"
+links {
+   "opengl32",
+   "glfw3",
+   "m",
+}
+
+filter "system:not windows"
+links {
+   "GL",
+   "glfw",
+   "m",
+   "rt"
+}
+
 filter "configurations:debug"
 defines { "DEBUG", "ZF_LOG_DEF_LEVEL=ZF_LOG_VERBOSE" }
-flags { "Symbols" }
+symbols "On"
 
 filter "configurations:release"
 defines { "NDEBUG", "ZF_LOG_DEF_LEVEL=ZF_LOG_WARN"  }

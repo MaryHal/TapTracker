@@ -41,10 +41,10 @@ struct button_spectrum_t
         struct button_spectrum_quad_t quads[BUTTON_QUAD_COUNT];
 };
 
-void button_spectrum_init(struct button_spectrum_t* bspec);
+void button_spectrum_init(struct button_spectrum_t* bspec, const uint8_t* data, size_t size);
 void button_spectrum_terminate(struct button_spectrum_t* bspec);
 
-struct button_spectrum_t* button_spectrum_create();
+struct button_spectrum_t* button_spectrum_create(const uint8_t* data, size_t size);
 void button_spectrum_destroy(struct button_spectrum_t* bspec);
 
 uint8_t joystickButtonToQuadIndex(struct joystick_mapping_t jmap, uint8_t button);

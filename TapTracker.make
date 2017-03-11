@@ -13,16 +13,16 @@ endif
 ifeq ($(config),debug)
   RESCOMP = windres
   TARGETDIR = bin/debug
-  TARGET = $(TARGETDIR)/TapTracker
+  TARGET = $(TARGETDIR)/TapTracker.exe
   OBJDIR = obj/debug
   DEFINES += -DDEBUG -DZF_LOG_DEF_LEVEL=ZF_LOG_VERBOSE
   INCLUDES += -isystem ext/uthash/src -isystem ext/stb -isystem ext/incbin -isystem ext/flag -isystem ext/parson -isystem ext/zf_log/zf_log
   FORCE_INCLUDE +=
   ALL_CPPFLAGS += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
   ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -g -Wall -Wextra -pedantic -std=gnu11
-  ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CFLAGS)
+  ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -g -Wall -Wextra -pedantic -std=gnu11
   ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
-  LIBS += -Wl,--start-group -lGL -lglfw -lm -lrt -Wl,--end-group
+  LIBS += -lopengl32 -lglfw3 -lm
   LDDEPS +=
   ALL_LDFLAGS += $(LDFLAGS)
   LINKCMD = $(CC) -o "$@" $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
@@ -40,16 +40,16 @@ endif
 ifeq ($(config),release)
   RESCOMP = windres
   TARGETDIR = bin/release
-  TARGET = $(TARGETDIR)/TapTracker
+  TARGET = $(TARGETDIR)/TapTracker.exe
   OBJDIR = obj/release
   DEFINES += -DNDEBUG -DZF_LOG_DEF_LEVEL=ZF_LOG_WARN
   INCLUDES += -isystem ext/uthash/src -isystem ext/stb -isystem ext/incbin -isystem ext/flag -isystem ext/parson -isystem ext/zf_log/zf_log
   FORCE_INCLUDE +=
   ALL_CPPFLAGS += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
   ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -O2 -Wall -Wextra -pedantic -std=gnu11
-  ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CFLAGS)
+  ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -O2 -Wall -Wextra -pedantic -std=gnu11
   ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
-  LIBS += -Wl,--start-group -lGL -lglfw -lm -lrt -Wl,--end-group
+  LIBS += -lopengl32 -lglfw3 -lm
   LDDEPS +=
   ALL_LDFLAGS += $(LDFLAGS) -s
   LINKCMD = $(CC) -o "$@" $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
@@ -79,6 +79,7 @@ OBJECTS := \
 	$(OBJDIR)/joystick.o \
 	$(OBJDIR)/layout.o \
 	$(OBJDIR)/main.o \
+	$(OBJDIR)/memorymap.o \
 	$(OBJDIR)/sectiontable.o \
 	$(OBJDIR)/stb_truetype_impl.o \
 	$(OBJDIR)/tracker.o \
@@ -181,6 +182,9 @@ $(OBJDIR)/layout.o: src/layout.c
 	@echo $(notdir $<)
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/main.o: src/main.c
+	@echo $(notdir $<)
+	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/memorymap.o: src/memorymap.c
 	@echo $(notdir $<)
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/sectiontable.o: src/sectiontable.c
