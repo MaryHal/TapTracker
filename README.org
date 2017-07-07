@@ -19,7 +19,7 @@
 
 ** About
 
-This project aims to log various game data (and inputs) during a game of [[https://en.wikipedia.org/wiki/Tetris:_The_Grand_Master][Tetris: The Grandmaster 2 Plus]] (TGM2p/TGM2+/TAP) when run in an emulator ([[http://mamedev.org/][MAME]]). TapTracker runs alongside the emulator and performs its logging in real-time. This is linux-only for now.
+This project aims to log various game data (and inputs) during a game of [[https://en.wikipedia.org/wiki/Tetris:_The_Grand_Master][Tetris: The Grandmaster 2 Plus]] (TGM2p/TGM2+/TAP) when run in an emulator ([[http://mamedev.org/][MAME]]). TapTracker runs alongside the emulator and performs its logging in real-time. Windows support is experimental.
 
 [[https://github.com/sanford1/BlockTracker][BlockTracker]] was my first attempt at this. It was done by interacting with [[https://github.com/scanmem/scanmem][scanmem]] as a child process, but ultimately, this meant every time I started up the game, I had to probe for the memory address holding level data (not unlike someone using [[http://www.cheatengine.org/][cheat-engine]]) then pass the proper memory addresses to BlockTracker. Along the way I wrote quite possibly the worst code I've ever written, so despite it being such a small program, it wasn't too pleasant for me to look at and maintain. (There was one upside though: this method was game-agnostic, so I could probe any TGM-style game for level data).
 
@@ -120,7 +120,7 @@ The top portion graphs the time vs level during the last three sections. Below t
        Layout 4.0 0.0
        Ratio InputHistory 1.0
      #+END_SRC
-     
+
      Or this (yaml):
      #+BEGIN_SRC text
        joystick:
@@ -316,4 +316,4 @@ All these addresses are for player 1. I still need to double check some of these
   #define MODE_TLS_MASK  (1 << 7)
 #+END_SRC
 
-  
+
