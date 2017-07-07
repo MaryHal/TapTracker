@@ -56,3 +56,4 @@ symbols "On"
 filter "configurations:release"
 defines { "NDEBUG", "ZF_LOG_DEF_LEVEL=ZF_LOG_WARN"  }
 optimize "On"
+

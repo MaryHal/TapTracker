@@ -3,24 +3,24 @@ sudo: required
 language: c
 
 compiler:
-    - gcc
-    - clang
+  - gcc
+  - clang
 
 install:
-    - if [ "$CC" = "gcc" ]; then export CC="gcc-4.8"; fi
+  - if [ "$CC" = "gcc" ]; then export CC="gcc-4.8"; fi
 
 addons:
-    apt:
-        sources:
-            - ubuntu-toolchain-r-test
-            - debian-sid
-        packages:
-            - gcc-4.8
-            - clang
-            - libglfw3-dev
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+      - debian-sid
+    packages:
+      - gcc-4.8
+      - clang
+      - libglfw3-dev
 
-before_install:
-- sudo apt-get update -qq
+    before_install:
+      - sudo apt-get update -qq
 
-script:
-    - make
+    script:
+      - make
