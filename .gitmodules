@@ -4,9 +4,6 @@
 [submodule "ext/uthash"]
 	path = ext/uthash
 	url = https://github.com/troydhanson/uthash.git
-[submodule "ext/incbin"]
-	path = ext/incbin
-	url = https://github.com/graphitemaster/incbin.git
 [submodule "ext/flag"]
 	path = ext/flag
 	url = https://github.com/clibs/flag.git
@@ -16,3 +13,6 @@
 [submodule "ext/zf_log"]
 	path = ext/zf_log
 	url = https://github.com/wonder-mice/zf_log.git
+[submodule "ext/incbin"]
+	path = ext/incbin
+	url = git@github.com:MaryHal/incbin.git
