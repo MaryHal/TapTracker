@@ -14,10 +14,12 @@ static size_t vSize = sizeof(struct tap_state);
 #include <sys/mman.h>
 #include <fcntl.h>
 
+static int fd = 0;
+
 struct tap_state* getMappingPtr()
 {
     const char* sharedMemKey = "taptracker_data";
-    int fd = shm_open(sharedMemKey, O_RDONLY, S_IRWXO | S_IRWXG | S_IRWXU);
+    fd = shm_open(sharedMemKey, O_RDONLY, S_IRWXO | S_IRWXG | S_IRWXU);
     if (fd < 0)
     {
         ZF_LOGF("Could not open shared memory object");
