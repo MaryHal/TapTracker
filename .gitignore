@@ -28,3 +28,4 @@ obj/
 *.i64
 /bin/tt.valgrind
 /bin/GoldST.txt
+releases/

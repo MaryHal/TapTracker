@@ -1,34 +1,29 @@
 * TapTracker  :TOC_5_gh:
-   - [[#about][About]]
-   - [[#building-taptracker][Building TapTracker]]
-   - [[#running-taptracker][Running TapTracker]]
-   - [[#screenshots][Screenshots]]
-   - [[#videos][Videos]]
-   - [[#to-do-list][To-do list]]
-   - [[#appendix][Appendix]]
-     - [[#tap-tgm2p][TAP (tgm2p)]]
-       - [[#useful-ram-addresses][Useful RAM Addresses]]
-       - [[#block-indices][Block Indices]]
-       - [[#tgm2p-states][TGM2P States]]
-         - [[#m-roll-flags][M-Roll Flags]]
-         - [[#internal-state][Internal State]]
-         - [[#game-mode][Game Mode]]
-     - [[#tgm1-tgmj][TGM1 (tgmj)]]
-       - [[#useful-ram-addresses-1][Useful RAM Addresses]]
-       - [[#tgm1-states][TGM1 States]]
+  - [[#about][About]]
+  - [[#building-taptracker][Building TapTracker]]
+  - [[#download][Download]]
+  - [[#running-taptracker][Running TapTracker]]
+  - [[#screenshots][Screenshots]]
+  - [[#videos][Videos]]
+  - [[#to-do-list][To-do list]]
+  - [[#appendix][Appendix]]
+    - [[#tap-tgm2p][TAP (tgm2p)]]
+      - [[#useful-ram-addresses][Useful RAM Addresses]]
+      - [[#block-indices][Block Indices]]
+      - [[#tgm2p-states][TGM2P States]]
+        - [[#m-roll-flags][M-Roll Flags]]
+        - [[#internal-state][Internal State]]
+        - [[#game-mode][Game Mode]]
+    - [[#tgm1-tgmj][TGM1 (tgmj)]]
+      - [[#useful-ram-addresses-1][Useful RAM Addresses]]
+      - [[#tgm1-states][TGM1 States]]
 
 ** About
-
 This project aims to log various game data (and inputs) during a game of [[https://en.wikipedia.org/wiki/Tetris:_The_Grand_Master][Tetris: The Grandmaster 2 Plus]] (TGM2p/TGM2+/TAP) when run in an emulator ([[http://mamedev.org/][MAME]]). TapTracker runs alongside the emulator and performs its logging in real-time. Windows support is experimental.
 
 [[https://github.com/sanford1/BlockTracker][BlockTracker]] was my first attempt at this. It was done by interacting with [[https://github.com/scanmem/scanmem][scanmem]] as a child process, but ultimately, this meant every time I started up the game, I had to probe for the memory address holding level data (not unlike someone using [[http://www.cheatengine.org/][cheat-engine]]) then pass the proper memory addresses to BlockTracker. Along the way I wrote quite possibly the worst code I've ever written, so despite it being such a small program, it wasn't too pleasant for me to look at and maintain. (There was one upside though: this method was game-agnostic, so I could probe any TGM-style game for level data).
 
-In contrast, TapTracker takes a more direct route by modifying a [[https://github.com/sanford1/shmupmametgm/][TGM-specific version of MAME]] to output relevant data. You can also build TapTracker MAME like so:
-
-#+BEGIN_SRC sh
-  git clone https://github.com/sanford1/shmupmametgm.git
-  make SUBTARGET=tgm NOWERROR=1
-#+END_SRC
+In contrast, TapTracker takes a more direct route by modifying a [[https://github.com/sanford1/shmupmametgm/][TGM-specific version of MAME]] to output relevant data.
 
 ** Building TapTracker
 
@@ -51,7 +46,8 @@ Building this project requires [[http://premake.github.io/][premake5]], [[https:
   make
 #+END_SRC
 
-Alternatively, if you trust me enough, you can find a "stable" build [[https://github.com/sanford1/TapTracker/releases/latest][here]].
+** Download
+If you don't want to go through the trouble of building this by yourself (and you trust me enough): [[https://github.com/MaryHal/TapTracker/releases/latest][Latest Release]]
 
 ** Running TapTracker
 
@@ -315,5 +311,3 @@ All these addresses are for player 1. I still need to double check some of these
   #define MODE_MONO_MASK (1 << 5)
   #define MODE_TLS_MASK  (1 << 7)
 #+END_SRC
-
-
