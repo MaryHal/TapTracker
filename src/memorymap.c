@@ -1,6 +1,8 @@
 #include "memorymap.h"
 #include "tap_state.h"
 
+#include <stddef.h>
+
 #include <zf_log.h>
 
 static size_t vSize = sizeof(struct tap_state);
@@ -23,14 +25,14 @@ struct tap_state* getMappingPtr()
     if (fd < 0)
     {
         ZF_LOGF("Could not open shared memory object");
-        return 1;
+        return 0;
     }
 
     struct tap_state* addr = (struct tap_state*)mmap(NULL, vSize, PROT_READ, MAP_SHARED, fd, 0);
     if (addr == MAP_FAILED)
     {
         ZF_LOGF("Could not map memory");
-        return 1;
+        return 0;
     }
 
     return addr;

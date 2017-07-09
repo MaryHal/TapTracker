@@ -1,6 +1,7 @@
 #ifndef BUTTONQUADS_H
 #define BUTTONQUADS_H
 
+#include <stddef.h>
 #include <stdbool.h>
 #include <stdint.h>
 
