@@ -572,7 +572,7 @@ bool drawGameHistory(float width, float height)
     struct game_history_t* gh = data.gh;
 
     const float vertStride = font->pixelHeight;
-    const int maxIterations = height / vertStride - 2;
+    const int maxIterations = height / vertStride - 3;
 
     float x = 0.0f;
     float y = vertStride;
@@ -608,7 +608,8 @@ bool drawGameHistory(float width, float height)
 
     char buf[64];
     snprintf(buf, 64,
-             "Credits Played: %d",
+             "Death Carnival Score: %d\nCredits Used: %d",
+             carnivalScore(gh),
              getGameHistoryCount(gh));
 
     drawString(font, x, y, buf);

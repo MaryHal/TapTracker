@@ -13,7 +13,7 @@ endif
 ifeq ($(config),debug)
   RESCOMP = windres
   TARGETDIR = bin/debug
-  TARGET = $(TARGETDIR)/TapTracker
+  TARGET = $(TARGETDIR)/TapTracker.exe
   OBJDIR = obj/debug
   DEFINES += -DDEBUG -DZF_LOG_DEF_LEVEL=ZF_LOG_VERBOSE
   INCLUDES += -isystem ext/uthash/src -isystem ext/stb -isystem ext/incbin -isystem ext/flag -isystem ext/parson -isystem ext/zf_log/zf_log
@@ -22,7 +22,7 @@ ifeq ($(config),debug)
   ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -g -Wall -Wextra -pedantic -std=gnu11
   ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -g -Wall -Wextra -pedantic -std=gnu11
   ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
-  LIBS += -lGL -lglfw -lm -lrt
+  LIBS += -lopengl32 -lglfw3 -lm
   LDDEPS +=
   ALL_LDFLAGS += $(LDFLAGS)
   LINKCMD = $(CC) -o "$@" $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
@@ -40,7 +40,7 @@ endif
 ifeq ($(config),release)
   RESCOMP = windres
   TARGETDIR = bin/release
-  TARGET = $(TARGETDIR)/TapTracker
+  TARGET = $(TARGETDIR)/TapTracker.exe
   OBJDIR = obj/release
   DEFINES += -DNDEBUG -DZF_LOG_DEF_LEVEL=ZF_LOG_WARN
   INCLUDES += -isystem ext/uthash/src -isystem ext/stb -isystem ext/incbin -isystem ext/flag -isystem ext/parson -isystem ext/zf_log/zf_log
@@ -49,7 +49,7 @@ ifeq ($(config),release)
   ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -O2 -Wall -Wextra -pedantic -std=gnu11
   ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -O2 -Wall -Wextra -pedantic -std=gnu11
   ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
-  LIBS += -lGL -lglfw -lm -lrt
+  LIBS += -lopengl32 -lglfw3 -lm
   LDDEPS +=
   ALL_LDFLAGS += $(LDFLAGS) -s
   LINKCMD = $(CC) -o "$@" $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
@@ -128,6 +128,11 @@ ifneq (,$(PCH))
 $(OBJECTS): $(GCH) $(PCH)
 $(GCH): $(PCH)
 	@echo $(notdir $<)
+ifeq (posix,$(SHELLTYPE))
+	$(SILENT) mkdir -p $(OBJDIR)
+else
+	$(SILENT) mkdir $(subst /,\\,$(OBJDIR))
+endif
 	$(SILENT) $(CC) -x c-header $(ALL_CFLAGS) -o "$@" -MF "$(@:%.gch=%.d)" -c "$<"
 endif
 

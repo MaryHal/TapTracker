@@ -15,4 +15,4 @@
 	url = https://github.com/wonder-mice/zf_log.git
 [submodule "ext/incbin"]
 	path = ext/incbin
-	url = git@github.com:MaryHal/incbin.git
+	url = https://github.com/graphitemaster/incbin.git
